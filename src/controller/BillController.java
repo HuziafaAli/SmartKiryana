@@ -5,6 +5,8 @@ import model.BillItem;
 import model.User;
 import model.InventoryItem;
 import model.Product;
+import model.ReturnItem;
+import model.ReturnTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +15,14 @@ public class BillController {
 
     // Runtime Database
     private List<Bill> billDatabase;
+    private List<ReturnTransaction> returnDatabase;
 
     private Bill currentBill;
     private InventoryController inventoryController;
 
     public BillController(InventoryController inventoryController) {
         this.billDatabase = new ArrayList<>();
+        this.returnDatabase = new ArrayList<>();
         this.currentBill = null;
         this.inventoryController = inventoryController;
     }
@@ -95,4 +99,24 @@ public class BillController {
         System.out.println("CheckOut Successfull.");
         return currentBill;
     }
+
+    public List<ReturnTransaction> getAllReturns() {
+        return returnDatabase;
+    }
+
+    public void processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
+        int returnId = returnDatabase.size() + 1;
+        
+        ReturnTransaction returnTx = new ReturnTransaction(returnId, originalBill, reason);
+        
+        for (ReturnItem item : items) {
+            returnTx.addReturnedItem(item);
+            
+            inventoryController.addStock(item.getOriginalItem().getProduct().getBarcode(), item.getReturnQuantity());
+        }
+        
+        returnDatabase.add(returnTx);
+        System.out.println("Return processed successfully. Refund amount: " + returnTx.getRefundAmount());
+    }
+
 }
