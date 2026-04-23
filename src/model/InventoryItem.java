@@ -11,7 +11,8 @@ public class InventoryItem {
     public InventoryItem() {
     }
 
-    public InventoryItem(int inventoryId, Product product, int stockQuantity, int minStockThreshold, int maxStockThreshold) {
+    public InventoryItem(int inventoryId, Product product, int stockQuantity, int minStockThreshold,
+            int maxStockThreshold) {
         this.inventoryId = inventoryId;
         this.product = product;
         this.stockQuantity = stockQuantity;
@@ -25,6 +26,18 @@ public class InventoryItem {
 
     public boolean isOverStock() {
         return stockQuantity >= maxStockThreshold;
+    }
+
+    public void addStockQuantity(int amount) {
+        this.stockQuantity += amount;
+    }
+
+    public boolean reduceStockQuantity(int amount) {
+        if (this.stockQuantity >= amount) {
+            this.stockQuantity -= amount;
+            return true;
+        }
+        return false;
     }
 
     // Getters & Setters
