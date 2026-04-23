@@ -5,7 +5,7 @@ public class BillItem {
     private int billItemId;
     private Product product;
     private int quantity;
-    private double unitPrice; // We save this here in case the product's price changes later
+    private double unitPrice; 
 
     public BillItem() {
     }
@@ -17,14 +17,11 @@ public class BillItem {
         this.unitPrice = unitPrice;
     }
 
-    // --- Business Logic ---
-
-    // Information Expert Pattern: BillItem knows its quantity and price, so it calculates its own subtotal.
-    public double getSubtotal() {
+   public double getSubtotal() {
         return quantity * unitPrice;
     }
 
-    // --- Getters & Setters ---
+    // Getters & Setters 
 
     public int getBillItemId() {
         return billItemId;

@@ -19,8 +19,6 @@ public class InventoryItem {
         this.maxStockThreshold = maxStockThreshold;
     }
 
-    // --- Business Logic ---
-    
     public boolean isLowStock() {
         return stockQuantity <= minStockThreshold;
     }
@@ -29,7 +27,7 @@ public class InventoryItem {
         return stockQuantity >= maxStockThreshold;
     }
 
-    // --- Getters & Setters ---
+    // Getters & Setters
 
     public int getInventoryId() {
         return inventoryId;

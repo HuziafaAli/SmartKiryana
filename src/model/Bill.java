@@ -7,7 +7,7 @@ import java.util.List;
 public class Bill {
 
     private int billId;
-    private User user; // The employee or admin who processed the sale
+    private User user; 
     private List<BillItem> items;
     private LocalDateTime billDate;
     private double totalAmount;
@@ -16,7 +16,7 @@ public class Bill {
 
     public Bill() {
         this.items = new ArrayList<>();
-        this.billDate = LocalDateTime.now(); // Automatically set the current time
+        this.billDate = LocalDateTime.now(); 
     }
 
     public Bill(int billId, User user) {
@@ -26,11 +26,9 @@ public class Bill {
         this.billDate = LocalDateTime.now();
     }
 
-    // --- Business Logic ---
-
     public void addItem(BillItem item) {
-        this.items.add(item);
-        calculateTotal(); // Recalculate total whenever an item is added
+        items.add(item);
+        calculateTotal(); 
     }
 
     public void calculateTotal() {
