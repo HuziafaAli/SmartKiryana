@@ -7,7 +7,7 @@ public class User {
     private String password;
     private String fullName;
     private String phone;
-    private String role; 
+    private String role; // "ADMIN" or "EMPLOYEE"
     private boolean isActive;
 
     public User() {
@@ -73,7 +73,7 @@ public class User {
         this.role = role;
     }
 
-    public boolean getisActive() {
+    public boolean isActive() {
         return isActive;
     }
 
