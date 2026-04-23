@@ -51,28 +51,39 @@ public class InventoryController {
     }
 
     public void addStock(String barcode, int quantityToAdd) {
-        for(InventoryItem i: inventoryDatabase) {
-            if(i.getProduct().getBarcode().equals(barcode)) {
-                i.addStockQuantity(quantityToAdd);
-                System.out.println(i.getProduct().getName() +" quantity Added.");
-                return;
-            }
+        
+        InventoryItem itemExist = isProductExists(barcode);
+        if(itemExist == null) {
+            System.out.println("Invalid Barcode.");
+            return;
         }
-        System.out.println("Invalid Barcode.");
+
+        itemExist.addStockQuantity(quantityToAdd);
+        System.out.println(itemExist.getProduct().getName() +" quantity Added.");
     }
 
     public void reduceStock(String barcode, int quantityToReduce) {
+        
+        InventoryItem itemExist = isProductExists(barcode);
+        if(itemExist == null) {
+            System.out.println("Invalid Barcode.");
+            return;
+        }
+
+        if(itemExist.reduceStockQuantity(quantityToReduce)) {
+            System.out.println(itemExist.getProduct().getName() +" quantity reduced.");
+        } else {
+            System.out.println(itemExist.getProduct().getName() +" has not enough stock");    
+        }
+    }
+
+    public InventoryItem isProductExists(String barcode) {
         for(InventoryItem i: inventoryDatabase) {
             if(i.getProduct().getBarcode().equals(barcode)) {
-                if(i.reduceStockQuantity(quantityToReduce)) {
-                    System.out.println(i.getProduct().getName() +" quantity reduced.");
-                } else {
-                    System.out.println(i.getProduct().getName() +" has not enough stock");    
-                }
-                return;
+                return i;
             }
         }
-        System.out.println("Invalid Barcode.");
+        return null;
     }
 
     public List<InventoryItem> getLowStockItems() {

@@ -13,6 +13,8 @@ public class Bill {
     private double totalAmount;
     private double taxAmount;
     private double discountAmount;
+    private double cashProvided;
+    private double returnCash;
 
     public Bill() {
         this.items = new ArrayList<>();
@@ -102,6 +104,22 @@ public class Bill {
     public void setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
         calculateTotal();
+    }
+
+    public double getCashProvided() {
+        return cashProvided;
+    }
+
+    public void setCashProvided(double amount) {
+        cashProvided = amount;
+    }
+
+    public double getreturnCash() {
+        return returnCash;
+    }
+
+    public void setReturnCash(double amount) {
+        returnCash = amount;
     }
 
     @Override

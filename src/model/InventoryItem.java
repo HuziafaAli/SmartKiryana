@@ -40,6 +40,13 @@ public class InventoryItem {
         return false;
     }
 
+    public boolean checkStockQuantity(int amount) {
+        if(amount <= stockQuantity) {
+            return true;
+        }
+        return false;
+    }
+
     // Getters & Setters
 
     public int getInventoryId() {
