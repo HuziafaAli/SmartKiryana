@@ -1,98 +1,70 @@
 package controller;
 
+import service.InventoryService;
 import model.InventoryItem;
-import model.Product;
 import model.ProductCategory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryController {
-    //Runtime DB
-    private List<InventoryItem> inventoryDatabase;
-    private List<ProductCategory> categoryDatabase;
 
-    public InventoryController() {
-        inventoryDatabase = new ArrayList<>();
-        categoryDatabase = new ArrayList<>();
+    private InventoryService inventoryService;
 
-        //For Testing
-        ProductCategory tempCat = new ProductCategory(1, "Dairy");
-        ProductCategory tempCat2 = new ProductCategory(1, "Snacks");
-        
-        categoryDatabase.add(tempCat);
-        categoryDatabase.add(tempCat2);
+    public InventoryController(InventoryService IS) {
+        inventoryService = IS;
     }
 
     public void addCategory(int id, String name) {
-        categoryDatabase.add(new ProductCategory(id, name));
+        inventoryService.addCategory(id, name);
         System.out.println("Product Category Added.");
     }
 
     public List<ProductCategory> getAllCategories() {
-        return categoryDatabase;
+        return inventoryService.getAllCategories();
     }
 
     public void addProduct(int productId, String barcode, String name, int categoryId,
-                            double price, double costPrice, int minStock, int maxStock) {
-                
-        for(ProductCategory c: categoryDatabase) {
-            if(c.getCategoryId() == categoryId) {
-                ProductCategory category = new ProductCategory(categoryId, c.getCategoryName());
-                Product p = new Product(productId, barcode, name, category, price, costPrice);
-                int newInvId = inventoryDatabase.size() + 1;
-                InventoryItem i = new InventoryItem(newInvId, p , 0, minStock, maxStock);
-                inventoryDatabase.add(i);
-                System.out.println("Product Added.");
-                return;
-            }
+            double price, double costPrice, int minStock, int maxStock) {
+
+        boolean success = inventoryService.addProduct(productId, barcode, name, categoryId, price, costPrice, minStock,
+                maxStock);
+        if (success) {
+            System.out.println("Product Added.");
+        } else {
+            System.out.println("Product Category Not Found.");
         }
-        System.out.println("Product Category Not Found.");
+
     }
 
     public void addStock(String barcode, int quantityToAdd) {
-        
-        InventoryItem itemExist = isProductExists(barcode);
-        if(itemExist == null) {
-            System.out.println("Invalid Barcode.");
-            return;
-        }
 
-        itemExist.addStockQuantity(quantityToAdd);
-        System.out.println(itemExist.getProduct().getName() +" quantity Added.");
+        boolean success = inventoryService.addStock(barcode, quantityToAdd);
+        InventoryItem itemExist = inventoryService.isProductExists(barcode);
+        if (success) {
+            System.out.println(itemExist.getProduct().getName() + " quantity Added.");
+        } else {
+            System.out.println("Invalid Barcode.");
+        }
     }
 
     public void reduceStock(String barcode, int quantityToReduce) {
-        
-        InventoryItem itemExist = isProductExists(barcode);
-        if(itemExist == null) {
-            System.out.println("Invalid Barcode.");
-            return;
-        }
+        InventoryItem itemExist = inventoryService.isProductExists(barcode);
+        boolean success = inventoryService.reduceStock(barcode, quantityToReduce);
 
-        if(itemExist.reduceStockQuantity(quantityToReduce)) {
-            System.out.println(itemExist.getProduct().getName() +" quantity reduced.");
+        if (success) {
+            System.out.println(itemExist.getProduct().getName() + " quantity reduced.");
+        } else if (itemExist != null) {
+            System.out.println(itemExist.getProduct().getName() + " does not have enough stock.");
         } else {
-            System.out.println(itemExist.getProduct().getName() +" has not enough stock");    
+            System.out.println("Invalid Barcode.");
         }
     }
 
     public InventoryItem isProductExists(String barcode) {
-        for(InventoryItem i: inventoryDatabase) {
-            if(i.getProduct().getBarcode().equals(barcode)) {
-                return i;
-            }
-        }
-        return null;
+        return inventoryService.isProductExists(barcode);
     }
 
     public List<InventoryItem> getLowStockItems() {
-        List<InventoryItem> lowStockItems = new ArrayList<>();
-        for(InventoryItem i: inventoryDatabase) {
-            if(i.isLowStock()) {
-                lowStockItems.add(i);
-            }
-        }
-        return lowStockItems;
+        return inventoryService.getLowStockItems();
     }
 }
