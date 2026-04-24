@@ -29,11 +29,13 @@ public class ReportController {
 
     public void generatePerformanceReport(Employee emp, int month, int year, List<Bill> allBills) {
         PerformanceReport report = reportService.generatePerformanceReport(emp, month, year, allBills);
+        report.toString();
         System.out.println("Performance Report Generated for " + emp.getFullName());
     }
 
     public void generateMonthlyReport(int month, int year, List<Bill> allBills, List<ReturnTransaction> allReturns) {
         MonthlyReport report = reportService.generateMonthlyReport(month, year, allBills, allReturns);
+        report.toString();
         System.out.println("Monthly Report Generated for " + month + "/" + year);
     }
 

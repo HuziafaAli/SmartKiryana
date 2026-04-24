@@ -6,15 +6,15 @@ import model.MonthlyReport;
 import model.PerformanceReport;
 import model.SalesTarget;
 import model.Bill;
-import model.BillItem;
 import model.ReturnTransaction;
 import model.SalesRecord;
-import model.Product;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+
+import template.MonthlyReportGenerator;
+import template.PerformanceReportGenerator;
+import template.ReportTemplate;
 
 public class ReportService {
 
@@ -44,72 +44,33 @@ public class ReportService {
         return true;
     }
 
-    public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, List<Bill> allBills) {
-        double totalSales = 0;
-
-        for (Bill b : allBills) {
-            if (b.getUser() != null && b.getUser().getUserId() == emp.getUserId()) {
-                if (b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year) {
-                    totalSales += b.getTotalAmount();
-                }
-            }
-        }
-
-        double targetAmt = 0;
-        for (SalesTarget t : targetDatabase) {
-            if (t.getEmployee().getUserId() == emp.getUserId() && t.getMonth() == month && t.getYear() == year) {
-                targetAmt = t.getTargetAmount();
-                t.setAchievedAmount(totalSales);
-                break;
-            }
-        }
-
-        double bonus = 0;
-        if (targetAmt > 0 && totalSales > targetAmt) {
-            bonus = (totalSales - targetAmt) * 0.05;
-        }
+    public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, 
+            List<Bill> allBills) {
+        ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills, targetDatabase);
+        PerformanceReport report = generator.generate();
 
         int reportId = performanceReports.size() + 1;
-        PerformanceReport report = new PerformanceReport(reportId, emp, month, year, totalSales, targetAmt, bonus);
-        performanceReports.add(report);
-
-        return report;
+        
+        PerformanceReport finalReport = new PerformanceReport(reportId, report.getEmployee(), report.getMonth(), report.getYear(), 
+                                                              report.getTotalSales(), report.getTargetAmount(), report.getBonusAmount());
+        
+        performanceReports.add(finalReport);
+        return finalReport;
     }
 
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
-        double totalSales = 0;
-        double totalReturns = 0;
-        Map<Product, Integer> productSalesMap = new HashMap<>();
-
-        for (Bill b : allBills) {
-            if (b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year) {
-                totalSales += b.getTotalAmount();
-                List<BillItem> i = b.getItems();
-                for (BillItem item : i) {
-                    Product p = item.getProduct();
-                    productSalesMap.put(p, productSalesMap.getOrDefault(p, 0) + item.getQuantity());
-                }
-            }
-        }
-
-        for (ReturnTransaction r : allReturns) {
-            if (r.getReturnDate().getMonthValue() == month && r.getReturnDate().getYear() == year) {
-                totalReturns += r.getRefundAmount();
-            }
-        }
-
-        List<Product> topProducts = new ArrayList<>();
-        productSalesMap.entrySet().stream()
-                .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
-                .limit(3)
-                .forEach(entry -> topProducts.add(entry.getKey()));
+        
+        ReportTemplate<MonthlyReport> generator = new MonthlyReportGenerator(month, year, allBills, allReturns);
+        MonthlyReport report = generator.generate();
 
         int reportId = monthlyReports.size() + 1;
-        MonthlyReport report = new MonthlyReport(reportId, month, year, totalSales, totalReturns, topProducts);
-        monthlyReports.add(report);
-
-        return report;
+        
+        MonthlyReport finalReport = new MonthlyReport(reportId, report.getMonth(), report.getYear(), 
+                                                      report.getTotalSales(), report.getTotalReturns(), report.getTopProducts());
+                                                      
+        monthlyReports.add(finalReport);
+        return finalReport;
     }
 
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
