@@ -7,6 +7,7 @@ import observer.StockObserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import util.Validator;
 
 public class InventoryService {
     // Runtime DB
@@ -28,6 +29,7 @@ public class InventoryService {
     }
 
     public void addCategory(int id, String name) {
+        if (!Validator.isNotEmpty(name)) return;
         categoryDatabase.add(new ProductCategory(id, name));
     }
 
@@ -37,6 +39,11 @@ public class InventoryService {
 
     public boolean addProduct(int productId, String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
+
+        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(name) 
+                || !Validator.isPositiveAmount(price) || !Validator.isPositiveAmount(costPrice)) {
+            return false;
+        }
 
         for (ProductCategory c : categoryDatabase) {
             if (c.getCategoryId() == categoryId) {
@@ -52,6 +59,11 @@ public class InventoryService {
     }
 
     public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
+        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(newName) 
+                || !Validator.isPositiveAmount(newPrice) || !Validator.isPositiveAmount(newCostPrice)) {
+            return false;
+        }
+
         InventoryItem itemExist = isProductExists(barcode);
         if (itemExist == null) {
             return false;
@@ -64,6 +76,8 @@ public class InventoryService {
     }
 
     public boolean deleteProduct(String barcode) {
+        if(!Validator.isValidBarcode(barcode)) return false;
+
         InventoryItem itemExist = isProductExists(barcode);
         if (itemExist == null) {
             return false;
@@ -74,6 +88,9 @@ public class InventoryService {
     }
 
     public boolean addStock(String barcode, int quantityToAdd) {
+        if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantityToAdd)) {
+            return false;
+        }
 
         InventoryItem itemExist = isProductExists(barcode);
         if (itemExist == null) {
@@ -85,6 +102,9 @@ public class InventoryService {
     }
 
     public boolean reduceStock(String barcode, int quantityToReduce) {
+        if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantityToReduce)) {
+            return false;
+        }
 
         InventoryItem itemExist = isProductExists(barcode);
         if (itemExist == null) {
@@ -110,6 +130,8 @@ public class InventoryService {
     }
 
     public InventoryItem isProductExists(String barcode) {
+        if(!Validator.isValidBarcode(barcode)) return null;
+
         for (InventoryItem i : inventoryDatabase) {
             if (i.getProduct().getBarcode().equals(barcode)) {
                 return i;

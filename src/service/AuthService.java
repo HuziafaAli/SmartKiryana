@@ -4,12 +4,13 @@ import model.User;
 import model.Employee;
 import model.Admin;
 import factory.UserFactory;
+import util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthService {
-
+    //Runtime Database
     private List<User> userDatabase;
     private User currentUser;
 
@@ -23,6 +24,10 @@ public class AuthService {
     }
 
     public boolean login(String username, String password) {
+        if (!Validator.isNotEmpty(username) || !Validator.isNotEmpty(password)) {
+            return false;
+        }
+
         for (User user : userDatabase) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 if (!user.isActive()) {
@@ -48,6 +53,12 @@ public class AuthService {
             return false; 
         }
 
+        if (!Validator.isNotEmpty(username) || !Validator.isNotEmpty(password) 
+                || !Validator.isNotEmpty(fullName) || !Validator.isValidPhone(phone) 
+                || !Validator.isValidCNIC(cnic)) {
+            return false;
+        }
+
         int newId = userDatabase.size() + 1;
         User newEmp = UserFactory.createUser("EMPLOYEE", newId, username, password, fullName, phone, cnic);
         userDatabase.add(newEmp);
@@ -56,6 +67,11 @@ public class AuthService {
 
     public boolean updateEmployee(int userId, String newFullName, String newPhone, String newUsername, String newPassword) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
+            return false;
+        }
+
+        if (!Validator.isNotEmpty(newUsername) || !Validator.isNotEmpty(newPassword) 
+                || !Validator.isNotEmpty(newFullName) || !Validator.isValidPhone(newPhone)) {
             return false;
         }
 
@@ -73,6 +89,10 @@ public class AuthService {
 
     public boolean deactivateUser(int userId) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
+            return false;
+        }
+
+        if(!Validator.isPositiveQuantity(userId)) {
             return false;
         }
 

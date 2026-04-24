@@ -15,6 +15,7 @@ import java.util.List;
 import template.MonthlyReportGenerator;
 import template.PerformanceReportGenerator;
 import template.ReportTemplate;
+import util.Validator;
 
 public class ReportService {
 
@@ -38,6 +39,11 @@ public class ReportService {
             return false;
         }
 
+        if (!Validator.isNotNull(employee) || !Validator.isValidMonth(month) 
+                || !Validator.isValidYear(year) || !Validator.isPositiveAmount(targetAmount)) {
+            return false;
+        }
+
         int targetId = targetDatabase.size() + 1;
         SalesTarget newTarget = new SalesTarget(targetId, employee, month, year, targetAmount);
         targetDatabase.add(newTarget);
@@ -46,6 +52,13 @@ public class ReportService {
 
     public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, 
             List<Bill> allBills) {
+        
+        if (!Validator.isNotNull(emp) || !Validator.isValidMonth(month) 
+                || !Validator.isValidYear(year)) {
+            return null;
+        }
+
+
         ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills, targetDatabase);
         PerformanceReport report = generator.generate();
 
@@ -60,6 +73,10 @@ public class ReportService {
 
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
+
+        if (!Validator.isValidMonth(month) || !Validator.isValidYear(year) ) {
+            return null;
+        }
         
         ReportTemplate<MonthlyReport> generator = new MonthlyReportGenerator(month, year, allBills, allReturns);
         MonthlyReport report = generator.generate();

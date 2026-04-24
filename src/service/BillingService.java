@@ -11,6 +11,7 @@ import model.ReturnTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+import util.Validator;
 
 public class BillingService {
 
@@ -40,6 +41,10 @@ public class BillingService {
     public String scanItem(String barcode, int quantity) {
         if (currentBill == null) {
             return "No active bill. Please start a new bill first.";
+        }
+
+        if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantity)) {
+            return "Invalid barcode or quantity.";
         }
 
         InventoryItem itemExist = inventoryService.isProductExists(barcode);
@@ -82,6 +87,8 @@ public class BillingService {
     }
 
     public void applyDiscount(double amount) {
+        if(!Validator.isPositiveAmount(amount)) return;
+
         if (currentBill != null) {
             currentBill.setDiscountAmount(amount);
         }
@@ -90,6 +97,10 @@ public class BillingService {
     public boolean checkOut(double cashProvided) {
         if (currentBill == null)
             return false;
+
+        if (!Validator.isPositiveAmount(cashProvided)) {
+            return false;
+        }
 
         currentBill.calculateTotal();
         if (cashProvided < currentBill.getTotalAmount()) {
@@ -127,7 +138,7 @@ public class BillingService {
             returnTx.addReturnedItem(item);
             inventoryService.addStock(item.getOriginalItem().getProduct().getBarcode(), item.getReturnQuantity());
         }
-
+        
         returnDatabase.add(returnTx);
         return returnTx;
     }
