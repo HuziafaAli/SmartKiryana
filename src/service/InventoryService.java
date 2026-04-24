@@ -3,6 +3,7 @@ package service;
 import model.InventoryItem;
 import model.Product;
 import model.ProductCategory;
+import observer.StockObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,12 @@ public class InventoryService {
     // Runtime DB
     private List<InventoryItem> inventoryDatabase;
     private List<ProductCategory> categoryDatabase;
+    private List<StockObserver> observers;
 
     public InventoryService() {
         inventoryDatabase = new ArrayList<>();
         categoryDatabase = new ArrayList<>();
+        observers = new ArrayList<>();
 
         // For Testing
         ProductCategory tempCat = new ProductCategory(1, "Dairy");
@@ -70,7 +73,18 @@ public class InventoryService {
             return false;
         }
 
+        // OBSERVER TRIGGER: Notify all observers if stock is now low
+        if (itemExist.isLowStock()) {
+            for (StockObserver obs : observers) {
+                obs.onStockLow(itemExist);
+            }
+        }
+
         return true;
+    }
+
+    public void addObserver(StockObserver observer) {
+        observers.add(observer);
     }
 
     public InventoryItem isProductExists(String barcode) {
