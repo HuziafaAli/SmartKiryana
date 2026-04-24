@@ -23,9 +23,8 @@ public class InventoryController {
         return inventoryService.getAllCategories();
     }
 
-    public void addProduct(int productId, String barcode, String name, int categoryId,
+    public boolean addProduct(int productId, String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
-
         boolean success = inventoryService.addProduct(productId, barcode, name, categoryId, price, costPrice, minStock,
                 maxStock);
         if (success) {
@@ -33,28 +32,30 @@ public class InventoryController {
         } else {
             System.out.println("Product Category Not Found.");
         }
-
+        return success;
     }
 
-    public void updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
+    public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
         boolean success = inventoryService.updateProduct(barcode, newName, newPrice, newCostPrice);
         if (success) {
             System.out.println("Product '" + newName + "' updated successfully.");
         } else {
             System.out.println("Product not found. Invalid barcode.");
         }
+        return success;
     }
 
-    public void deleteProduct(String barcode) {
+    public boolean deleteProduct(String barcode) {
         boolean success = inventoryService.deleteProduct(barcode);
         if (success) {
             System.out.println("Product deleted successfully.");
         } else {
             System.out.println("Product not found. Invalid barcode.");
         }
+        return success;
     }
-    public void addStock(String barcode, int quantityToAdd) {
 
+    public boolean addStock(String barcode, int quantityToAdd) {
         boolean success = inventoryService.addStock(barcode, quantityToAdd);
         InventoryItem itemExist = inventoryService.isProductExists(barcode);
         if (success) {
@@ -62,12 +63,12 @@ public class InventoryController {
         } else {
             System.out.println("Invalid Barcode.");
         }
+        return success;
     }
 
-    public void reduceStock(String barcode, int quantityToReduce) {
+    public boolean reduceStock(String barcode, int quantityToReduce) {
         InventoryItem itemExist = inventoryService.isProductExists(barcode);
         boolean success = inventoryService.reduceStock(barcode, quantityToReduce);
-
         if (success) {
             System.out.println(itemExist.getProduct().getName() + " quantity reduced.");
         } else if (itemExist != null) {
@@ -75,6 +76,7 @@ public class InventoryController {
         } else {
             System.out.println("Invalid Barcode.");
         }
+        return success;
     }
 
     public InventoryItem isProductExists(String barcode) {

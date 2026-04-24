@@ -8,6 +8,7 @@ import model.Bill;
 import model.ReturnTransaction;
 import model.SalesRecord;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ReportController {
 
@@ -17,26 +18,51 @@ public class ReportController {
         this.reportService = reportService;
     }
 
-    public void assignTarget(Employee employee, int month, int year, double targetAmount) {
+    public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
         boolean success = reportService.assignTarget(employee, month, year, targetAmount);
-        
+
         if (success) {
-            System.out.println("Target of " + targetAmount + " assigned to " + employee.getFullName() + " for " + month + "/" + year);
+            System.out.println("Target of " + targetAmount + " assigned to " + employee.getFullName() + " for " + month
+                    + "/" + year);
         } else {
             System.out.println("Access Denied: Only Admins can assign sales targets.");
         }
+        return success;
     }
 
-    public void generatePerformanceReport(Employee emp, int month, int year, List<Bill> allBills) {
+    public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, List<Bill> allBills) {
         PerformanceReport report = reportService.generatePerformanceReport(emp, month, year, allBills);
-        report.toString();
-        System.out.println("Performance Report Generated for " + emp.getFullName());
+        if (report != null) {
+            System.out.println("Performance Report Generated for " + emp.getFullName());
+        } else {
+            System.out.println("Failed to generate report. Invalid data.");
+        }
+        return report;
     }
 
-    public void generateMonthlyReport(int month, int year, List<Bill> allBills, List<ReturnTransaction> allReturns) {
+    public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
+            List<ReturnTransaction> allReturns) {
+
         MonthlyReport report = reportService.generateMonthlyReport(month, year, allBills, allReturns);
-        report.toString();
-        System.out.println("Monthly Report Generated for " + month + "/" + year);
+        if (report != null) {
+            System.out.println("Monthly Report Generated for " + month + "/" + year);
+        } else {
+            System.out.println("Failed to generate report. Invalid data.");
+        }
+        return report;
+    }
+
+    public List<PerformanceReport> getPerformanceComparison(List<Employee> employees, int month, int year,
+            List<Bill> allBills) {
+
+        List<PerformanceReport> reports = new ArrayList<>();
+        for (Employee emp : employees) {
+            PerformanceReport report = reportService.generatePerformanceReport(emp, month, year, allBills);
+            if (report != null) {
+                reports.add(report);
+            }
+        }
+        return reports;
     }
 
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {

@@ -21,9 +21,10 @@ public class BillController {
         System.out.println("New bill started for cashier: " + cashier.getFullName());
     }
 
-    public void scanItem(String barcode, int quantity) {
+    public String scanItem(String barcode, int quantity) {
         String resultMessage = billingService.scanItem(barcode, quantity);
         System.out.println(resultMessage);
+        return resultMessage;
     }
 
     public void applyDiscount(double amount) {
@@ -31,45 +32,35 @@ public class BillController {
         System.out.println("Discount Applied.");
     }
 
-    public void checkOut(double cashProvided) {
+    public boolean checkOut(double cashProvided) {
         boolean success = billingService.checkOut(cashProvided);
         if (success) {
             System.out.println("Checkout Successful. Thank you for shopping!");
         } else {
             System.out.println("Insufficient cash provided for checkout.");
         }
+        return success;
     }
 
-    public void processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
+    public ReturnTransaction processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
         ReturnTransaction tx = billingService.processReturn(originalBill, items, reason);
         System.out.println("Return processed successfully. Refund amount: " + tx.getRefundAmount());
+        return tx;
     }
 
     public List<Bill> getAllBills() {
         return billingService.getAllBills();
     }
 
-    public void filterByDateRange(LocalDateTime from, LocalDateTime to) {
+    public List<Bill> filterByDateRange(LocalDateTime from, LocalDateTime to) {
         List<Bill> filtered = billingService.filterByDateRange(from, to);
-        if (filtered.isEmpty()) {
-            System.out.println("No sales found in the specified date range.");
-        } else {
-            System.out.println("Found " + filtered.size() + " sales between " + from + " and " + to + ":");
-            for (Bill b : filtered) {
-                System.out.println("  Bill #" + b.getBillId() + " | Date: " + b.getBillDate() + " | Total: " + b.getTotalAmount());
-            }
-        }
+        System.out.println("Found " + filtered.size() + " sales in the specified date range.");
+        return filtered;
     }
 
-    public void filterByCategory(int categoryId) {
+    public List<Bill> filterByCategory(int categoryId) {
         List<Bill> filtered = billingService.filterByCategory(categoryId);
-        if (filtered.isEmpty()) {
-            System.out.println("No sales found for the specified category.");
-        } else {
-            System.out.println("Found " + filtered.size() + " sales containing products from category ID " + categoryId + ":");
-            for (Bill b : filtered) {
-                System.out.println("  Bill #" + b.getBillId() + " | Date: " + b.getBillDate() + " | Total: " + b.getTotalAmount());
-            }
-        }
+        System.out.println("Found " + filtered.size() + " sales for category ID " + categoryId + ".");
+        return filtered;
     }
 }
