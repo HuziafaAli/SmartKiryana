@@ -10,6 +10,7 @@ import model.ReturnTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class BillingService {
 
@@ -129,5 +130,28 @@ public class BillingService {
 
         returnDatabase.add(returnTx);
         return returnTx;
+    }
+
+    public List<Bill> filterByDateRange(LocalDateTime from, LocalDateTime to) {
+        List<Bill> filtered = new ArrayList<>();
+        for (Bill b : billDatabase) {
+            if (!b.getBillDate().isBefore(from) && !b.getBillDate().isAfter(to)) {
+                filtered.add(b);
+            }
+        }
+        return filtered;
+    }
+
+    public List<Bill> filterByCategory(int categoryId) {
+        List<Bill> filtered = new ArrayList<>();
+        for (Bill b : billDatabase) {
+            for (BillItem item : b.getItems()) {
+                if (item.getProduct().getCategory().getCategoryId() == categoryId) {
+                    filtered.add(b);
+                    break;
+                }
+            }
+        }
+        return filtered;
     }
 }

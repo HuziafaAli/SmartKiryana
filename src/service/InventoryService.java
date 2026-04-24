@@ -51,6 +51,28 @@ public class InventoryService {
         return false;
     }
 
+    public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
+        InventoryItem itemExist = isProductExists(barcode);
+        if (itemExist == null) {
+            return false;
+        }
+
+        itemExist.getProduct().setName(newName);
+        itemExist.getProduct().setPrice(newPrice);
+        itemExist.getProduct().setCostPrice(newCostPrice);
+        return true;
+    }
+
+    public boolean deleteProduct(String barcode) {
+        InventoryItem itemExist = isProductExists(barcode);
+        if (itemExist == null) {
+            return false;
+        }
+
+        inventoryDatabase.remove(itemExist);
+        return true;
+    }
+
     public boolean addStock(String barcode, int quantityToAdd) {
 
         InventoryItem itemExist = isProductExists(barcode);
@@ -104,5 +126,19 @@ public class InventoryService {
             }
         }
         return lowStockItems;
+    }
+
+    public List<InventoryItem> getAllInventoryItems() {
+        return inventoryDatabase;
+    }
+
+    public void checkAllStockLevels() {
+        for (InventoryItem item : inventoryDatabase) {
+            if (item.isLowStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockLow(item);
+                }
+            }
+        }
     }
 }

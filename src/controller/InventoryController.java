@@ -36,6 +36,23 @@ public class InventoryController {
 
     }
 
+    public void updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
+        boolean success = inventoryService.updateProduct(barcode, newName, newPrice, newCostPrice);
+        if (success) {
+            System.out.println("Product '" + newName + "' updated successfully.");
+        } else {
+            System.out.println("Product not found. Invalid barcode.");
+        }
+    }
+
+    public void deleteProduct(String barcode) {
+        boolean success = inventoryService.deleteProduct(barcode);
+        if (success) {
+            System.out.println("Product deleted successfully.");
+        } else {
+            System.out.println("Product not found. Invalid barcode.");
+        }
+    }
     public void addStock(String barcode, int quantityToAdd) {
 
         boolean success = inventoryService.addStock(barcode, quantityToAdd);
@@ -66,5 +83,13 @@ public class InventoryController {
 
     public List<InventoryItem> getLowStockItems() {
         return inventoryService.getLowStockItems();
+    }
+
+    public List<InventoryItem> getAllInventoryItems() {
+        return inventoryService.getAllInventoryItems();
+    }
+
+    public void checkAllStockLevels() {
+        inventoryService.checkAllStockLevels();
     }
 }

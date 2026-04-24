@@ -6,6 +6,7 @@ import model.User;
 import model.ReturnItem;
 import model.ReturnTransaction;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class BillController {
 
@@ -42,5 +43,33 @@ public class BillController {
     public void processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
         ReturnTransaction tx = billingService.processReturn(originalBill, items, reason);
         System.out.println("Return processed successfully. Refund amount: " + tx.getRefundAmount());
+    }
+
+    public List<Bill> getAllBills() {
+        return billingService.getAllBills();
+    }
+
+    public void filterByDateRange(LocalDateTime from, LocalDateTime to) {
+        List<Bill> filtered = billingService.filterByDateRange(from, to);
+        if (filtered.isEmpty()) {
+            System.out.println("No sales found in the specified date range.");
+        } else {
+            System.out.println("Found " + filtered.size() + " sales between " + from + " and " + to + ":");
+            for (Bill b : filtered) {
+                System.out.println("  Bill #" + b.getBillId() + " | Date: " + b.getBillDate() + " | Total: " + b.getTotalAmount());
+            }
+        }
+    }
+
+    public void filterByCategory(int categoryId) {
+        List<Bill> filtered = billingService.filterByCategory(categoryId);
+        if (filtered.isEmpty()) {
+            System.out.println("No sales found for the specified category.");
+        } else {
+            System.out.println("Found " + filtered.size() + " sales containing products from category ID " + categoryId + ":");
+            for (Bill b : filtered) {
+                System.out.println("  Bill #" + b.getBillId() + " | Date: " + b.getBillDate() + " | Total: " + b.getTotalAmount());
+            }
+        }
     }
 }
