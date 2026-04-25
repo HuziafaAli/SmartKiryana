@@ -3,6 +3,7 @@ package command;
 import controller.BillController;
 import model.Bill;
 import model.ReturnItem;
+import model.ReturnTransaction;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class ReturnItemCommand implements Command {
     private Bill originalBill;
     private List<ReturnItem> items;
     private String reason;
+    private ReturnTransaction resultTransaction;
 
     public ReturnItemCommand(BillController billController, Bill originalBill, List<ReturnItem> items, String reason) {
         this.billController = billController;
@@ -22,6 +24,10 @@ public class ReturnItemCommand implements Command {
 
     @Override
     public void execute() {
-        billController.processReturn(originalBill, items, reason);
+        this.resultTransaction = billController.processReturn(originalBill, items, reason);
+    }
+
+    public ReturnTransaction getResult() {
+        return resultTransaction;
     }
 }
