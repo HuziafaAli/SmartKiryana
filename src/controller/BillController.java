@@ -16,9 +16,10 @@ public class BillController {
         this.billingService = billingService;
     }
 
-    public void startNewBill(User cashier) {
-        billingService.startNewBill(cashier);
-        System.out.println("New bill started for cashier: " + cashier.getFullName());
+    public Bill startNewBill(User cashier) {
+        Bill b = billingService.startNewBill(cashier);
+        System.out.println("Started new bill session.");
+        return b;
     }
 
     public String scanItem(String barcode, int quantity) {
@@ -27,9 +28,14 @@ public class BillController {
         return resultMessage;
     }
 
-    public void applyDiscount(double amount) {
-        billingService.applyDiscount(amount);
-        System.out.println("Discount Applied.");
+    public boolean applyDiscount(double amount) {
+        boolean success = billingService.applyDiscount(amount);
+        if (success) {
+            System.out.println("Discount Applied.");
+        } else {
+            System.out.println("Failed to apply discount.");
+        }
+        return success;
     }
 
     public Bill checkOut(double cashProvided) {

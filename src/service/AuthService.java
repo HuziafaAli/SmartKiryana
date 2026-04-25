@@ -40,8 +40,12 @@ public class AuthService {
         return false;
     }
 
-    public void logout() {
-        this.currentUser = null;
+    public boolean logout() {
+        if (this.currentUser != null) {
+            this.currentUser = null;
+            return true;
+        }
+        return false;
     }
 
     public User getCurrentUser() {

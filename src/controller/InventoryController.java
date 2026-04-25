@@ -118,5 +118,6 @@ public class InventoryController {
 
     public void checkAllStockLevels() {
         inventoryService.checkAllStockLevels();
+        System.out.println("Stock check complete. Alerts generated for low stock items.");
     }
 }

@@ -23,9 +23,12 @@ public class UserController {
         return success;
     }
 
-    public void logout() {
-        authService.logout();
-        System.out.println("Logged out successfully.");
+    public boolean logout() {
+        boolean success = authService.logout();
+        if (success) {
+            System.out.println("Logged out successfully.");
+        }
+        return success;
     }
 
     public User getCurrentUser() {

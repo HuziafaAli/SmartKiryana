@@ -29,16 +29,19 @@ public class InventoryService {
     }
 
     public boolean addCategory(int id, String name) {
-        if (!Validator.isNotEmpty(name)) return false;
+        if (!Validator.isNotEmpty(name))
+            return false;
         for (ProductCategory c : categoryDatabase) {
-            if (c.getCategoryId() == id) return false; // Duplicate ID
+            if (c.getCategoryId() == id)
+                return false; // Duplicate ID
         }
         categoryDatabase.add(new ProductCategory(id, name));
         return true;
     }
 
     public boolean updateCategory(int id, String newName) {
-        if (!Validator.isNotEmpty(newName)) return false;
+        if (!Validator.isNotEmpty(newName))
+            return false;
         for (ProductCategory c : categoryDatabase) {
             if (c.getCategoryId() == id) {
                 c.setCategoryName(newName);
@@ -51,7 +54,6 @@ public class InventoryService {
     public boolean deleteCategory(int id) {
         for (int i = 0; i < categoryDatabase.size(); i++) {
             if (categoryDatabase.get(i).getCategoryId() == id) {
-                // Prevent deletion if category is in use
                 for (InventoryItem item : inventoryDatabase) {
                     if (item.getProduct().getCategory().getCategoryId() == id) {
                         return false;
@@ -71,7 +73,7 @@ public class InventoryService {
     public boolean addProduct(int productId, String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
 
-        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(name) 
+        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(name)
                 || !Validator.isPositiveAmount(price) || !Validator.isPositiveAmount(costPrice)) {
             return false;
         }
@@ -90,7 +92,7 @@ public class InventoryService {
     }
 
     public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
-        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(newName) 
+        if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(newName)
                 || !Validator.isPositiveAmount(newPrice) || !Validator.isPositiveAmount(newCostPrice)) {
             return false;
         }
@@ -107,7 +109,8 @@ public class InventoryService {
     }
 
     public boolean deleteProduct(String barcode) {
-        if(!Validator.isValidBarcode(barcode)) return false;
+        if (!Validator.isValidBarcode(barcode))
+            return false;
 
         InventoryItem itemExist = isProductExists(barcode);
         if (itemExist == null) {
@@ -161,7 +164,8 @@ public class InventoryService {
     }
 
     public InventoryItem isProductExists(String barcode) {
-        if(!Validator.isValidBarcode(barcode)) return null;
+        if (!Validator.isValidBarcode(barcode))
+            return null;
 
         for (InventoryItem i : inventoryDatabase) {
             if (i.getProduct().getBarcode().equals(barcode)) {

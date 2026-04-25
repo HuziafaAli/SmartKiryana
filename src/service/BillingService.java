@@ -29,9 +29,10 @@ public class BillingService {
         this.inventoryService = inventoryService;
     }
 
-    public void startNewBill(User cashier) {
+    public Bill startNewBill(User cashier) {
         int billId = billDatabase.size() + 1;
         currentBill = new Bill(billId, cashier);
+        return currentBill;
     }
 
     public Bill getCurrentBill() {
@@ -86,13 +87,15 @@ public class BillingService {
         }
     }
 
-    public void applyDiscount(double amount) {
+    public boolean applyDiscount(double amount) {
         if (!Validator.isPositiveAmount(amount))
-            return;
+            return false;
 
         if (currentBill != null) {
             currentBill.setDiscountAmount(amount);
+            return true;
         }
+        return false;
     }
 
     public boolean removeItem(String barcode) {
