@@ -87,24 +87,47 @@ public class BillingService {
     }
 
     public void applyDiscount(double amount) {
-        if(!Validator.isPositiveAmount(amount)) return;
+        if (!Validator.isPositiveAmount(amount))
+            return;
 
         if (currentBill != null) {
             currentBill.setDiscountAmount(amount);
         }
     }
 
-    public boolean checkOut(double cashProvided) {
-        if (currentBill == null)
+    public boolean removeItem(String barcode) {
+        if (currentBill == null || !Validator.isValidBarcode(barcode)) {
             return false;
+        }
+
+        BillItem toRemove = null;
+        for (BillItem b : currentBill.getItems()) {
+            if (b.getProduct().getBarcode().equals(barcode)) {
+                toRemove = b;
+                break;
+            }
+        }
+
+        if (toRemove == null) {
+            return false;
+        }
+
+        currentBill.getItems().remove(toRemove);
+        currentBill.calculateTotal();
+        return true;
+    }
+
+    public Bill checkOut(double cashProvided) {
+        if (currentBill == null)
+            return null;
 
         if (!Validator.isPositiveAmount(cashProvided)) {
-            return false;
+            return null;
         }
 
         currentBill.calculateTotal();
         if (cashProvided < currentBill.getTotalAmount()) {
-            return false;
+            return null;
         }
 
         currentBill.setCashProvided(cashProvided);
@@ -117,8 +140,9 @@ public class BillingService {
         }
 
         billDatabase.add(currentBill);
+        Bill finalizedBill = currentBill;
         currentBill = null;
-        return true;
+        return finalizedBill;
     }
 
     public List<ReturnTransaction> getAllReturns() {
@@ -130,6 +154,31 @@ public class BillingService {
     }
 
     public ReturnTransaction processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
+        if (originalBill == null || items == null || items.isEmpty()) {
+            return null;
+        }
+
+        for (ReturnItem rItem : items) {
+            if (rItem.getOriginalItem() == null || rItem.getReturnQuantity() <= 0) {
+                return null;
+            }
+
+            boolean itemFoundInBill = false;
+            for (BillItem bItem : originalBill.getItems()) {
+                if (bItem.getBillItemId() == rItem.getOriginalItem().getBillItemId()) {
+                    itemFoundInBill = true;
+                    if (rItem.getReturnQuantity() > bItem.getQuantity()) {
+                        return null;
+                    }
+                    break;
+                }
+            }
+
+            if (!itemFoundInBill) {
+                return null;
+            }
+        }
+
         int returnId = returnDatabase.size() + 1;
 
         ReturnTransaction returnTx = new ReturnTransaction(returnId, originalBill, reason);
@@ -138,7 +187,7 @@ public class BillingService {
             returnTx.addReturnedItem(item);
             inventoryService.addStock(item.getOriginalItem().getProduct().getBarcode(), item.getReturnQuantity());
         }
-        
+
         returnDatabase.add(returnTx);
         return returnTx;
     }
@@ -161,6 +210,26 @@ public class BillingService {
                     filtered.add(b);
                     break;
                 }
+            }
+        }
+        return filtered;
+    }
+
+    public List<Bill> filterByEmployee(int employeeId) {
+        List<Bill> filtered = new ArrayList<>();
+        for (Bill b : billDatabase) {
+            if (b.getUser() != null && b.getUser().getUserId() == employeeId) {
+                filtered.add(b);
+            }
+        }
+        return filtered;
+    }
+
+    public List<Bill> filterByAmountRange(double minAmount, double maxAmount) {
+        List<Bill> filtered = new ArrayList<>();
+        for (Bill b : billDatabase) {
+            if (b.getTotalAmount() >= minAmount && b.getTotalAmount() <= maxAmount) {
+                filtered.add(b);
             }
         }
         return filtered;

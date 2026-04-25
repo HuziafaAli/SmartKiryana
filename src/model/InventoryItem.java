@@ -28,6 +28,12 @@ public class InventoryItem {
         return stockQuantity >= maxStockThreshold;
     }
 
+    public String getStatus() {
+        if (isLowStock()) return "Low Stock";
+        if (isOverStock()) return "Over Stock";
+        return "Normal";
+    }
+
     public void addStockQuantity(int amount) {
         this.stockQuantity += amount;
     }

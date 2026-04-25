@@ -28,9 +28,40 @@ public class InventoryService {
         categoryDatabase.add(tempCat2);
     }
 
-    public void addCategory(int id, String name) {
-        if (!Validator.isNotEmpty(name)) return;
+    public boolean addCategory(int id, String name) {
+        if (!Validator.isNotEmpty(name)) return false;
+        for (ProductCategory c : categoryDatabase) {
+            if (c.getCategoryId() == id) return false; // Duplicate ID
+        }
         categoryDatabase.add(new ProductCategory(id, name));
+        return true;
+    }
+
+    public boolean updateCategory(int id, String newName) {
+        if (!Validator.isNotEmpty(newName)) return false;
+        for (ProductCategory c : categoryDatabase) {
+            if (c.getCategoryId() == id) {
+                c.setCategoryName(newName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteCategory(int id) {
+        for (int i = 0; i < categoryDatabase.size(); i++) {
+            if (categoryDatabase.get(i).getCategoryId() == id) {
+                // Prevent deletion if category is in use
+                for (InventoryItem item : inventoryDatabase) {
+                    if (item.getProduct().getCategory().getCategoryId() == id) {
+                        return false;
+                    }
+                }
+                categoryDatabase.remove(i);
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<ProductCategory> getAllCategories() {

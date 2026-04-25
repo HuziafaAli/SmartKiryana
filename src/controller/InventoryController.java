@@ -14,9 +14,34 @@ public class InventoryController {
         inventoryService = IS;
     }
 
-    public void addCategory(int id, String name) {
-        inventoryService.addCategory(id, name);
-        System.out.println("Product Category Added.");
+    public boolean addCategory(int id, String name) {
+        boolean success = inventoryService.addCategory(id, name);
+        if (success) {
+            System.out.println("Product Category Added.");
+        } else {
+            System.out.println("Failed to add category. Invalid name or duplicate ID.");
+        }
+        return success;
+    }
+
+    public boolean updateCategory(int id, String newName) {
+        boolean success = inventoryService.updateCategory(id, newName);
+        if (success) {
+            System.out.println("Product Category Updated.");
+        } else {
+            System.out.println("Failed to update category. Invalid name or ID not found.");
+        }
+        return success;
+    }
+
+    public boolean deleteCategory(int id) {
+        boolean success = inventoryService.deleteCategory(id);
+        if (success) {
+            System.out.println("Product Category Deleted.");
+        } else {
+            System.out.println("Failed to delete category. It may not exist or is in use by products.");
+        }
+        return success;
     }
 
     public List<ProductCategory> getAllCategories() {

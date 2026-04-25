@@ -39,7 +39,7 @@ public class ReportService {
             return false;
         }
 
-        if (!Validator.isNotNull(employee) || !Validator.isValidMonth(month) 
+        if (!Validator.isNotNull(employee) || !Validator.isValidMonth(month)
                 || !Validator.isValidYear(year) || !Validator.isPositiveAmount(targetAmount)) {
             return false;
         }
@@ -50,23 +50,24 @@ public class ReportService {
         return true;
     }
 
-    public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, 
+    public PerformanceReport generatePerformanceReport(Employee emp, int month, int year,
             List<Bill> allBills) {
-        
-        if (!Validator.isNotNull(emp) || !Validator.isValidMonth(month) 
+
+        if (!Validator.isNotNull(emp) || !Validator.isValidMonth(month)
                 || !Validator.isValidYear(year)) {
             return null;
         }
 
-
-        ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills, targetDatabase);
+        ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills,
+                targetDatabase);
         PerformanceReport report = generator.generate();
 
         int reportId = performanceReports.size() + 1;
-        
-        PerformanceReport finalReport = new PerformanceReport(reportId, report.getEmployee(), report.getMonth(), report.getYear(), 
-                                                              report.getTotalSales(), report.getTargetAmount(), report.getBonusAmount());
-        
+
+        PerformanceReport finalReport = new PerformanceReport(reportId, report.getEmployee(), report.getMonth(),
+                report.getYear(),
+                report.getTotalSales(), report.getTargetAmount(), report.getBonusAmount());
+
         performanceReports.add(finalReport);
         return finalReport;
     }
@@ -74,18 +75,18 @@ public class ReportService {
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
 
-        if (!Validator.isValidMonth(month) || !Validator.isValidYear(year) ) {
+        if (!Validator.isValidMonth(month) || !Validator.isValidYear(year)) {
             return null;
         }
-        
+
         ReportTemplate<MonthlyReport> generator = new MonthlyReportGenerator(month, year, allBills, allReturns);
         MonthlyReport report = generator.generate();
 
         int reportId = monthlyReports.size() + 1;
-        
-        MonthlyReport finalReport = new MonthlyReport(reportId, report.getMonth(), report.getYear(), 
-                                                      report.getTotalSales(), report.getTotalReturns(), report.getTopProducts());
-                                                      
+
+        MonthlyReport finalReport = new MonthlyReport(reportId, report.getMonth(), report.getYear(),
+                report.getTotalSales(), report.getTotalReturns(), report.getTopProducts());
+
         monthlyReports.add(finalReport);
         return finalReport;
     }
