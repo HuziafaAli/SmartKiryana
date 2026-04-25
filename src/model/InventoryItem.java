@@ -29,8 +29,10 @@ public class InventoryItem {
     }
 
     public String getStatus() {
-        if (isLowStock()) return "Low Stock";
-        if (isOverStock()) return "Over Stock";
+        if (isLowStock())
+            return "Low Stock";
+        if (isOverStock())
+            return "Over Stock";
         return "Normal";
     }
 
@@ -47,7 +49,7 @@ public class InventoryItem {
     }
 
     public boolean checkStockQuantity(int amount) {
-        if(amount <= stockQuantity) {
+        if (amount <= stockQuantity) {
             return true;
         }
         return false;

@@ -1,32 +1,31 @@
 package observer;
 
 import model.InventoryItem;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StockAlert implements StockObserver {
 
-    private List<String> pendingAlerts;
+    private Set<InventoryItem> pendingAlerts;
 
     public StockAlert() {
-        this.pendingAlerts = new ArrayList<>();
+        this.pendingAlerts = new HashSet<>();
     }
 
     @Override
     public void onStockLow(InventoryItem item) {
-        String alertMessage = "ALERT: '" + item.getProduct().getName() 
-                + "' stock is " + item.getStockQuantity() 
-                + " (Minimum: " + item.getMinStockThreshold() + "). Please restock.";
-        pendingAlerts.add(alertMessage);
-        System.out.println("--------------------------------------------------");
-        System.out.println("  URGENT STOCK ALERT ");
-        System.out.println("Item: " + item.getProduct().getName());
-        System.out.println("Current Stock: " + item.getStockQuantity() + " (Minimum: " + item.getMinStockThreshold() + ")");
-        System.out.println("Action Required: Please order more inventory immediately.");
-        System.out.println("--------------------------------------------------");
+        if (pendingAlerts.add(item)) {
+            System.out.println("--------------------------------------------------");
+            System.out.println("  URGENT STOCK ALERT ");
+            System.out.println("Item: " + item.getProduct().getName());
+            System.out.println(
+                    "Current Stock: " + item.getStockQuantity() + " (Minimum: " + item.getMinStockThreshold() + ")");
+            System.out.println("Action Required: Please order more inventory immediately.");
+            System.out.println("--------------------------------------------------");
+        }
     }
 
-    public List<String> getPendingAlerts() {
+    public Set<InventoryItem> getPendingAlerts() {
         return pendingAlerts;
     }
 
