@@ -60,8 +60,8 @@ public class SystemFacade {
     }
 
     // Inventory: Categories
-    public boolean addCategory(int id, String name) {
-        return inventoryController.addCategory(id, name);
+    public boolean addCategory(String name) {
+        return inventoryController.addCategory(name);
     }
 
     public boolean updateCategory(int id, String newName) {
@@ -77,9 +77,9 @@ public class SystemFacade {
     }
 
     // Inventory: Products
-    public boolean addProduct(int productId, String barcode, String name, int categoryId, double price,
+    public boolean addProduct(String barcode, String name, int categoryId, double price,
             double costPrice, int minStock, int maxStock) {
-        return inventoryController.addProduct(productId, barcode, name, categoryId, price, costPrice, minStock,
+        return inventoryController.addProduct(barcode, name, categoryId, price, costPrice, minStock,
                 maxStock);
     }
 

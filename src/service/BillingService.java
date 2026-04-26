@@ -7,6 +7,8 @@ import model.InventoryItem;
 import model.Product;
 import model.ReturnItem;
 import model.ReturnTransaction;
+import dao.BillDAO;
+import dao.ReturnTransactionDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,23 +17,21 @@ import util.Validator;
 
 public class BillingService {
 
-    // Runtime Database
-    private List<Bill> billDatabase;
-    private List<ReturnTransaction> returnDatabase;
+    private BillDAO billDAO;
+    private ReturnTransactionDAO returnDAO;
 
     private Bill currentBill;
     private InventoryService inventoryService;
 
-    public BillingService(InventoryService inventoryService) {
-        this.billDatabase = new ArrayList<>();
-        this.returnDatabase = new ArrayList<>();
+    public BillingService(InventoryService inventoryService, BillDAO billDAO, ReturnTransactionDAO returnDAO) {
+        this.billDAO = billDAO;
+        this.returnDAO = returnDAO;
         this.currentBill = null;
         this.inventoryService = inventoryService;
     }
 
     public Bill startNewBill(User cashier) {
-        int billId = billDatabase.size() + 1;
-        currentBill = new Bill(billId, cashier);
+        currentBill = new Bill(0, cashier);
         return currentBill;
     }
 
@@ -142,18 +142,18 @@ public class BillingService {
             inventoryService.reduceStock(b.getProduct().getBarcode(), b.getQuantity());
         }
 
-        billDatabase.add(currentBill);
+        billDAO.save(currentBill);
         Bill finalizedBill = currentBill;
         currentBill = null;
         return finalizedBill;
     }
 
     public List<ReturnTransaction> getAllReturns() {
-        return returnDatabase;
+        return returnDAO.findAll();
     }
 
     public List<Bill> getAllBills() {
-        return billDatabase;
+        return billDAO.findAll();
     }
 
     public ReturnTransaction processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
@@ -182,22 +182,30 @@ public class BillingService {
             }
         }
 
-        int returnId = returnDatabase.size() + 1;
-
-        ReturnTransaction returnTx = new ReturnTransaction(returnId, originalBill, reason);
+        ReturnTransaction returnTx = new ReturnTransaction(0, originalBill, reason);
 
         for (ReturnItem item : items) {
             returnTx.addReturnedItem(item);
-            inventoryService.addStock(item.getOriginalItem().getProduct().getBarcode(), item.getReturnQuantity());
+            String barcode = item.getOriginalItem().getProduct().getBarcode();
+            int qty = item.getReturnQuantity();
+            
+            boolean stockAdded = inventoryService.addStock(barcode, qty);
+            if (!stockAdded) {
+                // The item was deleted from inventory! Recreate the row so stock isn't lost.
+                inventoryService.restoreDeletedStock(barcode, qty);
+            }
         }
 
-        returnDatabase.add(returnTx);
+        returnDAO.save(returnTx);
         return returnTx;
     }
 
+    // Filtering: Service fetches all bills then applies logic in Java
+
     public List<Bill> filterByDateRange(LocalDateTime from, LocalDateTime to) {
+        List<Bill> allBills = billDAO.findAll();
         List<Bill> filtered = new ArrayList<>();
-        for (Bill b : billDatabase) {
+        for (Bill b : allBills) {
             if (!b.getBillDate().isBefore(from) && !b.getBillDate().isAfter(to)) {
                 filtered.add(b);
             }
@@ -206,8 +214,9 @@ public class BillingService {
     }
 
     public List<Bill> filterByCategory(int categoryId) {
+        List<Bill> allBills = billDAO.findAll();
         List<Bill> filtered = new ArrayList<>();
-        for (Bill b : billDatabase) {
+        for (Bill b : allBills) {
             for (BillItem item : b.getItems()) {
                 if (item.getProduct().getCategory().getCategoryId() == categoryId) {
                     filtered.add(b);
@@ -219,8 +228,9 @@ public class BillingService {
     }
 
     public List<Bill> filterByEmployee(int employeeId) {
+        List<Bill> allBills = billDAO.findAll();
         List<Bill> filtered = new ArrayList<>();
-        for (Bill b : billDatabase) {
+        for (Bill b : allBills) {
             if (b.getUser() != null && b.getUser().getUserId() == employeeId) {
                 filtered.add(b);
             }
@@ -229,8 +239,9 @@ public class BillingService {
     }
 
     public List<Bill> filterByAmountRange(double minAmount, double maxAmount) {
+        List<Bill> allBills = billDAO.findAll();
         List<Bill> filtered = new ArrayList<>();
-        for (Bill b : billDatabase) {
+        for (Bill b : allBills) {
             if (b.getTotalAmount() >= minAmount && b.getTotalAmount() <= maxAmount) {
                 filtered.add(b);
             }
@@ -238,3 +249,4 @@ public class BillingService {
         return filtered;
     }
 }
+
