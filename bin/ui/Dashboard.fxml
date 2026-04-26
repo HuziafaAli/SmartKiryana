@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ui.DashboardController"
+            stylesheets="ui/style.css"
+            styleClass="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" spacing="10">
+            <padding>
+                <Insets top="40" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Logo Area -->
+            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 0 0 40 0;">
+                <ImageView pickOnBounds="true" preserveRatio="true" fitWidth="100">
+                    <Image url="@assets/logo.png"/>
+                </ImageView>
+                <Text text="SmartKiryana" styleClass="sidebar-brand"/>
+            </VBox>
+
+            <!-- Navigation Links -->
+            <Button text="POS Terminal" onAction="#showPOS" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button text="Inventory" onAction="#showInventory" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button text="Employees" onAction="#showEmployees" maxWidth="Infinity" styleClass="nav-button"/>
+            <Button text="Reports" onAction="#showReports" maxWidth="Infinity" styleClass="nav-button"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- User Info & Logout -->
+            <VBox spacing="5" styleClass="user-profile">
+                <Label fx:id="userNameLabel" text="Admin User" styleClass="user-name"/>
+                <Button text="Logout" onAction="#handleLogout" maxWidth="Infinity" styleClass="btn-logout-sidebar"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT AREA -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <VBox alignment="CENTER" spacing="20">
+                <Text text="Welcome to SmartKiryana" styleClass="welcome-text"/>
+                <Text text="Select a module from the sidebar to get started." styleClass="welcome-subtext"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

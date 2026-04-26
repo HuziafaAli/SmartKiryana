@@ -1,24 +1,28 @@
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import dao.*;
 import service.*;
 import controller.*;
 import facade.SystemFacade;
-import observer.StockAlert;
 import util.DatabaseConnection;
+import ui.LoginController;
 
-public class Main {
+public class Main extends Application {
 
-    public static void main(String[] args) {
-        
-        System.out.println("Initializing SmartKiryana Backend...");
+    private SystemFacade systemFacade;
 
+    @Override
+    public void init() {
         // 1. Test Database Connection
         if (!DatabaseConnection.testConnection()) {
-            System.err.println("CRITICAL: Could not connect to PostgreSQL Database. Exiting...");
+            System.err.println("CRITICAL: Database Connection Failed!");
             return;
         }
-        System.out.println("Database Connected Successfully!");
 
-        // 2. Initialize DAOs (Data Access Layer)
+        // 2. Initialize Backend stack
         UserDAO userDAO = new UserDAO();
         ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
         InventoryItemDAO inventoryDAO = new InventoryItemDAO();
@@ -26,34 +30,40 @@ public class Main {
         ReturnTransactionDAO returnDAO = new ReturnTransactionDAO(billDAO);
         SalesTargetDAO salesTargetDAO = new SalesTargetDAO(userDAO);
 
-        // 3. Initialize Services (Business Logic Layer)
         AuthService authService = new AuthService(userDAO);
         InventoryService inventoryService = new InventoryService(categoryDAO, inventoryDAO);
         BillingService billingService = new BillingService(inventoryService, billDAO, returnDAO);
         ReportService reportService = new ReportService(authService, salesTargetDAO);
 
-        // 4. Setup Observers (e.g., Stock Alerts)
-        StockAlert stockAlert = new StockAlert();
-        inventoryService.addObserver(stockAlert);
-
-        // 5. Initialize Controllers (API / Routing Layer)
         UserController userController = new UserController(authService);
         InventoryController inventoryController = new InventoryController(inventoryService);
         BillController billController = new BillController(billingService);
         ReportController reportController = new ReportController(reportService);
 
-        // 6. Initialize the Facade (Single Entry Point for UI)
-        SystemFacade systemFacade = new SystemFacade(billController, inventoryController, reportController, userController);
+        this.systemFacade = new SystemFacade(billController, inventoryController, reportController, userController);
+    }
 
-        System.out.println("Backend Initialization Complete! Ready for UI connection.");
+    @Override
+    public void start(Stage stage) throws Exception {
+        // 3. Load the FXML Login View
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Login.fxml"));
+        Parent root = loader.load();
+
+        // 4. Inject the Facade into the Controller
+        LoginController controller = loader.getController();
+        controller.setSystemFacade(systemFacade);
+
+        // 5. Setup Scene and Window
+        Scene scene = new Scene(root);
+        stage.setTitle("SmartKiryana POS - Login");
+        stage.setScene(scene);
         
-        // --- Quick Test to prove it works ---
-        System.out.println("\n--- Testing Login with Database ---");
-        boolean loginSuccess = systemFacade.login("admin", "admin123");
-        if(loginSuccess) {
-            System.out.println("SUCCESS: Logged in as: " + systemFacade.getCurrentUser().getFullName());
-        } else {
-            System.out.println("FAILED: Could not log in.");
-        }
+        // Open in Maximized mode
+        stage.setMaximized(true);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
