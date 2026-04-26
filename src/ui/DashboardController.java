@@ -72,8 +72,11 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/" + fxmlFile));
             Node view = loader.load();
             
-            // Here we would inject the facade into sub-controllers if needed
-            // e.g. if (loader.getController() instanceof POSController) ...
+            // Inject the facade into the loaded controller
+            Object controller = loader.getController();
+            if (controller instanceof InventoryController) {
+                ((InventoryController) controller).setSystemFacade(systemFacade);
+            }
 
             contentArea.getChildren().setAll(view);
         } catch (IOException e) {

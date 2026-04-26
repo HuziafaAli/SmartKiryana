@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.InventoryController"
+      spacing="20"
+      styleClass="inventory-container">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="Inventory Management" styleClass="welcome-text"/>
+    </HBox>
+
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="inventory-tabs">
+        <tabs>
+            <!-- PRODUCTS TAB -->
+            <Tab text="Products">
+                <VBox spacing="15">
+                    <padding>
+                        <Insets top="15" right="0" bottom="0" left="0"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="productSearchField" promptText="Search by Name or Barcode..." prefWidth="300" styleClass="input-field"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add Product" onAction="#handleAddProduct" styleClass="btn-primary-small"/>
+                    </HBox>
+
+                    <TableView fx:id="productTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="colBarcode" text="Barcode" prefWidth="120"/>
+                            <TableColumn fx:id="colProductName" text="Product Name" prefWidth="200"/>
+                            <TableColumn fx:id="colCategory" text="Category" prefWidth="120"/>
+                            <TableColumn fx:id="colPrice" text="Price" prefWidth="100"/>
+                            <TableColumn fx:id="colCostPrice" text="Cost" prefWidth="100"/>
+                            <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+
+            <!-- CATEGORIES TAB -->
+            <Tab text="Categories">
+                <VBox spacing="15">
+                    <padding>
+                        <Insets top="15" right="0" bottom="0" left="0"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Button text="+ Add Category" onAction="#handleAddCategory" styleClass="btn-primary-small"/>
+                    </HBox>
+
+                    <TableView fx:id="categoryTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="colCatId" text="ID" prefWidth="80"/>
+                            <TableColumn fx:id="colCatName" text="Category Name" prefWidth="300"/>
+                            <TableColumn fx:id="colCatActions" text="Actions" prefWidth="120"/>
+                        </columns>
+                    </TableView>
+                </VBox>
+            </Tab>
+        </tabs>
+    </TabPane>
+</VBox>

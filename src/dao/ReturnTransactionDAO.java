@@ -88,14 +88,15 @@ public class ReturnTransactionDAO {
             while (rs.next()) {
                 int returnId = rs.getInt("return_id");
                 ReturnTransaction tx = returnMap.get(returnId);
-                
+
                 if (tx == null) {
                     tx = mapRow(rs);
                     returnMap.put(returnId, tx);
                 }
 
                 int returnItemId = rs.getInt("return_item_id");
-                if (rs.wasNull()) continue;
+                if (rs.wasNull())
+                    continue;
 
                 ProductCategory category = new ProductCategory(
                         rs.getInt("category_id"),
@@ -129,7 +130,24 @@ public class ReturnTransactionDAO {
         return new ArrayList<>(returnMap.values());
     }
 
+    public ReturnTransaction findById(int id) {
+        String query = "SELECT * FROM return_transactions WHERE return_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
 
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                ReturnTransaction tx = mapRow(rs);
+                tx.setReturnedItems(findReturnItems(id));
+                return tx;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private List<ReturnItem> findReturnItems(int returnId) {
         List<ReturnItem> items = new ArrayList<>();
