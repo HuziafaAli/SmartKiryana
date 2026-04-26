@@ -14,12 +14,12 @@ public class InventoryController {
         inventoryService = IS;
     }
 
-    public boolean addCategory(int id, String name) {
-        boolean success = inventoryService.addCategory(id, name);
+    public boolean addCategory(String name) {
+        boolean success = inventoryService.addCategory(name);
         if (success) {
             System.out.println("Product Category Added.");
         } else {
-            System.out.println("Failed to add category. Invalid name or duplicate ID.");
+            System.out.println("Failed to add category. Invalid name.");
         }
         return success;
     }
@@ -48,9 +48,9 @@ public class InventoryController {
         return inventoryService.getAllCategories();
     }
 
-    public boolean addProduct(int productId, String barcode, String name, int categoryId,
+    public boolean addProduct(String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
-        boolean success = inventoryService.addProduct(productId, barcode, name, categoryId, price, costPrice, minStock,
+        boolean success = inventoryService.addProduct(barcode, name, categoryId, price, costPrice, minStock,
                 maxStock);
         if (success) {
             System.out.println("Product Added.");
@@ -82,24 +82,29 @@ public class InventoryController {
 
     public boolean addStock(String barcode, int quantityToAdd) {
         boolean success = inventoryService.addStock(barcode, quantityToAdd);
-        InventoryItem itemExist = inventoryService.isProductExists(barcode);
         if (success) {
-            System.out.println(itemExist.getProduct().getName() + " quantity Added.");
+            InventoryItem itemExist = inventoryService.isProductExists(barcode);
+            if (itemExist != null) {
+                System.out.println(itemExist.getProduct().getName() + " quantity Added.");
+            }
         } else {
-            System.out.println("Invalid Barcode.");
+            System.out.println("Invalid Barcode or Quantity.");
         }
         return success;
     }
 
     public boolean reduceStock(String barcode, int quantityToReduce) {
         InventoryItem itemExist = inventoryService.isProductExists(barcode);
+        if (itemExist == null) {
+            System.out.println("Invalid Barcode.");
+            return false;
+        }
+
         boolean success = inventoryService.reduceStock(barcode, quantityToReduce);
         if (success) {
             System.out.println(itemExist.getProduct().getName() + " quantity reduced.");
-        } else if (itemExist != null) {
-            System.out.println(itemExist.getProduct().getName() + " does not have enough stock.");
         } else {
-            System.out.println("Invalid Barcode.");
+            System.out.println(itemExist.getProduct().getName() + " does not have enough stock.");
         }
         return success;
     }

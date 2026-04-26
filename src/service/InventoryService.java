@@ -4,73 +4,78 @@ import model.InventoryItem;
 import model.Product;
 import model.ProductCategory;
 import observer.StockObserver;
+import dao.ProductCategoryDAO;
+import dao.InventoryItemDAO;
 
 import java.util.ArrayList;
 import java.util.List;
 import util.Validator;
 
 public class InventoryService {
-    // Runtime DB
-    private List<InventoryItem> inventoryDatabase;
-    private List<ProductCategory> categoryDatabase;
+
+    private ProductCategoryDAO categoryDAO;
+    private InventoryItemDAO inventoryDAO;
     private List<StockObserver> observers;
 
-    public InventoryService() {
-        inventoryDatabase = new ArrayList<>();
-        categoryDatabase = new ArrayList<>();
-        observers = new ArrayList<>();
-
-        // For Testing
-        ProductCategory tempCat = new ProductCategory(1, "Dairy");
-        ProductCategory tempCat2 = new ProductCategory(1, "Snacks");
-
-        categoryDatabase.add(tempCat);
-        categoryDatabase.add(tempCat2);
+    public InventoryService(ProductCategoryDAO categoryDAO, InventoryItemDAO inventoryDAO) {
+        this.categoryDAO = categoryDAO;
+        this.inventoryDAO = inventoryDAO;
+        this.observers = new ArrayList<>();
     }
 
-    public boolean addCategory(int id, String name) {
+    // Category CRUD
+
+    public boolean addCategory(String name) {
         if (!Validator.isNotEmpty(name))
             return false;
-        for (ProductCategory c : categoryDatabase) {
-            if (c.getCategoryId() == id)
-                return false; // Duplicate ID
-        }
-        categoryDatabase.add(new ProductCategory(id, name));
-        return true;
+
+        return categoryDAO.save(new ProductCategory(0, name));
     }
 
     public boolean updateCategory(int id, String newName) {
         if (!Validator.isNotEmpty(newName))
             return false;
-        for (ProductCategory c : categoryDatabase) {
+
+        List<ProductCategory> allCategories = categoryDAO.findAll();
+        for (ProductCategory c : allCategories) {
             if (c.getCategoryId() == id) {
                 c.setCategoryName(newName);
-                return true;
+                return categoryDAO.update(c);
             }
         }
         return false;
     }
 
     public boolean deleteCategory(int id) {
-        for (int i = 0; i < categoryDatabase.size(); i++) {
-            if (categoryDatabase.get(i).getCategoryId() == id) {
-                for (InventoryItem item : inventoryDatabase) {
-                    if (item.getProduct().getCategory().getCategoryId() == id) {
-                        return false;
-                    }
-                }
-                categoryDatabase.remove(i);
-                return true;
+        List<ProductCategory> allCategories = categoryDAO.findAll();
+        List<InventoryItem> allItems = inventoryDAO.findAll();
+
+        boolean found = false;
+        for (ProductCategory c : allCategories) {
+            if (c.getCategoryId() == id) {
+                found = true;
+                break;
             }
         }
-        return false;
+        if (!found)
+            return false;
+
+        for (InventoryItem item : allItems) {
+            if (item.getProduct().getCategory().getCategoryId() == id) {
+                return false;
+            }
+        }
+
+        return categoryDAO.delete(id);
     }
 
     public List<ProductCategory> getAllCategories() {
-        return categoryDatabase;
+        return categoryDAO.findAll();
     }
 
-    public boolean addProduct(int productId, String barcode, String name, int categoryId,
+    // Product CRUD
+
+    public boolean addProduct(String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
 
         if (!Validator.isValidBarcode(barcode) || !Validator.isNotEmpty(name)
@@ -78,14 +83,19 @@ public class InventoryService {
             return false;
         }
 
-        for (ProductCategory c : categoryDatabase) {
+        // Check if barcode already exists
+        if (inventoryDAO.findByBarcode(barcode) != null) {
+            return false;
+        }
+
+        // Find the category
+        List<ProductCategory> allCategories = categoryDAO.findAll();
+        for (ProductCategory c : allCategories) {
             if (c.getCategoryId() == categoryId) {
                 ProductCategory category = new ProductCategory(categoryId, c.getCategoryName());
-                Product p = new Product(productId, barcode, name, category, price, costPrice);
-                int newInvId = inventoryDatabase.size() + 1;
-                InventoryItem i = new InventoryItem(newInvId, p, 0, minStock, maxStock);
-                inventoryDatabase.add(i);
-                return true;
+                Product p = new Product(0, barcode, name, category, price, costPrice);
+                InventoryItem item = new InventoryItem(0, p, 0, minStock, maxStock);
+                return inventoryDAO.save(item);
             }
         }
         return false;
@@ -102,10 +112,7 @@ public class InventoryService {
             return false;
         }
 
-        itemExist.getProduct().setName(newName);
-        itemExist.getProduct().setPrice(newPrice);
-        itemExist.getProduct().setCostPrice(newCostPrice);
-        return true;
+        return inventoryDAO.updateProduct(barcode, newName, newPrice, newCostPrice);
     }
 
     public boolean deleteProduct(String barcode) {
@@ -117,9 +124,10 @@ public class InventoryService {
             return false;
         }
 
-        inventoryDatabase.remove(itemExist);
-        return true;
+        return inventoryDAO.delete(barcode);
     }
+
+    // Stock Management
 
     public boolean addStock(String barcode, int quantityToAdd) {
         if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantityToAdd)) {
@@ -131,8 +139,31 @@ public class InventoryService {
             return false;
         }
 
-        itemExist.addStockQuantity(quantityToAdd);
-        return true;
+        // Business logic: calculate new quantity in Java
+        int newQuantity = itemExist.getStockQuantity() + quantityToAdd;
+        boolean success = inventoryDAO.updateStock(barcode, newQuantity);
+
+        if (success && newQuantity >= itemExist.getMinStockThreshold()) {
+            InventoryItem updatedItem = isProductExists(barcode);
+            for (StockObserver obs : observers) {
+                obs.onStockRefilled(updatedItem);
+            }
+        }
+        return success;
+    }
+
+    public boolean restoreDeletedStock(String barcode, int quantity) {
+        if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantity)) {
+            return false;
+        }
+
+        model.Product product = inventoryDAO.findProductByBarcode(barcode);
+        if (product == null) {
+            return false;
+        }
+
+        InventoryItem item = new InventoryItem(0, product, quantity, 10, 100);
+        return inventoryDAO.insertInventoryOnly(item);
     }
 
     public boolean reduceStock(String barcode, int quantityToReduce) {
@@ -145,39 +176,47 @@ public class InventoryService {
             return false;
         }
 
-        if (!itemExist.reduceStockQuantity(quantityToReduce)) {
+        // Business logic: check if enough stock exists
+        if (itemExist.getStockQuantity() < quantityToReduce) {
             return false;
         }
 
-        // OBSERVER TRIGGER: Notify all observers if stock is now low
-        if (itemExist.isLowStock()) {
-            for (StockObserver obs : observers) {
-                obs.onStockLow(itemExist);
+        // Business logic: calculate new quantity in Java
+        int newQuantity = itemExist.getStockQuantity() - quantityToReduce;
+        boolean success = inventoryDAO.updateStock(barcode, newQuantity);
+
+        // Observer trigger: notify if stock is now low
+        if (success) {
+            itemExist.setStockQuantity(newQuantity);
+            if (itemExist.isLowStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockLow(itemExist);
+                }
             }
         }
 
-        return true;
+        return success;
     }
+
+    // Observer Management
 
     public void addObserver(StockObserver observer) {
         observers.add(observer);
     }
 
+    // Lookup & Queries
+
     public InventoryItem isProductExists(String barcode) {
         if (!Validator.isValidBarcode(barcode))
             return null;
 
-        for (InventoryItem i : inventoryDatabase) {
-            if (i.getProduct().getBarcode().equals(barcode)) {
-                return i;
-            }
-        }
-        return null;
+        return inventoryDAO.findByBarcode(barcode);
     }
 
     public List<InventoryItem> getLowStockItems() {
+        List<InventoryItem> allItems = inventoryDAO.findAll();
         List<InventoryItem> lowStockItems = new ArrayList<>();
-        for (InventoryItem i : inventoryDatabase) {
+        for (InventoryItem i : allItems) {
             if (i.isLowStock()) {
                 lowStockItems.add(i);
             }
@@ -186,11 +225,12 @@ public class InventoryService {
     }
 
     public List<InventoryItem> getAllInventoryItems() {
-        return inventoryDatabase;
+        return inventoryDAO.findAll();
     }
 
     public void checkAllStockLevels() {
-        for (InventoryItem item : inventoryDatabase) {
+        List<InventoryItem> allItems = inventoryDAO.findAll();
+        for (InventoryItem item : allItems) {
             if (item.isLowStock()) {
                 for (StockObserver obs : observers) {
                     obs.onStockLow(item);

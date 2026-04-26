@@ -8,6 +8,7 @@ public class Product {
     private ProductCategory category;
     private double price;       // Selling price
     private double costPrice;   // Purchase price
+    private int salesQuantity;  // Lifetime sales tracking
 
     public Product() {
     }
@@ -19,6 +20,17 @@ public class Product {
         this.category = category;
         this.price = price;
         this.costPrice = costPrice;
+        this.salesQuantity = 0;
+    }
+
+    public Product(int productId, String barcode, String name, ProductCategory category, double price, double costPrice, int salesQuantity) {
+        this.productId = productId;
+        this.barcode = barcode;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.costPrice = costPrice;
+        this.salesQuantity = salesQuantity;
     }
 
     public int getProductId() {
@@ -69,6 +81,14 @@ public class Product {
         this.costPrice = costPrice;
     }
 
+    public int getSalesQuantity() {
+        return salesQuantity;
+    }
+
+    public void setSalesQuantity(int salesQuantity) {
+        this.salesQuantity = salesQuantity;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -77,5 +97,20 @@ public class Product {
                 ", price=" + price +
                 ", category=" + (category != null ? category.getCategoryName() : "None") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return barcode != null ? barcode.equals(product.barcode) : product.barcode == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return barcode != null ? barcode.hashCode() : 0;
     }
 }
