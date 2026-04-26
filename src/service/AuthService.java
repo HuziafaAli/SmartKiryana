@@ -2,25 +2,21 @@ package service;
 
 import model.User;
 import model.Employee;
-import model.Admin;
 import factory.UserFactory;
+import dao.UserDAO;
 import util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthService {
-    //Runtime Database
-    private List<User> userDatabase;
+
+    private UserDAO userDAO;
     private User currentUser;
 
-    public AuthService() {
-        this.userDatabase = new ArrayList<>();
+    public AuthService(UserDAO userDAO) {
+        this.userDAO = userDAO;
         this.currentUser = null;
-
-        // Default admin for testing
-        Admin defaultAdmin = new Admin(1, "admin", "admin123", "Super Admin", "0300-1234567");
-        userDatabase.add(defaultAdmin);
     }
 
     public boolean login(String username, String password) {
@@ -28,13 +24,14 @@ public class AuthService {
             return false;
         }
 
-        for (User user : userDatabase) {
+        List<User> allUsers = userDAO.findAll();
+        for (User user : allUsers) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 if (!user.isActive()) {
-                    return false; 
+                    return false;
                 }
                 this.currentUser = user;
-                return true; 
+                return true;
             }
         }
         return false;
@@ -54,19 +51,17 @@ public class AuthService {
 
     public boolean addEmployee(String username, String password, String fullName, String phone, String cnic) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
-            return false; 
+            return false;
         }
 
-        if (!Validator.isNotEmpty(username) || !Validator.isNotEmpty(password) 
-                || !Validator.isNotEmpty(fullName) || !Validator.isValidPhone(phone) 
+        if (!Validator.isNotEmpty(username) || !Validator.isNotEmpty(password)
+                || !Validator.isNotEmpty(fullName) || !Validator.isValidPhone(phone)
                 || !Validator.isValidCNIC(cnic)) {
             return false;
         }
 
-        int newId = userDatabase.size() + 1;
-        User newEmp = UserFactory.createUser("EMPLOYEE", newId, username, password, fullName, phone, cnic);
-        userDatabase.add(newEmp);
-        return true;
+        User newEmp = UserFactory.createUser("EMPLOYEE", 0, username, password, fullName, phone, cnic);
+        return userDAO.save(newEmp);
     }
 
     public boolean updateEmployee(int userId, String newFullName, String newPhone, String newUsername, String newPassword) {
@@ -74,21 +69,22 @@ public class AuthService {
             return false;
         }
 
-        if (!Validator.isNotEmpty(newUsername) || !Validator.isNotEmpty(newPassword) 
+        if (!Validator.isNotEmpty(newUsername) || !Validator.isNotEmpty(newPassword)
                 || !Validator.isNotEmpty(newFullName) || !Validator.isValidPhone(newPhone)) {
             return false;
         }
 
-        for (User u : userDatabase) {
+        List<User> allUsers = userDAO.findAll();
+        for (User u : allUsers) {
             if (u.getUserId() == userId) {
                 u.setUsername(newUsername);
                 u.setPassword(newPassword);
                 u.setFullName(newFullName);
                 u.setPhone(newPhone);
-                return true; 
+                return userDAO.update(u);
             }
         }
-        return false; 
+        return false;
     }
 
     public boolean deactivateUser(int userId) {
@@ -96,22 +92,24 @@ public class AuthService {
             return false;
         }
 
-        if(!Validator.isPositiveQuantity(userId)) {
+        if (!Validator.isPositiveQuantity(userId)) {
             return false;
         }
 
-        for (User u : userDatabase) {
+        List<User> allUsers = userDAO.findAll();
+        for (User u : allUsers) {
             if (u.getUserId() == userId) {
                 u.setActive(false);
-                return true;
+                return userDAO.update(u);
             }
         }
         return false;
     }
 
     public List<Employee> getAllEmployees() {
+        List<User> allUsers = userDAO.findAll();
         List<Employee> tempEmp = new ArrayList<>();
-        for (User u : userDatabase) {
+        for (User u : allUsers) {
             if (u.getRole().equals("EMPLOYEE")) {
                 tempEmp.add((Employee) u);
             }
@@ -119,3 +117,4 @@ public class AuthService {
         return tempEmp;
     }
 }
+
