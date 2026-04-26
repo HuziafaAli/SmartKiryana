@@ -33,4 +33,15 @@ public class StockAlert implements StockObserver {
         pendingAlerts.clear();
         System.out.println("All alerts have been acknowledged and cleared.");
     }
+
+    @Override
+    public void onStockRefilled(InventoryItem item) {
+        if (pendingAlerts.remove(item)) {
+            System.out.println("--------------------------------------------------");
+            System.out.println("  STOCK REFILLED ");
+            System.out.println("Item: " + item.getProduct().getName());
+            System.out.println("New Stock: " + item.getStockQuantity() + " - Alert cleared.");
+            System.out.println("--------------------------------------------------");
+        }
+    }
 }

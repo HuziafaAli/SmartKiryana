@@ -8,6 +8,7 @@ import model.SalesTarget;
 import model.Bill;
 import model.ReturnTransaction;
 import model.SalesRecord;
+import dao.SalesTargetDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +20,12 @@ import util.Validator;
 
 public class ReportService {
 
-    private List<MonthlyReport> monthlyReports;
-    private List<PerformanceReport> performanceReports;
-    private List<SalesTarget> targetDatabase;
-
+    private SalesTargetDAO salesTargetDAO;
     private AuthService authService;
 
-    public ReportService(AuthService authService) {
-        this.monthlyReports = new ArrayList<>();
-        this.performanceReports = new ArrayList<>();
-        this.targetDatabase = new ArrayList<>();
+    public ReportService(AuthService authService, SalesTargetDAO salesTargetDAO) {
         this.authService = authService;
+        this.salesTargetDAO = salesTargetDAO;
     }
 
     public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
@@ -44,10 +40,8 @@ public class ReportService {
             return false;
         }
 
-        int targetId = targetDatabase.size() + 1;
-        SalesTarget newTarget = new SalesTarget(targetId, employee, month, year, targetAmount);
-        targetDatabase.add(newTarget);
-        return true;
+        SalesTarget newTarget = new SalesTarget(0, employee, month, year, targetAmount);
+        return salesTargetDAO.save(newTarget);
     }
 
     public PerformanceReport generatePerformanceReport(Employee emp, int month, int year,
@@ -58,18 +52,13 @@ public class ReportService {
             return null;
         }
 
+        List<SalesTarget> targetDatabase = salesTargetDAO.findAll();
+
         ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills,
                 targetDatabase);
         PerformanceReport report = generator.generate();
 
-        int reportId = performanceReports.size() + 1;
-
-        PerformanceReport finalReport = new PerformanceReport(reportId, report.getEmployee(), report.getMonth(),
-                report.getYear(),
-                report.getTotalSales(), report.getTargetAmount(), report.getBonusAmount());
-
-        performanceReports.add(finalReport);
-        return finalReport;
+        return report;
     }
 
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
@@ -82,13 +71,7 @@ public class ReportService {
         ReportTemplate<MonthlyReport> generator = new MonthlyReportGenerator(month, year, allBills, allReturns);
         MonthlyReport report = generator.generate();
 
-        int reportId = monthlyReports.size() + 1;
-
-        MonthlyReport finalReport = new MonthlyReport(reportId, report.getMonth(), report.getYear(),
-                report.getTotalSales(), report.getTotalReturns(), report.getTopProducts());
-
-        monthlyReports.add(finalReport);
-        return finalReport;
+        return report;
     }
 
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
@@ -108,3 +91,4 @@ public class ReportService {
         return history;
     }
 }
+
