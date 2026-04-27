@@ -170,6 +170,6 @@ public class ReportsController implements FacadeAware {
 
     private void showAlert(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle(title); a.setContentText(msg); a.showAndWait();
+        a.setTitle(title); a.setContentText(msg); DialogStyler.style(a); a.showAndWait();
     }
 }

@@ -175,6 +175,10 @@ public class SystemFacade {
         return reportController.getPerformanceComparison(employees, month, year, allBills);
     }
 
+    public List<PerformanceReport> getTargetHistory(Employee employee, List<Bill> allBills) {
+        return reportController.getTargetHistory(employee, allBills);
+    }
+
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
         return reportController.getSalesHistory(allBills);
     }

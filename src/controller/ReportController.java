@@ -65,6 +65,10 @@ public class ReportController {
         return reports;
     }
 
+    public List<PerformanceReport> getTargetHistory(Employee employee, List<Bill> allBills) {
+        return reportService.getTargetHistory(employee, allBills);
+    }
+
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
         return reportService.getSalesHistory(allBills);
     }

@@ -1,11 +1,9 @@
 package ui;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.*;
 import facade.SystemFacade;
 import model.*;
 import command.ReturnItemCommand;
@@ -24,62 +22,20 @@ public class ReturnsController implements FacadeAware {
     @FXML private Label billDateLabel;
     @FXML private Label billTotalLabel;
     @FXML private Label billCashierLabel;
-
-    @FXML private TableView<BillItem> billItemsTable;
-    @FXML private TableColumn<BillItem, String> colOrigItem;
-    @FXML private TableColumn<BillItem, String> colOrigQty;
-    @FXML private TableColumn<BillItem, String> colOrigPrice;
-    @FXML private TableColumn<BillItem, String> colOrigTotal;
-
-    @FXML private TableView<BillItem> returnItemsTable;
-    @FXML private TableColumn<BillItem, String> colRetItem;
-    @FXML private TableColumn<BillItem, String> colRetQty;
-    @FXML private TableColumn<BillItem, String> colRetReturn;
-    @FXML private TableColumn<BillItem, Void> colRetSelect;
-
+    @FXML private Label itemCountLabel;
+    @FXML private FlowPane billItemsFlow;
+    @FXML private VBox selectedReturnsBox;
     @FXML private TextField reasonField;
     @FXML private Label refundLabel;
 
     private SystemFacade systemFacade;
     private Bill foundBill;
-    private Map<Integer, Spinner<Integer>> returnSpinners = new HashMap<>();
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm a");
+    private final Map<Integer, Spinner<Integer>> returnSpinners = new HashMap<>();
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm a");
 
     public void initialize() {
-        colOrigItem.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getProduct().getName()));
-        colOrigQty.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getQuantity())));
-        colOrigPrice.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %.0f", c.getValue().getUnitPrice())));
-        colOrigTotal.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %.0f", c.getValue().getSubtotal())));
-
-        colRetItem.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getProduct().getName()));
-        colRetQty.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getQuantity())));
-
-        colRetReturn.setCellFactory(col -> new TableCell<BillItem, String>() {
-            @Override
-            protected void updateItem(String s, boolean empty) {
-                super.updateItem(s, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                } else {
-                    BillItem item = getTableRow().getItem();
-                    Spinner<Integer> spinner = new Spinner<>(0, item.getQuantity(), 0);
-                    spinner.setPrefWidth(70);
-                    spinner.setStyle("-fx-background-color: #1a1f35; -fx-font-size: 12px;");
-                    returnSpinners.put(item.getBillItemId(), spinner);
-                    spinner.valueProperty().addListener((obs, o, n) -> calculateRefund());
-                    setGraphic(spinner);
-                }
-            }
-        });
-
-        colRetSelect.setCellFactory(col -> new TableCell<BillItem, Void>() {
-            private final CheckBox cb = new CheckBox();
-            @Override
-            protected void updateItem(Void v, boolean empty) {
-                super.updateItem(v, empty);
-                setGraphic(empty ? null : cb);
-            }
-        });
+        renderEmptyState("Search for a bill to begin a return.");
+        renderSelectedReturns();
     }
 
     @Override
@@ -94,26 +50,134 @@ public class ReturnsController implements FacadeAware {
             int billId = Integer.parseInt(idText);
             foundBill = systemFacade.findBillById(billId);
 
-            if (foundBill != null) {
-                billInfoBox.setVisible(true);
-                billInfoBox.setManaged(true);
-                billIdLabel.setText("BLL-" + foundBill.getBillId());
-                billDateLabel.setText(foundBill.getBillDate().format(dtf));
-                billTotalLabel.setText(String.format("Rs. %.2f", foundBill.getTotalAmount()));
-                billCashierLabel.setText(foundBill.getUser() != null ? foundBill.getUser().getFullName() : "N/A");
-
-                ObservableList<BillItem> items = FXCollections.observableArrayList(foundBill.getItems());
-                billItemsTable.setItems(items);
-                returnItemsTable.setItems(items);
-                returnSpinners.clear();
-                refundLabel.setText("Rs. 0.00");
-            } else {
+            if (foundBill == null) {
                 showAlert("Not Found", "No bill found with ID: " + idText);
-                billInfoBox.setVisible(false);
-                billInfoBox.setManaged(false);
+                handleReset();
+                billSearchField.setText(idText);
+                return;
             }
+
+            billInfoBox.setVisible(true);
+            billInfoBox.setManaged(true);
+            billIdLabel.setText("BLL-" + foundBill.getBillId());
+            billDateLabel.setText(foundBill.getBillDate().format(dtf));
+            billTotalLabel.setText(String.format("Rs. %.2f", foundBill.getTotalAmount()));
+            billCashierLabel.setText(foundBill.getUser() != null ? foundBill.getUser().getFullName() : "N/A");
+
+            returnSpinners.clear();
+            renderBillItems();
+            calculateRefund();
         } catch (NumberFormatException e) {
             showAlert("Invalid Input", "Please enter a valid Bill ID number.");
+        }
+    }
+
+    @FXML
+    private void handleReset() {
+        foundBill = null;
+        returnSpinners.clear();
+        billSearchField.clear();
+        reasonField.clear();
+        billInfoBox.setVisible(false);
+        billInfoBox.setManaged(false);
+        refundLabel.setText("Rs. 0.00");
+        itemCountLabel.setText("Search for a bill");
+        renderEmptyState("Search for a bill to begin a return.");
+        renderSelectedReturns();
+    }
+
+    private void renderBillItems() {
+        billItemsFlow.getChildren().clear();
+
+        if (foundBill == null || foundBill.getItems().isEmpty()) {
+            itemCountLabel.setText("No products");
+            renderEmptyState("This bill has no products.");
+            return;
+        }
+
+        itemCountLabel.setText(foundBill.getItems().size() + " products available");
+        for (BillItem item : foundBill.getItems()) {
+            billItemsFlow.getChildren().add(createReturnItemCard(item));
+        }
+    }
+
+    private VBox createReturnItemCard(BillItem item) {
+        Product product = item.getProduct();
+
+        VBox card = new VBox(0);
+        card.getStyleClass().add("return-product-card");
+
+        Label category = new Label(product.getCategory() != null ? product.getCategory().getCategoryName() : "Uncategorized");
+        category.getStyleClass().add("inv-card-cat-pill");
+
+        Label name = new Label(product.getName());
+        name.getStyleClass().add("return-product-name");
+        name.setMaxWidth(238);
+        name.setWrapText(true);
+        VBox.setMargin(name, new javafx.geometry.Insets(10, 0, 2, 0));
+
+        Label barcode = new Label("# " + product.getBarcode());
+        barcode.getStyleClass().add("inv-card-barcode");
+        VBox.setMargin(barcode, new javafx.geometry.Insets(0, 0, 12, 0));
+
+        HBox metrics = new HBox(8,
+                metric("Sold", String.valueOf(item.getQuantity())),
+                metric("Unit", String.format("Rs. %.0f", item.getUnitPrice())),
+                metric("Total", String.format("Rs. %.0f", item.getSubtotal())));
+        VBox.setMargin(metrics, new javafx.geometry.Insets(12, 0, 12, 0));
+
+        Spinner<Integer> spinner = new Spinner<>(0, item.getQuantity(), 0);
+        spinner.setEditable(true);
+        spinner.setPrefWidth(86);
+        spinner.getStyleClass().add("return-spinner");
+        returnSpinners.put(item.getBillItemId(), spinner);
+
+        Label refund = new Label("Rs. 0");
+        refund.getStyleClass().add("return-card-refund");
+
+        spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+            refund.setText(String.format("Rs. %.0f", newValue * item.getUnitPrice()));
+            updateCardSelection(card, newValue > 0);
+            calculateRefund();
+        });
+
+        HBox action = new HBox(10);
+        action.setAlignment(Pos.CENTER_LEFT);
+        Label returnQty = new Label("Return Qty");
+        returnQty.getStyleClass().add("bill-label");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        action.getChildren().addAll(returnQty, spinner, refund);
+
+        card.getChildren().addAll(category, name, barcode, divider(), metrics, divider(), action);
+        return card;
+    }
+
+    private VBox metric(String labelText, String valueText) {
+        VBox box = new VBox(3);
+        box.getStyleClass().add("return-mini-metric");
+        Label label = new Label(labelText);
+        label.getStyleClass().add("inv-card-field-label");
+        Label value = new Label(valueText);
+        value.getStyleClass().add("inv-card-field-value");
+        box.getChildren().addAll(label, value);
+        HBox.setHgrow(box, Priority.ALWAYS);
+        return box;
+    }
+
+    private Region divider() {
+        Region region = new Region();
+        region.getStyleClass().add("inv-card-divider");
+        return region;
+    }
+
+    private void updateCardSelection(VBox card, boolean selected) {
+        if (selected) {
+            if (!card.getStyleClass().contains("return-product-card-selected")) {
+                card.getStyleClass().add("return-product-card-selected");
+            }
+        } else {
+            card.getStyleClass().remove("return-product-card-selected");
         }
     }
 
@@ -128,6 +192,72 @@ public class ReturnsController implements FacadeAware {
             }
         }
         refundLabel.setText(String.format("Rs. %.2f", refund));
+        renderSelectedReturns();
+    }
+
+    private void renderSelectedReturns() {
+        selectedReturnsBox.getChildren().clear();
+
+        if (foundBill == null) {
+            selectedReturnsBox.getChildren().add(emptySummary("No bill selected."));
+            return;
+        }
+
+        boolean hasItems = false;
+        for (BillItem item : foundBill.getItems()) {
+            Spinner<Integer> spinner = returnSpinners.get(item.getBillItemId());
+            if (spinner == null || spinner.getValue() <= 0) {
+                continue;
+            }
+
+            hasItems = true;
+            selectedReturnsBox.getChildren().add(createSelectedReturnRow(item, spinner.getValue()));
+        }
+
+        if (!hasItems) {
+            selectedReturnsBox.getChildren().add(emptySummary("Set a return quantity on any product card."));
+        }
+    }
+
+    private HBox createSelectedReturnRow(BillItem item, int quantity) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getStyleClass().add("selected-return-row");
+
+        VBox text = new VBox(3);
+        HBox.setHgrow(text, Priority.ALWAYS);
+
+        Label name = new Label(item.getProduct().getName());
+        name.getStyleClass().add("selected-return-name");
+        name.setWrapText(true);
+        name.setMaxWidth(190);
+
+        Label qty = new Label(quantity + " x Rs. " + String.format("%.0f", item.getUnitPrice()));
+        qty.getStyleClass().add("text-muted");
+
+        Label amount = new Label(String.format("Rs. %.0f", quantity * item.getUnitPrice()));
+        amount.getStyleClass().add("selected-return-amount");
+
+        text.getChildren().addAll(name, qty);
+        row.getChildren().addAll(text, amount);
+        return row;
+    }
+
+    private Label emptySummary(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("return-empty-state");
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setAlignment(Pos.CENTER);
+        return label;
+    }
+
+    private void renderEmptyState(String message) {
+        billItemsFlow.getChildren().clear();
+        Label empty = new Label(message);
+        empty.getStyleClass().add("return-empty-state");
+        empty.setPrefWidth(460);
+        empty.setAlignment(Pos.CENTER);
+        billItemsFlow.getChildren().add(empty);
     }
 
     @FXML
@@ -147,17 +277,15 @@ public class ReturnsController implements FacadeAware {
         for (BillItem item : foundBill.getItems()) {
             Spinner<Integer> spinner = returnSpinners.get(item.getBillItemId());
             if (spinner != null && spinner.getValue() > 0) {
-                ReturnItem ri = new ReturnItem(0, item, spinner.getValue());
-                returnItems.add(ri);
+                returnItems.add(new ReturnItem(0, item, spinner.getValue()));
             }
         }
 
         if (returnItems.isEmpty()) {
-            showAlert("No Items", "Please select items to return.");
+            showAlert("No Items", "Please set a return quantity for at least one product.");
             return;
         }
 
-        // Use Command Pattern
         ReturnItemCommand cmd = new ReturnItemCommand(systemFacade.getBillController(), foundBill, returnItems, reason);
         systemFacade.executeCommand(cmd);
 
@@ -166,23 +294,19 @@ public class ReturnsController implements FacadeAware {
             Alert info = new Alert(Alert.AlertType.INFORMATION);
             info.setTitle("Return Processed");
             info.setContentText("Refund Amount: Rs. " + String.format("%.2f", result.getRefundAmount()));
+            DialogStyler.style(info);
             info.showAndWait();
-
-            // Reset
-            billSearchField.clear();
-            billInfoBox.setVisible(false);
-            billInfoBox.setManaged(false);
-            billItemsTable.getItems().clear();
-            returnItemsTable.getItems().clear();
-            reasonField.clear();
-            refundLabel.setText("Rs. 0.00");
+            handleReset();
         } else {
             showAlert("Failed", "Return processing failed. Items may be ineligible.");
         }
     }
 
     private void showAlert(String title, String msg) {
-        Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle(title); a.setContentText(msg); a.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setContentText(msg);
+        DialogStyler.style(alert);
+        alert.showAndWait();
     }
 }

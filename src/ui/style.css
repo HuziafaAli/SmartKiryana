@@ -789,10 +789,10 @@
 .progress-circle {
     -fx-background-color: #141929;
     -fx-background-radius: 200;
-    -fx-min-width: 180;
-    -fx-min-height: 180;
-    -fx-max-width: 180;
-    -fx-max-height: 180;
+    -fx-min-width: 150;
+    -fx-min-height: 150;
+    -fx-max-width: 150;
+    -fx-max-height: 150;
     -fx-alignment: CENTER;
     -fx-border-color: rgba(59, 130, 246, 0.3);
     -fx-border-width: 6;
@@ -953,6 +953,76 @@
     -fx-border-color: #3b82f6;
 }
 
+.smart-dialog {
+    -fx-background-color: #111827;
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(59, 130, 246, 0.28);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 16;
+    -fx-padding: 0;
+}
+
+.smart-dialog .header-panel {
+    -fx-background-color: linear-gradient(to right, rgba(59, 130, 246, 0.18), rgba(16, 185, 129, 0.10));
+    -fx-background-radius: 16 16 0 0;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.08) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 16 20;
+}
+
+.smart-dialog .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.smart-dialog .content {
+    -fx-padding: 18 20 10 20;
+}
+
+.smart-dialog .content.label {
+    -fx-text-fill: rgba(255, 255, 255, 0.82);
+    -fx-font-size: 13px;
+    -fx-line-spacing: 2;
+}
+
+.smart-dialog .button-bar {
+    -fx-background-color: rgba(0, 0, 0, 0.24);
+    -fx-padding: 14 20;
+    -fx-background-radius: 0 0 16 16;
+    -fx-border-color: rgba(255, 255, 255, 0.06) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.smart-dialog .button-bar .button {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 9 22;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.smart-dialog .button-bar .button:default {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+.smart-dialog .button-bar .button:default:hover {
+    -fx-background-color: #059669;
+}
+
+.smart-dialog .combo-box {
+    -fx-background-color: #1a1f35;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.smart-dialog .combo-box .list-cell {
+    -fx-text-fill: white;
+}
+
 /* GridPane labels inside add/edit dialogs */
 .dialog-pane .label {
     -fx-text-fill: rgba(255, 255, 255, 0.70);
@@ -1021,6 +1091,321 @@
 
 .btn-process-return:hover {
     -fx-background-color: #059669;
+}
+
+.return-search-bar {
+    -fx-background-color: #101626;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 12;
+}
+
+.return-bill-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(59, 130, 246, 0.22);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+}
+
+.return-bill-id {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #93c5fd;
+    -fx-background-radius: 20;
+    -fx-padding: 6 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.return-metric-card {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 10 12;
+}
+
+.return-metric-value {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.return-metric-value-strong {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.return-product-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-pref-width: 270;
+    -fx-min-width: 270;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 16, 0, 0, 5);
+}
+
+.return-product-card:hover {
+    -fx-border-color: rgba(59, 130, 246, 0.45);
+    -fx-background-color: #172035;
+}
+
+.return-product-card-selected {
+    -fx-border-color: #10b981;
+    -fx-background-color: rgba(16, 185, 129, 0.08);
+}
+
+.return-product-name {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.return-mini-metric {
+    -fx-background-color: rgba(255, 255, 255, 0.035);
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.return-spinner {
+    -fx-background-color: #1a1f35;
+}
+
+.return-spinner .text-field {
+    -fx-background-color: #1a1f35;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.return-card-refund {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-min-width: 62;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.selected-return-row {
+    -fx-background-color: rgba(255, 255, 255, 0.045);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 11 12;
+}
+
+.selected-return-name {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.selected-return-amount {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.return-empty-state {
+    -fx-background-color: rgba(255, 255, 255, 0.035);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-text-fill: rgba(255, 255, 255, 0.42);
+    -fx-font-size: 13px;
+    -fx-padding: 28 18;
+}
+
+.employee-card,
+.sales-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-pref-width: 430;
+    -fx-min-width: 430;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 16, 0, 0, 5);
+}
+
+.employee-card:hover,
+.sales-card:hover {
+    -fx-border-color: rgba(59, 130, 246, 0.45);
+    -fx-background-color: #172035;
+}
+
+.employee-avatar {
+    -fx-background-color: rgba(59, 130, 246, 0.18);
+    -fx-text-fill: #93c5fd;
+    -fx-background-radius: 12;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+}
+
+.employee-name,
+.sales-bill-id {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.employee-mini-metric,
+.sales-mini-metric {
+    -fx-background-color: rgba(255, 255, 255, 0.035);
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.employee-metric-value {
+    -fx-text-fill: rgba(255, 255, 255, 0.90);
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.sales-amount {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.sales-change {
+    -fx-text-fill: #93c5fd;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.target-form-panel,
+.target-hero-card,
+.target-progress-panel {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.42), 16, 0, 0, 5);
+}
+
+.target-hero-card {
+    -fx-min-height: 112;
+}
+
+.target-note-card,
+.target-detail-card {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 14;
+}
+
+.target-note-text {
+    -fx-text-fill: rgba(255, 255, 255, 0.70);
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+}
+
+.target-employee-name {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.target-amount-main {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.target-message {
+    -fx-text-fill: rgba(255, 255, 255, 0.55);
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+    -fx-text-alignment: CENTER;
+}
+
+.target-detail-value {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.target-detail-warning {
+    -fx-text-fill: #f59e0b;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.target-detail-bonus {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.target-history-panel {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.38), 14, 0, 0, 4);
+}
+
+.target-history-card {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 14;
+    -fx-pref-width: 360;
+    -fx-min-width: 360;
+}
+
+.target-history-card:hover {
+    -fx-border-color: rgba(16, 185, 129, 0.42);
+    -fx-background-color: rgba(16, 185, 129, 0.06);
+}
+
+.target-history-period {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.target-history-metric {
+    -fx-background-color: rgba(0, 0, 0, 0.12);
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.target-history-value {
+    -fx-text-fill: rgba(255, 255, 255, 0.92);
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.target-history-warning {
+    -fx-text-fill: #f59e0b;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
 }
 
 /* ══════════════════════════════════════════════════

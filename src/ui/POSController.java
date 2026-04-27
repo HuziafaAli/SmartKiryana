@@ -5,8 +5,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.beans.property.SimpleStringProperty;
 import facade.SystemFacade;
 import model.*;
 
@@ -29,6 +27,12 @@ public class POSController implements FacadeAware {
     private Label totalLabel;
     @FXML
     private TextField discountField;
+    @FXML
+    private ReturnsController returnsViewController;
+    @FXML
+    private TabPane posTabs;
+    @FXML
+    private Tab billingTab;
 
     private SystemFacade systemFacade;
 
@@ -43,11 +47,21 @@ public class POSController implements FacadeAware {
             } catch (NumberFormatException ignored) {
             }
         });
+
+        posTabs.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab == billingTab && systemFacade != null) {
+                loadProductGrid();
+                refreshBillSummary();
+            }
+        });
     }
 
     @Override
     public void setSystemFacade(SystemFacade facade) {
         this.systemFacade = facade;
+        if (returnsViewController != null) {
+            returnsViewController.setSystemFacade(facade);
+        }
         systemFacade.startNewBill(systemFacade.getCurrentUser());
         loadProductGrid();
     }
@@ -227,6 +241,7 @@ public class POSController implements FacadeAware {
         dialog.setTitle("Payment");
         dialog.setHeaderText("Total: " + String.format("Rs. %.2f", bill.getTotalAmount()));
         dialog.setContentText("Cash Provided:");
+        DialogStyler.style(dialog);
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(cash -> {
@@ -259,6 +274,7 @@ public class POSController implements FacadeAware {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setContentText(msg);
+        DialogStyler.style(alert);
         alert.showAndWait();
     }
 
@@ -266,6 +282,8 @@ public class POSController implements FacadeAware {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setContentText(msg);
+        DialogStyler.style(alert);
         alert.showAndWait();
     }
+
 }

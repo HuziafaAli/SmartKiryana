@@ -498,8 +498,7 @@ public class InventoryController implements FacadeAware {
     }
 
     private void applyDialogStyle(Dialog<?> dialog) {
-        dialog.getDialogPane().getStylesheets().add(
-                getClass().getResource("style.css").toExternalForm());
+        DialogStyler.style(dialog);
     }
 
     private void showAlert(String title, String msg) {

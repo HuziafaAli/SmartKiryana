@@ -2,17 +2,14 @@ package ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import facade.SystemFacade;
 import model.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,7 +31,6 @@ public class DashboardHomeController implements FacadeAware {
     @FXML private TableView<Bill> recentBillsTable;
     @FXML private TableColumn<Bill, String> colBillId;
     @FXML private TableColumn<Bill, String> colBillDate;
-    @FXML private TableColumn<Bill, String> colBillCustomer;
     @FXML private TableColumn<Bill, String> colBillAmount;
     @FXML private TableColumn<Bill, String> colBillCashier;
 
@@ -48,7 +44,6 @@ public class DashboardHomeController implements FacadeAware {
     public void initialize() {
         colBillId.setCellValueFactory(c -> new SimpleStringProperty("BLL-" + c.getValue().getBillId()));
         colBillDate.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getBillDate().format(dtf)));
-        colBillCustomer.setCellValueFactory(c -> new SimpleStringProperty("Walk-in Customer"));
         colBillAmount.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %.2f", c.getValue().getTotalAmount())));
         colBillCashier.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getUser() != null ? c.getValue().getUser().getFullName() : "N/A"));

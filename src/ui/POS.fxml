@@ -5,77 +5,83 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 
-<HBox xmlns="http://javafx.com/javafx/8.0.171"
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ui.POSController"
-      spacing="20"
       styleClass="pos-container">
 
     <padding>
         <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <!-- LEFT: Product Grid -->
-    <VBox HBox.hgrow="ALWAYS" spacing="15">
-        <!-- Search Bar -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <TextField fx:id="searchField" promptText="Scan barcode or search product..."
-                       HBox.hgrow="ALWAYS" styleClass="search-field"/>
-            <Button text="Search" onAction="#handleSearch" styleClass="btn-primary-small"/>
-            <Button text="✕" onAction="#handleClearSearch" styleClass="btn-danger"
-                    style="-fx-padding: 8 12;"/>
-        </HBox>
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 0 0 20 0;">
+        <Text text="Billing" styleClass="page-title"/>
+    </HBox>
 
-        <!-- Product Grid -->
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                    style="-fx-background-color: transparent;">
-            <FlowPane fx:id="productGrid" hgap="15" vgap="15"
-                      style="-fx-padding: 5;"/>
-        </ScrollPane>
-    </VBox>
+    <TabPane fx:id="posTabs" tabClosingPolicy="UNAVAILABLE"
+             VBox.vgrow="ALWAYS" styleClass="inventory-tabs">
 
-    <!-- RIGHT: Current Bill Panel -->
-    <VBox prefWidth="380" spacing="15" styleClass="bill-panel">
-        <HBox alignment="CENTER_LEFT" spacing="10">
-            <Text text="Current Bill" styleClass="section-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label text="Walk-in Customer" styleClass="text-muted,text-sm"/>
-        </HBox>
+        <Tab fx:id="billingTab" text="Billing">
+            <HBox spacing="20" style="-fx-padding: 15 0 0 0;">
+                <VBox HBox.hgrow="ALWAYS" spacing="15">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <TextField fx:id="searchField" promptText="Scan barcode or search product..."
+                                   HBox.hgrow="ALWAYS" styleClass="search-field"/>
+                        <Button text="Search" onAction="#handleSearch" styleClass="btn-primary-small"/>
+                        <Button text="X" onAction="#handleClearSearch" styleClass="btn-danger"
+                                style="-fx-padding: 8 12;"/>
+                    </HBox>
 
-        <!-- Bill Items List -->
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                    style="-fx-background-color: transparent; -fx-border-color: transparent;"
-                    prefHeight="300">
-            <VBox fx:id="billItemsBox" spacing="6" style="-fx-padding: 2;"/>
-        </ScrollPane>
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                style="-fx-background-color: transparent;">
+                        <FlowPane fx:id="productGrid" hgap="15" vgap="15"
+                                  style="-fx-padding: 5;"/>
+                    </ScrollPane>
+                </VBox>
 
-        <!-- Bill Summary -->
-        <VBox spacing="8"
-              style="-fx-border-color: rgba(255,255,255,0.06); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;">
-            <HBox>
-                <Label text="Sub Total" styleClass="bill-label"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="subTotalLabel" text="Rs. 0.00" styleClass="bill-value"/>
+                <VBox prefWidth="380" spacing="15" styleClass="bill-panel">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Text text="Current Bill" styleClass="section-title"/>
+                    </HBox>
+
+                    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                                prefHeight="300">
+                        <VBox fx:id="billItemsBox" spacing="6" style="-fx-padding: 2;"/>
+                    </ScrollPane>
+
+                    <VBox spacing="8"
+                          style="-fx-border-color: rgba(255,255,255,0.06); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;">
+                        <HBox>
+                            <Label text="Sub Total" styleClass="bill-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="subTotalLabel" text="Rs. 0.00" styleClass="bill-value"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Discount" styleClass="bill-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="discountField" promptText="0" prefWidth="80"
+                                       styleClass="dark-input" style="-fx-padding: 5 8;"/>
+                        </HBox>
+                        <HBox>
+                            <Label text="Tax is Inclusive" styleClass="bill-label"/>
+                        </HBox>
+                        <HBox style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 1 0 0 0; -fx-padding: 10 0 0 0;">
+                            <Label text="Total" styleClass="bill-total-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="totalLabel" text="Rs. 0.00" styleClass="bill-total-value"/>
+                        </HBox>
+                    </VBox>
+
+                    <Button text="PAY" onAction="#handlePay" maxWidth="Infinity" styleClass="btn-pay"/>
+                    <Button text="Clear Bill" onAction="#handleClear" maxWidth="Infinity"
+                            styleClass="btn-hold"/>
+                </VBox>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Discount" styleClass="bill-label"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="discountField" promptText="0" prefWidth="80"
-                           styleClass="dark-input" style="-fx-padding: 5 8;"/>
-            </HBox>
-            <HBox>
-                <Label text="Tax is Inclusive" styleClass="bill-label"/>
-            </HBox>
-            <HBox style="-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 1 0 0 0; -fx-padding: 10 0 0 0;">
-                <Label text="Total" styleClass="bill-total-label"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="totalLabel" text="Rs. 0.00" styleClass="bill-total-value"/>
-            </HBox>
-        </VBox>
+        </Tab>
 
-        <!-- Action Buttons -->
-        <Button text="PAY" onAction="#handlePay" maxWidth="Infinity" styleClass="btn-pay"/>
-        <Button text="Clear Bill" onAction="#handleClear" maxWidth="Infinity"
-                styleClass="btn-hold"/>
-    </VBox>
-</HBox>
+        <Tab fx:id="returnsTab" text="Returns">
+            <fx:include fx:id="returnsView" source="Returns.fxml"/>
+        </Tab>
+    </TabPane>
+</VBox>

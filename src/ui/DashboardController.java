@@ -25,7 +25,6 @@ public class DashboardController {
     @FXML private Button navSales;
     @FXML private Button navEmployees;
     @FXML private Button navReports;
-    @FXML private Button navReturns;
     @FXML private Button navSalesTarget;
 
     private Button activeNavButton;
@@ -56,7 +55,6 @@ public class DashboardController {
     @FXML private void showEmployees() { setActiveNav(navEmployees); loadView("Employees.fxml"); }
     @FXML private void showReports() { setActiveNav(navReports); loadView("Reports.fxml"); }
     @FXML private void showSalesTarget() { setActiveNav(navSalesTarget); loadView("SalesTarget.fxml"); }
-    @FXML private void showReturns() { setActiveNav(navReturns); loadView("Returns.fxml"); }
 
     private void setActiveNav(Button button) {
         if (activeNavButton != null) {

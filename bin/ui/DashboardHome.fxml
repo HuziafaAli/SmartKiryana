@@ -84,9 +84,8 @@
                 <columns>
                     <TableColumn fx:id="colBillId" text="Bill #" prefWidth="70"/>
                     <TableColumn fx:id="colBillDate" text="Date" prefWidth="140"/>
-                    <TableColumn fx:id="colBillCustomer" text="Customer" prefWidth="120"/>
-                    <TableColumn fx:id="colBillAmount" text="Amount" prefWidth="100"/>
-                    <TableColumn fx:id="colBillCashier" text="Cashier" prefWidth="100"/>
+                    <TableColumn fx:id="colBillAmount" text="Amount" prefWidth="120"/>
+                    <TableColumn fx:id="colBillCashier" text="Cashier" prefWidth="140"/>
                 </columns>
             </TableView>
         </VBox>

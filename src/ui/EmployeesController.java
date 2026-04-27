@@ -3,67 +3,26 @@ package ui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.*;
 import facade.SystemFacade;
 import model.Employee;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class EmployeesController implements FacadeAware {
 
-    @FXML private TableView<Employee> employeeTable;
-    @FXML private TableColumn<Employee, String> colEmpId;
-    @FXML private TableColumn<Employee, String> colEmpName;
-    @FXML private TableColumn<Employee, String> colEmpRole;
-    @FXML private TableColumn<Employee, String> colEmpPhone;
-    @FXML private TableColumn<Employee, String> colEmpStatus;
-    @FXML private TableColumn<Employee, Void> colEmpActions;
+    @FXML private FlowPane employeeGrid;
     @FXML private TextField searchField;
 
     private SystemFacade systemFacade;
-    private ObservableList<Employee> empList = FXCollections.observableArrayList();
+    private final ObservableList<Employee> empList = FXCollections.observableArrayList();
 
     public void initialize() {
-        colEmpId.setCellValueFactory(c -> new SimpleStringProperty("EMP" + String.format("%03d", c.getValue().getUserId())));
-        colEmpName.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getFullName()));
-        colEmpRole.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getRole()));
-        colEmpPhone.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPhone()));
-
-        colEmpStatus.setCellFactory(col -> new TableCell<Employee, String>() {
-            @Override
-            protected void updateItem(String s, boolean empty) {
-                super.updateItem(s, empty);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                    setGraphic(null);
-                } else {
-                    Employee emp = getTableRow().getItem();
-                    Label badge = new Label(emp.isActive() ? "Active" : "Inactive");
-                    badge.getStyleClass().add(emp.isActive() ? "badge-active" : "badge-inactive");
-                    setGraphic(badge);
-                }
-            }
-        });
-
-        colEmpActions.setCellFactory(col -> new TableCell<Employee, Void>() {
-            private final Button editBtn = new Button("Edit");
-            private final Button deactBtn = new Button("Deactivate");
-            {
-                editBtn.getStyleClass().add("btn-table-action");
-                deactBtn.getStyleClass().add("btn-danger");
-                editBtn.setOnAction(e -> handleEdit(getTableView().getItems().get(getIndex())));
-                deactBtn.setOnAction(e -> handleDeactivate(getTableView().getItems().get(getIndex())));
-            }
-            @Override
-            protected void updateItem(Void v, boolean empty) {
-                super.updateItem(v, empty);
-                if (empty) { setGraphic(null); }
-                else { setGraphic(new HBox(5, editBtn, deactBtn)); }
-            }
-        });
-
-        searchField.textProperty().addListener((obs, o, n) -> filterEmployees(n));
+        searchField.textProperty().addListener((obs, oldValue, newValue) -> filterEmployees(newValue));
     }
 
     @Override
@@ -74,17 +33,124 @@ public class EmployeesController implements FacadeAware {
 
     private void refreshData() {
         empList.setAll(systemFacade.getAllEmployees());
-        employeeTable.setItems(empList);
+        renderEmployees(empList);
     }
 
     private void filterEmployees(String query) {
-        if (query == null || query.isEmpty()) {
-            employeeTable.setItems(empList);
-        } else {
-            employeeTable.setItems(empList.filtered(e ->
-                    e.getFullName().toLowerCase().contains(query.toLowerCase()) ||
-                    String.valueOf(e.getUserId()).contains(query)));
+        if (query == null || query.trim().isEmpty()) {
+            renderEmployees(empList);
+            return;
         }
+
+        String q = query.toLowerCase();
+        List<Employee> filtered = empList.stream()
+                .filter(e -> e.getFullName().toLowerCase().contains(q)
+                        || e.getUsername().toLowerCase().contains(q)
+                        || e.getPhone().contains(q)
+                        || String.valueOf(e.getUserId()).contains(q))
+                .collect(Collectors.toList());
+        renderEmployees(filtered);
+    }
+
+    private void renderEmployees(List<Employee> employees) {
+        employeeGrid.getChildren().clear();
+
+        if (employees.isEmpty()) {
+            Label empty = new Label("No employees found.");
+            empty.getStyleClass().add("return-empty-state");
+            empty.setPrefWidth(420);
+            empty.setAlignment(Pos.CENTER);
+            employeeGrid.getChildren().add(empty);
+            return;
+        }
+
+        for (Employee employee : employees) {
+            employeeGrid.getChildren().add(createEmployeeCard(employee));
+        }
+    }
+
+    private VBox createEmployeeCard(Employee emp) {
+        VBox card = new VBox(0);
+        card.getStyleClass().add("employee-card");
+
+        HBox top = new HBox(10);
+        top.setAlignment(Pos.CENTER_LEFT);
+
+        Label avatar = new Label(getInitials(emp.getFullName()));
+        avatar.getStyleClass().add("employee-avatar");
+
+        VBox identity = new VBox(3);
+        HBox.setHgrow(identity, Priority.ALWAYS);
+
+        Label name = new Label(emp.getFullName());
+        name.getStyleClass().add("employee-name");
+        name.setWrapText(true);
+        name.setMaxWidth(190);
+
+        Label id = new Label("EMP" + String.format("%03d", emp.getUserId()) + " - " + emp.getUsername());
+        id.getStyleClass().add("inv-card-barcode");
+
+        identity.getChildren().addAll(name, id);
+
+        Label status = new Label(emp.isActive() ? "Active" : "Inactive");
+        status.getStyleClass().add(emp.isActive() ? "badge-active" : "badge-inactive");
+
+        top.getChildren().addAll(avatar, identity, status);
+
+        HBox details = new HBox(8,
+                metric("Role", emp.getRole(), 96),
+                metric("Phone", emp.getPhone(), 132),
+                metric("CNIC", emp.getCnic() == null ? "N/A" : emp.getCnic(), 150));
+        VBox.setMargin(details, new javafx.geometry.Insets(14, 0, 14, 0));
+
+        Button editBtn = new Button("Edit");
+        editBtn.getStyleClass().add("btn-table-action");
+        editBtn.setOnAction(e -> handleEdit(emp));
+
+        Button deactivateBtn = new Button("Deactivate");
+        deactivateBtn.getStyleClass().add("btn-danger");
+        deactivateBtn.setDisable(!emp.isActive());
+        deactivateBtn.setOnAction(e -> handleDeactivate(emp));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox actions = new HBox(8, editBtn, spacer, deactivateBtn);
+        actions.setAlignment(Pos.CENTER_LEFT);
+
+        card.getChildren().addAll(top, divider(), details, divider(), actions);
+        return card;
+    }
+
+    private VBox metric(String labelText, String valueText, double width) {
+        VBox box = new VBox(3);
+        box.getStyleClass().add("employee-mini-metric");
+        box.setPrefWidth(width);
+        box.setMinWidth(width);
+        box.setMaxWidth(width);
+        Label label = new Label(labelText);
+        label.getStyleClass().add("inv-card-field-label");
+        Label value = new Label(valueText);
+        value.getStyleClass().add("employee-metric-value");
+        value.setWrapText(false);
+        value.setMaxWidth(width - 16);
+        box.getChildren().addAll(label, value);
+        return box;
+    }
+
+    private Region divider() {
+        Region region = new Region();
+        region.getStyleClass().add("inv-card-divider");
+        return region;
+    }
+
+    private String getInitials(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "?";
+        }
+        String[] parts = fullName.trim().split("\\s+");
+        String first = parts[0].substring(0, 1);
+        String second = parts.length > 1 ? parts[1].substring(0, 1) : "";
+        return (first + second).toUpperCase();
     }
 
     @FXML
@@ -107,6 +173,7 @@ public class EmployeesController implements FacadeAware {
         dialog.setTitle("Add New Employee");
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        DialogStyler.style(dialog);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -134,6 +201,7 @@ public class EmployeesController implements FacadeAware {
         dialog.setTitle("Edit Employee - " + emp.getFullName());
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        DialogStyler.style(dialog);
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -148,6 +216,7 @@ public class EmployeesController implements FacadeAware {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Deactivate Employee");
         confirm.setContentText("Deactivate " + emp.getFullName() + "?");
+        DialogStyler.style(confirm);
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -158,7 +227,10 @@ public class EmployeesController implements FacadeAware {
     }
 
     private void showAlert(String title, String msg) {
-        Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle(title); a.setContentText(msg); a.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setContentText(msg);
+        DialogStyler.style(alert);
+        alert.showAndWait();
     }
 }

@@ -36,7 +36,6 @@
             <Button fx:id="navEmployees" text="Employees" onAction="#showEmployees" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="navReports" text="Reports" onAction="#showReports" maxWidth="Infinity" styleClass="nav-button"/>
             <Button fx:id="navSalesTarget" text="Sales Target" onAction="#showSalesTarget" maxWidth="Infinity" styleClass="nav-button"/>
-            <Button fx:id="navReturns" text="Returns" onAction="#showReturns" maxWidth="Infinity" styleClass="nav-button"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 

@@ -22,14 +22,9 @@
         <Button text="+ Add Employee" onAction="#handleAddEmployee" styleClass="btn-primary-small"/>
     </HBox>
 
-    <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-        <columns>
-            <TableColumn fx:id="colEmpId" text="Employee ID" prefWidth="120"/>
-            <TableColumn fx:id="colEmpName" text="Name" prefWidth="180"/>
-            <TableColumn fx:id="colEmpRole" text="Role" prefWidth="120"/>
-            <TableColumn fx:id="colEmpPhone" text="Phone" prefWidth="140"/>
-            <TableColumn fx:id="colEmpStatus" text="Status" prefWidth="100"/>
-            <TableColumn fx:id="colEmpActions" text="Action" prefWidth="160"/>
-        </columns>
-    </TableView>
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <FlowPane fx:id="employeeGrid" hgap="18" vgap="18"
+                  style="-fx-padding: 4 2 10 2;"/>
+    </ScrollPane>
 </VBox>

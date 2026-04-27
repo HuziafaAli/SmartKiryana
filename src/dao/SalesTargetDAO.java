@@ -21,6 +21,12 @@ public class SalesTargetDAO {
     }
 
     public boolean save(SalesTarget target) {
+        int existingId = findExistingTargetId(target.getEmployee().getUserId(), target.getMonth(), target.getYear());
+        if (existingId > 0) {
+            target.setTargetId(existingId);
+            return update(target);
+        }
+
         String query = "INSERT INTO sales_targets (employee_id, month, year, target_amount, achieved_amount) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -44,9 +50,25 @@ public class SalesTargetDAO {
         }
     }
 
+    public boolean update(SalesTarget target) {
+        String query = "UPDATE sales_targets SET target_amount = ?, achieved_amount = ? WHERE target_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setDouble(1, target.getTargetAmount());
+            stmt.setDouble(2, target.getAchievedAmount());
+            stmt.setInt(3, target.getTargetId());
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public List<SalesTarget> findAll() {
         List<SalesTarget> targets = new ArrayList<>();
-        String query = "SELECT * FROM sales_targets";
+        String query = "SELECT * FROM sales_targets ORDER BY year DESC, month DESC, target_id DESC";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -61,6 +83,46 @@ public class SalesTargetDAO {
         return targets;
     }
 
+    public List<SalesTarget> findByEmployee(int employeeId) {
+        List<SalesTarget> targets = new ArrayList<>();
+        String query = "SELECT * FROM sales_targets WHERE employee_id = ? ORDER BY year DESC, month DESC, target_id DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
+            java.util.Set<String> seenPeriods = new java.util.HashSet<>();
+            while (rs.next()) {
+                String periodKey = rs.getInt("year") + "-" + rs.getInt("month");
+                if (seenPeriods.add(periodKey)) {
+                    targets.add(mapRow(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return targets;
+    }
+
+    private int findExistingTargetId(int employeeId, int month, int year) {
+        String query = "SELECT target_id FROM sales_targets WHERE employee_id = ? AND month = ? AND year = ? ORDER BY target_id DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, employeeId);
+            stmt.setInt(2, month);
+            stmt.setInt(3, year);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("target_id");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
 
     private SalesTarget mapRow(ResultSet rs) throws SQLException {

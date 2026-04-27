@@ -2,8 +2,9 @@ package ui;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.*;
 import facade.SystemFacade;
 import model.*;
 
@@ -17,17 +18,18 @@ public class SalesTargetController implements FacadeAware {
     @FXML private ComboBox<String> yearSelector;
     @FXML private TextField targetField;
 
-    @FXML private TableView<PerformanceReport> targetsTable;
-    @FXML private TableColumn<PerformanceReport, String> colMonth;
-    @FXML private TableColumn<PerformanceReport, String> colTarget;
-    @FXML private TableColumn<PerformanceReport, String> colAchieved;
-    @FXML private TableColumn<PerformanceReport, String> colProgress;
-
     @FXML private Label selectedEmpLabel;
+    @FXML private Label periodLabel;
     @FXML private Label progressLabel;
     @FXML private Label progressInfoLabel;
     @FXML private Label currentTargetLabel;
+    @FXML private Label achievedLabel;
     @FXML private Label remainingLabel;
+    @FXML private Label bonusLabel;
+    @FXML private Label achievementMessageLabel;
+    @FXML private Label historyCountLabel;
+    @FXML private VBox progressRing;
+    @FXML private FlowPane targetHistoryFlow;
 
     private SystemFacade systemFacade;
 
@@ -45,10 +47,8 @@ public class SalesTargetController implements FacadeAware {
                 String.valueOf(year - 1), String.valueOf(year), String.valueOf(year + 1)));
         yearSelector.setValue(String.valueOf(year));
 
-        colMonth.setCellValueFactory(c -> new SimpleStringProperty(MONTHS[c.getValue().getMonth() - 1] + " " + c.getValue().getYear()));
-        colTarget.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %,.0f", c.getValue().getTargetAmount())));
-        colAchieved.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %,.0f", c.getValue().getTotalSales())));
-        colProgress.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.0f%%", c.getValue().getAchievementPercentage())));
+        monthSelector.setOnAction(e -> loadEmployeeProgress());
+        yearSelector.setOnAction(e -> loadEmployeeProgress());
     }
 
     @Override
@@ -74,45 +74,156 @@ public class SalesTargetController implements FacadeAware {
         });
 
         empSelector.setOnAction(e -> loadEmployeeProgress());
+        loadEmployeeProgress();
     }
 
     private void loadEmployeeProgress() {
+        if (systemFacade == null || empSelector == null) {
+            return;
+        }
+
         Employee emp = empSelector.getValue();
-        if (emp == null) return;
+        int month = Math.max(1, monthSelector.getSelectionModel().getSelectedIndex() + 1);
+        int year = Integer.parseInt(yearSelector.getValue());
+        periodLabel.setText(MONTHS[month - 1] + " " + year);
+
+        if (emp == null) {
+            selectedEmpLabel.setText("Select an employee");
+            setEmptyProgress();
+            renderTargetHistory(null);
+            return;
+        }
 
         selectedEmpLabel.setText(emp.getFullName());
+        renderTargetHistory(emp);
 
         List<Bill> allBills = systemFacade.getAllBills();
         List<PerformanceReport> reports = systemFacade.getPerformanceComparison(
                 java.util.Collections.singletonList(emp),
-                monthSelector.getSelectionModel().getSelectedIndex() + 1,
-                Integer.parseInt(yearSelector.getValue()),
+                month,
+                year,
                 allBills);
 
         if (!reports.isEmpty()) {
             PerformanceReport current = reports.get(0);
             double pct = current.getAchievementPercentage();
+            double remaining = Math.max(0, current.getTargetAmount() - current.getTotalSales());
+
             progressLabel.setText(String.format("%.0f%%", pct));
             currentTargetLabel.setText(String.format("Rs. %,.0f", current.getTargetAmount()));
+            achievedLabel.setText(String.format("Rs. %,.0f", current.getTotalSales()));
+            remainingLabel.setText(String.format("Rs. %,.0f", remaining));
+            bonusLabel.setText(String.format("Rs. %,.0f", current.getBonusAmount()));
             progressInfoLabel.setText(String.format("Rs. %,.0f / Rs. %,.0f", current.getTotalSales(), current.getTargetAmount()));
 
-            double remaining = Math.max(0, current.getTargetAmount() - current.getTotalSales());
-            remainingLabel.setText(String.format("Remaining: Rs. %,.0f", remaining));
-
             String borderColor = pct >= 100 ? "#10b981" : pct >= 50 ? "#3b82f6" : "#ef4444";
-            progressLabel.getParent().setStyle(
+            progressRing.setStyle(
                     "-fx-background-color: #141929; -fx-background-radius: 200; " +
-                    "-fx-min-width: 180; -fx-min-height: 180; -fx-max-width: 180; -fx-max-height: 180; " +
+                    "-fx-min-width: 150; -fx-min-height: 150; -fx-max-width: 150; -fx-max-height: 150; " +
                     "-fx-alignment: CENTER; -fx-border-color: " + borderColor + "; -fx-border-width: 6; -fx-border-radius: 200;");
 
-            targetsTable.setItems(FXCollections.observableArrayList(reports));
+            if (pct >= 100) {
+                achievementMessageLabel.setText("Target achieved. Bonus is active for this period.");
+            } else if (pct > 0) {
+                achievementMessageLabel.setText("Keep tracking progress against the assigned target.");
+            } else {
+                achievementMessageLabel.setText("No sales recorded for this employee in the selected period.");
+            }
         } else {
-            progressLabel.setText("0%");
-            currentTargetLabel.setText("Rs. 0");
-            progressInfoLabel.setText("No target set");
-            remainingLabel.setText("");
-            targetsTable.getItems().clear();
+            setEmptyProgress();
         }
+    }
+
+    private void setEmptyProgress() {
+        progressLabel.setText("0%");
+        currentTargetLabel.setText("Rs. 0");
+        achievedLabel.setText("Rs. 0");
+        remainingLabel.setText("Rs. 0");
+        bonusLabel.setText("Rs. 0");
+        progressInfoLabel.setText("No target set");
+        achievementMessageLabel.setText("Assign a target to start tracking progress.");
+        progressRing.setStyle("");
+    }
+
+    private void renderTargetHistory(Employee emp) {
+        targetHistoryFlow.getChildren().clear();
+
+        if (emp == null) {
+            historyCountLabel.setText("Select an employee");
+            targetHistoryFlow.getChildren().add(emptyHistory("Select an employee to view assigned targets."));
+            return;
+        }
+
+        List<PerformanceReport> reports = systemFacade.getTargetHistory(emp, systemFacade.getAllBills());
+        historyCountLabel.setText(reports.size() + (reports.size() == 1 ? " target" : " targets"));
+
+        if (reports.isEmpty()) {
+            targetHistoryFlow.getChildren().add(emptyHistory("No targets assigned to this employee yet."));
+            return;
+        }
+
+        for (PerformanceReport report : reports) {
+            targetHistoryFlow.getChildren().add(createTargetHistoryCard(report));
+        }
+    }
+
+    private VBox createTargetHistoryCard(PerformanceReport report) {
+        VBox card = new VBox(0);
+        card.getStyleClass().add("target-history-card");
+
+        HBox top = new HBox(8);
+        top.setAlignment(Pos.CENTER_LEFT);
+
+        VBox title = new VBox(3);
+        HBox.setHgrow(title, Priority.ALWAYS);
+
+        Label period = new Label(MONTHS[report.getMonth() - 1] + " " + report.getYear());
+        period.getStyleClass().add("target-history-period");
+
+        Label target = new Label("Target: Rs. " + String.format("%,.0f", report.getTargetAmount()));
+        target.getStyleClass().add("text-muted");
+
+        Label pct = new Label(String.format("%.0f%%", report.getAchievementPercentage()));
+        pct.getStyleClass().add(report.getAchievementPercentage() >= 100 ? "badge-active" : "badge-info");
+
+        title.getChildren().addAll(period, target);
+        top.getChildren().addAll(title, pct);
+
+        HBox metrics = new HBox(8,
+                historyMetric("Achieved", String.format("Rs. %,.0f", report.getTotalSales()), false),
+                historyMetric("Remaining", String.format("Rs. %,.0f", Math.max(0, report.getTargetAmount() - report.getTotalSales())), true),
+                historyMetric("Bonus", String.format("Rs. %,.0f", report.getBonusAmount()), false));
+        VBox.setMargin(metrics, new javafx.geometry.Insets(12, 0, 0, 0));
+
+        card.getChildren().addAll(top, divider(), metrics);
+        return card;
+    }
+
+    private VBox historyMetric(String labelText, String valueText, boolean warning) {
+        VBox box = new VBox(3);
+        box.getStyleClass().add("target-history-metric");
+        Label label = new Label(labelText);
+        label.getStyleClass().add("inv-card-field-label");
+        Label value = new Label(valueText);
+        value.getStyleClass().add(warning ? "target-history-warning" : "target-history-value");
+        box.getChildren().addAll(label, value);
+        HBox.setHgrow(box, Priority.ALWAYS);
+        return box;
+    }
+
+    private Region divider() {
+        Region region = new Region();
+        region.getStyleClass().add("inv-card-divider");
+        VBox.setMargin(region, new javafx.geometry.Insets(12, 0, 0, 0));
+        return region;
+    }
+
+    private Label emptyHistory(String message) {
+        Label empty = new Label(message);
+        empty.getStyleClass().add("return-empty-state");
+        empty.setPrefWidth(460);
+        empty.setAlignment(Pos.CENTER);
+        return empty;
     }
 
     @FXML
@@ -139,9 +250,11 @@ public class SalesTargetController implements FacadeAware {
                 Alert info = new Alert(Alert.AlertType.INFORMATION);
                 info.setTitle("Success");
                 info.setContentText("Target of Rs. " + String.format("%,.0f", amount) + " assigned to " + emp.getFullName());
+                DialogStyler.style(info);
                 info.showAndWait();
                 targetField.clear();
                 loadEmployeeProgress();
+                renderTargetHistory(emp);
             } else {
                 showAlert("Failed", "Failed to assign target. Only admins can assign targets.");
             }
@@ -151,7 +264,10 @@ public class SalesTargetController implements FacadeAware {
     }
 
     private void showAlert(String title, String msg) {
-        Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle(title); a.setContentText(msg); a.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setContentText(msg);
+        DialogStyler.style(alert);
+        alert.showAndWait();
     }
 }

@@ -50,15 +50,15 @@
         </VBox>
     </HBox>
 
-    <!-- Table -->
-    <TableView fx:id="billTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-        <columns>
-            <TableColumn fx:id="colId" text="Bill #" prefWidth="80"/>
-            <TableColumn fx:id="colDate" text="Date" prefWidth="170"/>
-            <TableColumn fx:id="colCustomer" text="Customer" prefWidth="140"/>
-            <TableColumn fx:id="colAmount" text="Amount" prefWidth="110"/>
-            <TableColumn fx:id="colPayment" text="Payment" prefWidth="100"/>
-            <TableColumn fx:id="colCashier" text="Cashier" prefWidth="130"/>
-        </columns>
-    </TableView>
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Text text="Sales Records" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="resultCountLabel" text="0 records" styleClass="text-muted"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <FlowPane fx:id="billGrid" hgap="18" vgap="18"
+                  style="-fx-padding: 4 2 10 2;"/>
+    </ScrollPane>
 </VBox>

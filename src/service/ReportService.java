@@ -61,6 +61,27 @@ public class ReportService {
         return report;
     }
 
+    public List<PerformanceReport> getTargetHistory(Employee emp, List<Bill> allBills) {
+        List<PerformanceReport> reports = new ArrayList<>();
+
+        if (!Validator.isNotNull(emp)) {
+            return reports;
+        }
+
+        List<SalesTarget> targets = salesTargetDAO.findByEmployee(emp.getUserId());
+        for (SalesTarget target : targets) {
+            PerformanceReport report = generatePerformanceReport(
+                    emp,
+                    target.getMonth(),
+                    target.getYear(),
+                    allBills);
+            if (report != null) {
+                reports.add(report);
+            }
+        }
+        return reports;
+    }
+
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
 
@@ -91,4 +112,3 @@ public class ReportService {
         return history;
     }
 }
-
