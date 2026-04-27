@@ -1,63 +1,45 @@
 .root {
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-/* ── Full Screen Background (Login) ── */
+/* ══════════════════════════════════════════════════
+   LOGIN SCREEN
+   ══════════════════════════════════════════════════ */
 .root-container {
-    background-image: url("assets/bg.png");
     -fx-background-image: url("assets/bg.png");
-    background-size: cover;
     -fx-background-size: cover;
-    background-position: center;
     -fx-background-position: center;
-    background-repeat: no-repeat;
     -fx-background-repeat: no-repeat;
 }
 
-/* ── Left Side (Text Only) ── */
 .left-panel {
-    background-color: transparent;
     -fx-background-color: transparent;
 }
 
 .brand-name-left {
-    font-family: "Segoe UI Light", "Helvetica Neue", sans-serif;
-    -fx-font-family: "Segoe UI Light", "Helvetica Neue", sans-serif;
-    font-size: 64px;
+    -fx-font-family: "Segoe UI Light";
     -fx-font-size: 64px;
-    fill: white;
     -fx-fill: white;
-    font-weight: bold;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 20, 0, 0, 0);
 }
 
 .brand-tagline {
-    font-size: 18px;
     -fx-font-size: 18px;
-    fill: rgba(255, 255, 255, 0.9);
     -fx-fill: rgba(255, 255, 255, 0.9);
-    font-style: italic;
     -fx-font-style: italic;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
 }
 
-/* ── Transparent Right Panel (Glassmorphism) ── */
 .right-panel {
-    background-color: rgba(0, 0, 0, 0.8);
     -fx-background-color: rgba(0, 0, 0, 0.8);
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.7), 40, 0, -10, 0);
-    border-color: rgba(255, 255, 255, 0.1);
     -fx-border-color: rgba(255, 255, 255, 0.1);
-    border-width: 0 0 0 1;
     -fx-border-width: 0 0 0 1;
 }
 
-/* ── Logo ── */
 .logo-container {
     -fx-alignment: CENTER;
-    padding: 0 0 5 0;
     -fx-padding: 0 0 5 0;
 }
 
@@ -65,66 +47,654 @@
     -fx-preserve-ratio: true;
 }
 
-/* ── Dashboard Layout ── */
-.dashboard-container {
-    background-color: #0d0f14;
-    -fx-background-color: #0d0f14;
+.form-title {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 32px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
 }
 
+.form-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: rgba(255, 255, 255, 0.4);
+}
+
+.field-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.input-field {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-padding: 12 5;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.3);
+}
+
+.input-field:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-border-color: transparent transparent white transparent;
+}
+
+.btn-login {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 14 0;
+    -fx-cursor: hand;
+}
+
+.btn-login:hover {
+    -fx-background-color: #059669;
+}
+
+.status-label {
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER;
+}
+
+.status-error {
+    -fx-text-fill: #ff6b6b;
+}
+
+.status-success {
+    -fx-text-fill: #10b981;
+}
+
+/* ══════════════════════════════════════════════════
+   DASHBOARD LAYOUT
+   ══════════════════════════════════════════════════ */
+.dashboard-container {
+    -fx-background-color: #0b0f19;
+}
+
+/* ── Sidebar ── */
 .sidebar {
-    background-color: #12141a;
-    -fx-background-color: #12141a;
-    border-color: rgba(255, 255, 255, 0.05);
-    -fx-border-color: rgba(255, 255, 255, 0.05);
-    border-width: 0 1 0 0;
+    -fx-background-color: #0d1120;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
     -fx-border-width: 0 1 0 0;
 }
 
 .sidebar-brand {
-    font-size: 18px;
-    -fx-font-size: 18px;
-    font-weight: bold;
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
-    fill: white;
     -fx-fill: white;
 }
 
 .nav-button {
-    background-color: transparent;
     -fx-background-color: transparent;
-    color: rgba(255, 255, 255, 0.6);
-    -fx-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
     -fx-alignment: CENTER_LEFT;
-    padding: 12 20;
     -fx-padding: 12 20;
-    font-size: 14px;
-    -fx-font-size: 14px;
-    cursor: hand;
+    -fx-font-size: 13px;
     -fx-cursor: hand;
+    -fx-background-radius: 8;
 }
 
 .nav-button:hover {
-    background-color: rgba(255, 255, 255, 0.05);
     -fx-background-color: rgba(255, 255, 255, 0.05);
-    color: white;
-    -fx-text-fill: white;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
 }
 
-.nav-button:focused {
-    background-color: rgba(255, 255, 255, 0.1);
-    -fx-background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    -fx-text-fill: white;
-    border-color: transparent transparent transparent white;
-    -fx-border-color: transparent transparent transparent white;
-    border-width: 0 0 0 3;
+.nav-button-active {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #3b82f6;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent transparent transparent #3b82f6;
     -fx-border-width: 0 0 0 3;
+    -fx-background-radius: 0 8 8 0;
 }
 
-/* ── Inventory & Table Styles ── */
+.user-profile {
+    -fx-padding: 15 0 0 0;
+    -fx-border-color: rgba(255, 255, 255, 0.06) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.user-name {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.user-role {
+    -fx-text-fill: rgba(255, 255, 255, 0.4);
+    -fx-font-size: 11px;
+}
+
+.btn-logout-sidebar {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-border-color: rgba(239, 68, 68, 0.4);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-alignment: CENTER;
+    -fx-padding: 8 15;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+
+.btn-logout-sidebar:hover {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+}
+
+/* ── Main Content Area ── */
+.content-area {
+    -fx-background-color: #0b0f19;
+    -fx-padding: 30;
+}
+
+/* ══════════════════════════════════════════════════
+   STAT CARDS
+   ══════════════════════════════════════════════════ */
+.stat-card {
+    -fx-background-radius: 12;
+    -fx-padding: 20 25;
+    -fx-min-height: 110;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0, 0, 3);
+}
+
+.stat-card-blue {
+    -fx-background-color: linear-gradient(to bottom right, #1e40af, #3b82f6);
+}
+
+.stat-card-green {
+    -fx-background-color: linear-gradient(to bottom right, #065f46, #10b981);
+}
+
+.stat-card-red {
+    -fx-background-color: linear-gradient(to bottom right, #991b1b, #ef4444);
+}
+
+.stat-card-purple {
+    -fx-background-color: linear-gradient(to bottom right, #5b21b6, #8b5cf6);
+}
+
+.stat-card-amber {
+    -fx-background-color: linear-gradient(to bottom right, #92400e, #f59e0b);
+}
+
+.stat-card-dark {
+    -fx-background-color: #141929;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+.stat-card-title {
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+    -fx-font-size: 12px;
+}
+
+.stat-card-value {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.stat-card-subtitle {
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-font-size: 11px;
+}
+
+/* ══════════════════════════════════════════════════
+   TABLES
+   ══════════════════════════════════════════════════ */
+.modern-table {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.modern-table .column-header-background {
+    -fx-background-color: #141929;
+}
+
+.modern-table .column-header {
+    -fx-background-color: #141929;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.08) transparent;
+}
+
+.modern-table .column-header .label {
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.modern-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.04) transparent;
+}
+
+.modern-table .table-row-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.015);
+}
+
+.modern-table .table-row-cell:selected {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+}
+
+.modern-table .table-row-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+}
+
+.modern-table .table-cell {
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-padding: 10 12;
+    -fx-font-size: 13px;
+}
+
+.modern-table .filler {
+    -fx-background-color: #141929;
+}
+
+.modern-table .placeholder .label {
+    -fx-text-fill: rgba(255, 255, 255, 0.3);
+}
+
+/* ══════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════ */
+.btn-primary {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #2563eb;
+}
+
+.btn-primary-small {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+    -fx-font-size: 12px;
+}
+
+.btn-primary-small:hover {
+    -fx-background-color: #2563eb;
+}
+
+.btn-success {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.btn-success:hover {
+    -fx-background-color: #059669;
+}
+
+.btn-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ef4444;
+    -fx-border-color: rgba(239, 68, 68, 0.4);
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+}
+
+.btn-warning {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.btn-warning:hover {
+    -fx-background-color: #d97706;
+}
+
+.btn-table-action {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #3b82f6;
+    -fx-background-radius: 4;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+}
+
+.btn-table-action:hover {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.btn-pay {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 14 0;
+    -fx-cursor: hand;
+}
+
+.btn-pay:hover {
+    -fx-background-color: #059669;
+}
+
+.btn-hold {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-background-radius: 8;
+    -fx-padding: 10 0;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.btn-hold:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ══════════════════════════════════════════════════
+   SECTION PANELS
+   ══════════════════════════════════════════════════ */
+.section-panel {
+    -fx-background-color: #141929;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+}
+
+.section-title {
+    -fx-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.section-subtitle {
+    -fx-fill: rgba(255, 255, 255, 0.4);
+    -fx-font-size: 12px;
+}
+
+/* ══════════════════════════════════════════════════
+   PAGE HEADERS
+   ══════════════════════════════════════════════════ */
+.page-title {
+    -fx-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.page-subtitle {
+    -fx-fill: rgba(255, 255, 255, 0.4);
+    -fx-font-size: 13px;
+}
+
+.welcome-text {
+    -fx-font-size: 32px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+}
+
+.welcome-subtext {
+    -fx-font-size: 16px;
+    -fx-fill: rgba(255, 255, 255, 0.4);
+}
+
+/* ══════════════════════════════════════════════════
+   BADGES / STATUS
+   ══════════════════════════════════════════════════ */
+.badge-active {
+    -fx-background-color: rgba(16, 185, 129, 0.15);
+    -fx-text-fill: #10b981;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-inactive {
+    -fx-background-color: rgba(239, 68, 68, 0.15);
+    -fx-text-fill: #ef4444;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-warning {
+    -fx-background-color: rgba(245, 158, 11, 0.15);
+    -fx-text-fill: #f59e0b;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-info {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #3b82f6;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════════════
+   POS SCREEN  (product-card kept for POS use)
+   ══════════════════════════════════════════════════ */
+.pos-container {
+    -fx-background-color: #0b0f19;
+}
+
+.product-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+    -fx-pref-width: 140;
+    -fx-pref-height: 140;
+    -fx-alignment: CENTER;
+}
+
+.product-card:hover {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: rgba(59, 130, 246, 0.08);
+}
+
+.product-card-name {
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.product-card-price {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.bill-panel {
+    -fx-background-color: #141929;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+}
+
+.bill-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 13px;
+}
+
+.bill-value {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.bill-total-label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.bill-total-value {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* ══════════════════════════════════════════════════
+   INVENTORY CARD  (products & categories in card view)
+   ══════════════════════════════════════════════════ */
+.inv-product-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 16;
+    -fx-pref-width: 255;
+    -fx-min-width: 255;
+    -fx-cursor: default;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.50), 18, 0, 0, 6);
+}
+
+.inv-product-card:hover {
+    -fx-border-color: rgba(59, 130, 246, 0.45);
+    -fx-background-color: #172035;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.70), 28, 0, 0, 12);
+}
+
+/* Product name inside inventory card */
+.inv-card-name {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+/* Barcode / ID line */
+.inv-card-barcode {
+    -fx-text-fill: rgba(255, 255, 255, 0.35);
+    -fx-font-size: 11px;
+}
+
+/* Category pill inside card */
+.inv-card-cat-pill {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+    -fx-text-fill: #60a5fa;
+    -fx-background-radius: 20;
+    -fx-padding: 3 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Thin separator line */
+.inv-card-divider {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+}
+
+/* Field label (e.g. "PRICE", "STOCK") */
+.inv-card-field-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.35);
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* Field value (the number/text under the label) */
+.inv-card-field-value {
+    -fx-text-fill: rgba(255, 255, 255, 0.90);
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* Green price specifically */
+.inv-card-price-value {
+    -fx-text-fill: #10b981;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* ── Category Card ── */
+.inv-category-card {
+    -fx-background-color: #141929;
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(255, 255, 255, 0.07);
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 18;
+    -fx-pref-width: 215;
+    -fx-min-width: 215;
+    -fx-cursor: default;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.50), 18, 0, 0, 6);
+}
+
+.inv-category-card:hover {
+    -fx-border-color: rgba(139, 92, 246, 0.45);
+    -fx-background-color: #16192e;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.70), 28, 0, 0, 12);
+}
+
+.inv-cat-icon-box {
+    -fx-background-color: rgba(139, 92, 246, 0.15);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-alignment: CENTER;
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+}
+
+.inv-cat-name {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.inv-cat-id {
+    -fx-text-fill: rgba(255, 255, 255, 0.35);
+    -fx-font-size: 11px;
+}
+
+/* ══════════════════════════════════════════════════
+   INVENTORY / TABS
+   ══════════════════════════════════════════════════ */
 .inventory-container {
-    background-color: #0d0f14;
-    -fx-background-color: #0d0f14;
+    -fx-background-color: #0b0f19;
 }
 
 .inventory-tabs .tab-header-area .tab-header-background {
@@ -137,13 +707,13 @@
 }
 
 .inventory-tabs .tab:selected {
-    -fx-border-color: transparent transparent white transparent;
+    -fx-border-color: transparent transparent #3b82f6 transparent;
     -fx-border-width: 0 0 2 0;
 }
 
 .inventory-tabs .tab .tab-label {
-    -fx-text-fill: rgba(255,255,255,0.6);
-    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 13px;
 }
 
 .inventory-tabs .tab:selected .tab-label {
@@ -151,200 +721,335 @@
     -fx-font-weight: bold;
 }
 
-.modern-table {
-    -fx-background-color: transparent;
-    -fx-border-color: rgba(255,255,255,0.1);
-    -fx-border-radius: 5;
-}
-
-.modern-table .column-header {
-    -fx-background-color: #12141a;
-    -fx-border-color: transparent transparent rgba(255,255,255,0.1) transparent;
-}
-
-.modern-table .column-header .label {
-    -fx-text-fill: rgba(255,255,255,0.7);
-    -fx-font-weight: bold;
-}
-
-.modern-table .table-row-cell {
-    -fx-background-color: transparent;
-    -fx-border-color: transparent transparent rgba(255,255,255,0.05) transparent;
-}
-
-.modern-table .table-row-cell:odd {
-    -fx-background-color: rgba(255,255,255,0.02);
-}
-
-.modern-table .table-row-cell:selected {
-    -fx-background-color: rgba(255,255,255,0.1);
-}
-
-.modern-table .table-cell {
+/* ══════════════════════════════════════════════════
+   FORM INPUTS (Dark themed)
+   ══════════════════════════════════════════════════ */
+.dark-input {
+    -fx-background-color: #1a1f35;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
     -fx-text-fill: white;
-    -fx-padding: 10;
+    -fx-font-size: 13px;
+    -fx-padding: 10 12;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.3);
 }
 
-.btn-primary-small {
-    -fx-background-color: white;
-    -fx-text-fill: black;
+.dark-input:focused {
+    -fx-border-color: #3b82f6;
+    -fx-background-color: #1e2440;
+}
+
+.dark-combo {
+    -fx-background-color: #1a1f35;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-size: 13px;
+    -fx-padding: 2;
+}
+
+.dark-combo .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.dark-combo .combo-box-popup .list-view {
+    -fx-background-color: #1a1f35;
+}
+
+.dark-combo .combo-box-popup .list-view .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #1a1f35;
+    -fx-padding: 8 12;
+}
+
+.dark-combo .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark-datepicker {
+    -fx-background-color: #1a1f35;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.dark-datepicker .text-field {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+/* ══════════════════════════════════════════════════
+   PROGRESS CIRCLE
+   ══════════════════════════════════════════════════ */
+.progress-circle {
+    -fx-background-color: #141929;
+    -fx-background-radius: 200;
+    -fx-min-width: 180;
+    -fx-min-height: 180;
+    -fx-max-width: 180;
+    -fx-max-height: 180;
+    -fx-alignment: CENTER;
+    -fx-border-color: rgba(59, 130, 246, 0.3);
+    -fx-border-width: 6;
+    -fx-border-radius: 200;
+}
+
+.progress-percent {
+    -fx-text-fill: white;
+    -fx-font-size: 36px;
     -fx-font-weight: bold;
-    -fx-background-radius: 4;
-    -fx-padding: 8 15;
-    -fx-cursor: hand;
 }
 
-.btn-primary-small:hover {
-    -fx-background-color: rgba(255,255,255,0.9);
+.progress-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 12px;
 }
 
-/* ── Main Content Area ── */
-.content-area {
-    background-color: #0d0f14;
-    -fx-background-color: #0d0f14;
-    padding: 40;
-    -fx-padding: 40;
+/* ══════════════════════════════════════════════════
+   STOCK ALERTS
+   ══════════════════════════════════════════════════ */
+.alert-item {
+    -fx-background-color: rgba(239, 68, 68, 0.08);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-border-color: rgba(239, 68, 68, 0.2);
+    -fx-border-width: 0 0 0 3;
+    -fx-border-radius: 0;
 }
 
-.welcome-text {
-    font-size: 32px;
-    -fx-font-size: 32px;
-    fill: white;
-    -fx-fill: white;
-    font-weight: bold;
+.alert-item-name {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
 }
 
-.welcome-subtext {
-    font-size: 16px;
-    -fx-font-size: 16px;
-    fill: rgba(255, 255, 255, 0.4);
-    -fx-fill: rgba(255, 255, 255, 0.4);
+.alert-item-stock {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 12px;
 }
 
-/* ── User Profile Sidebar ── */
-.user-profile {
-    padding: 20 0 0 0;
-    -fx-padding: 20 0 0 0;
-    border-color: rgba(255, 255, 255, 0.05) transparent transparent transparent;
+/* ══════════════════════════════════════════════════
+   SCROLLBAR STYLING
+   ══════════════════════════════════════════════════ */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 10;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-shape: "";
+    -fx-padding: 0;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+/* ══════════════════════════════════════════════════
+   DIALOG STYLING
+   ══════════════════════════════════════════════════ */
+.dialog-pane {
+    -fx-background-color: linear-gradient(to bottom right, #1f2937, #111827);
+    -fx-border-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+    -fx-border-width: 1.5;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 40, 0, 0, 15);
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: rgba(255, 255, 255, 0.03);
+    -fx-background-radius: 12 12 0 0;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.08) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .graphic-container {
+    -fx-padding: 0;
+}
+
+.dialog-pane:header .header-panel .graphic-container {
+    -fx-padding: 0 10 0 0;
+}
+
+.dialog-pane .button-bar {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-padding: 12 20;
+    -fx-background-radius: 0 0 12 12;
     -fx-border-color: rgba(255, 255, 255, 0.05) transparent transparent transparent;
-    border-width: 1 0 0 0;
     -fx-border-width: 1 0 0 0;
 }
 
-.user-name {
-    color: white;
-    -fx-text-fill: white;
-    font-weight: bold;
-    -fx-font-weight: bold;
-    font-size: 14px;
-    -fx-font-size: 14px;
-}
-
-.btn-logout-sidebar {
-    background-color: transparent;
-    -fx-background-color: transparent;
-    color: #ff6b6b;
-    -fx-text-fill: #ff6b6b;
-    border-color: #ff6b6b;
-    -fx-border-color: #ff6b6b;
-    border-width: 1;
-    -fx-border-width: 1;
-    border-radius: 4;
-    -fx-border-radius: 4;
-    -fx-alignment: CENTER;
-    padding: 8 15;
-    -fx-padding: 8 15;
-    cursor: hand;
-    -fx-cursor: hand;
-}
-
-.btn-logout-sidebar:hover {
-    background-color: #ff6b6b;
-    -fx-background-color: #ff6b6b;
-    color: white;
-    -fx-text-fill: white;
-}
-
-/* ── Shared Components ── */
-.form-title {
-    font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
-    -fx-font-family: "Segoe UI Semibold", "Segoe UI", sans-serif;
-    font-size: 32px;
-    -fx-font-size: 32px;
-    fill: white;
-    -fx-fill: white;
-    font-weight: bold;
-    -fx-font-weight: bold;
-}
-
-.form-subtitle {
-    font-size: 14px;
-    -fx-font-size: 14px;
-    fill: rgba(255, 255, 255, 0.4);
-    -fx-fill: rgba(255, 255, 255, 0.4);
-}
-
-.field-label {
-    color: rgba(255, 255, 255, 0.5);
-    -fx-text-fill: rgba(255, 255, 255, 0.5);
-    font-size: 11px;
-    -fx-font-size: 11px;
-    font-weight: bold;
-    -fx-font-weight: bold;
-}
-
-.input-field {
-    background-color: rgba(255, 255, 255, 0.08);
+.dialog-pane .button-bar .button {
     -fx-background-color: rgba(255, 255, 255, 0.08);
-    border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
-    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
-    border-width: 0 0 1 0;
-    -fx-border-width: 0 0 1 0;
-    color: white;
-    -fx-text-fill: white;
-    font-size: 15px;
-    -fx-font-size: 15px;
-    padding: 12 5;
-    -fx-padding: 12 5;
-}
-
-.input-field:focused {
-    background-color: rgba(255, 255, 255, 0.12);
-    -fx-background-color: rgba(255, 255, 255, 0.12);
-    border-color: transparent transparent white transparent;
-    -fx-border-color: transparent transparent white transparent;
-}
-
-.btn-login {
-    background-color: white;
-    -fx-background-color: white;
-    color: #000000;
-    -fx-text-fill: #000000;
-    font-size: 16px;
-    -fx-font-size: 16px;
-    font-weight: bold;
-    -fx-font-weight: bold;
-    background-radius: 4;
-    -fx-background-radius: 4;
-    padding: 14 0;
-    -fx-padding: 14 0;
-    cursor: hand;
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 8 20;
+    -fx-font-size: 12px;
     -fx-cursor: hand;
 }
 
-.status-label {
-    font-size: 14px;
-    -fx-font-size: 14px;
-    -fx-alignment: CENTER;
-}
-
-.status-error {
-    color: #ff6b6b;
-    -fx-text-fill: #ff6b6b;
-}
-
-.status-success {
-    color: white;
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
     -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button:default {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .button-bar .button:default:hover {
+    -fx-background-color: #2563eb;
+}
+
+/* TextInputDialog field */
+.dialog-pane .text-field {
+    -fx-background-color: #1a1f35;
+    -fx-border-color: rgba(255, 255, 255, 0.1);
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 12;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.3);
+}
+
+.dialog-pane .text-field:focused {
+    -fx-border-color: #3b82f6;
+}
+
+/* GridPane labels inside add/edit dialogs */
+.dialog-pane .label {
+    -fx-text-fill: rgba(255, 255, 255, 0.70);
+    -fx-font-size: 12px;
+}
+
+/* ══════════════════════════════════════════════════
+   SEARCH BAR
+   ══════════════════════════════════════════════════ */
+.search-field {
+    -fx-background-color: #141929;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 10 15;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.3);
+}
+
+.search-field:focused {
+    -fx-border-color: #3b82f6;
+}
+
+/* ══════════════════════════════════════════════════
+   PAGINATION
+   ══════════════════════════════════════════════════ */
+.pagination .toggle-button {
+    -fx-background-color: #141929;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
+    -fx-padding: 6 12;
+    -fx-cursor: hand;
+}
+
+.pagination .toggle-button:selected {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+/* ══════════════════════════════════════════════════
+   RETURNS SCREEN
+   ══════════════════════════════════════════════════ */
+.return-refund-label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+}
+
+.return-refund-value {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.btn-process-return {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-padding: 12 30;
+    -fx-cursor: hand;
+}
+
+.btn-process-return:hover {
+    -fx-background-color: #059669;
+}
+
+/* ══════════════════════════════════════════════════
+   LABEL VARIANTS
+   ══════════════════════════════════════════════════ */
+.text-white {
+    -fx-text-fill: white;
+}
+
+.text-muted {
+    -fx-text-fill: rgba(255, 255, 255, 0.4);
+}
+
+.text-sm {
+    -fx-font-size: 12px;
+}
+
+.text-lg {
+    -fx-font-size: 16px;
+}
+
+.text-bold {
+    -fx-font-weight: bold;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
 }

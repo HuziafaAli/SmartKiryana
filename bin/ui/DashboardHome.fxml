@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.DashboardHomeController"
+      spacing="25"
+      styleClass="inventory-container">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="Dashboard" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="welcomeLabel" text="Welcome, Admin" styleClass="text-muted"/>
+    </HBox>
+
+    <!-- Stat Cards Row -->
+    <HBox spacing="20" alignment="CENTER">
+        <VBox styleClass="stat-card,stat-card-blue" HBox.hgrow="ALWAYS">
+            <Label text="Today's Sales" styleClass="stat-card-title"/>
+            <Label fx:id="todaySalesLabel" text="Rs. 0" styleClass="stat-card-value"/>
+            <Label fx:id="todaySalesChange" text="" styleClass="stat-card-subtitle"/>
+        </VBox>
+        <VBox styleClass="stat-card,stat-card-green" HBox.hgrow="ALWAYS">
+            <Label text="Monthly Revenue" styleClass="stat-card-title"/>
+            <Label fx:id="monthlyRevenueLabel" text="Rs. 0" styleClass="stat-card-value"/>
+            <Label fx:id="monthlyRevenueChange" text="" styleClass="stat-card-subtitle"/>
+        </VBox>
+        <VBox styleClass="stat-card,stat-card-red" HBox.hgrow="ALWAYS">
+            <Label text="Low Stock Items" styleClass="stat-card-title"/>
+            <Label fx:id="lowStockLabel" text="0" styleClass="stat-card-value"/>
+            <Label text="Items below threshold" styleClass="stat-card-subtitle"/>
+        </VBox>
+        <VBox styleClass="stat-card,stat-card-purple" HBox.hgrow="ALWAYS">
+            <Label text="Total Products" styleClass="stat-card-title"/>
+            <Label fx:id="totalProductsLabel" text="0" styleClass="stat-card-value"/>
+            <Label text="In inventory" styleClass="stat-card-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <!-- Middle Row: Sales Overview + Top Selling -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <!-- Sales Overview Panel -->
+        <VBox styleClass="section-panel" HBox.hgrow="ALWAYS" spacing="15">
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Sales Overview" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="This Week" styleClass="text-muted,text-sm"/>
+            </HBox>
+            <VBox fx:id="salesChartArea" VBox.vgrow="ALWAYS" alignment="CENTER" style="-fx-min-height: 200;">
+                <Label text="Sales chart will appear here" styleClass="text-muted"/>
+            </VBox>
+        </VBox>
+
+        <!-- Top Selling Products -->
+        <VBox styleClass="section-panel" prefWidth="300" spacing="10">
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Top Selling Products" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="This Month" styleClass="text-muted,text-sm"/>
+            </HBox>
+            <VBox fx:id="topProductsList" spacing="8" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
+
+    <!-- Bottom Row: Recent Transactions + Stock Alerts -->
+    <HBox spacing="20">
+        <!-- Recent Transactions -->
+        <VBox styleClass="section-panel" HBox.hgrow="ALWAYS" spacing="10">
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Recent Transactions" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="View All" styleClass="btn-table-action"/>
+            </HBox>
+            <TableView fx:id="recentBillsTable" prefHeight="180" styleClass="modern-table">
+                <columns>
+                    <TableColumn fx:id="colBillId" text="Bill #" prefWidth="70"/>
+                    <TableColumn fx:id="colBillDate" text="Date" prefWidth="140"/>
+                    <TableColumn fx:id="colBillCustomer" text="Customer" prefWidth="120"/>
+                    <TableColumn fx:id="colBillAmount" text="Amount" prefWidth="100"/>
+                    <TableColumn fx:id="colBillCashier" text="Cashier" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- Stock Alerts -->
+        <VBox styleClass="section-panel" prefWidth="280" spacing="10">
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Stock Alerts" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="alertCountLabel" text="" styleClass="badge-warning"/>
+            </HBox>
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                <VBox fx:id="alertsList" spacing="8"/>
+            </ScrollPane>
+        </VBox>
+    </HBox>
+
+</VBox>

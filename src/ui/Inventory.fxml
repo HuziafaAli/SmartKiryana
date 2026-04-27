@@ -8,65 +8,61 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ui.InventoryController"
-      spacing="20"
       styleClass="inventory-container">
-    
+
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets top="10" right="10" bottom="10" left="10"/>
     </padding>
 
-    <HBox alignment="CENTER_LEFT" spacing="15">
-        <Text text="Inventory Management" styleClass="welcome-text"/>
+    <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 0 0 20 0;">
+        <Text text="Inventory Management" styleClass="page-title"/>
     </HBox>
 
-    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="inventory-tabs">
-        <tabs>
-            <!-- PRODUCTS TAB -->
-            <Tab text="Products">
-                <VBox spacing="15">
-                    <padding>
-                        <Insets top="15" right="0" bottom="0" left="0"/>
-                    </padding>
-                    
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <TextField fx:id="productSearchField" promptText="Search by Name or Barcode..." prefWidth="300" styleClass="input-field"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button text="+ Add Product" onAction="#handleAddProduct" styleClass="btn-primary-small"/>
-                    </HBox>
+    <TabPane fx:id="inventoryTabs" tabClosingPolicy="UNAVAILABLE"
+             VBox.vgrow="ALWAYS" styleClass="inventory-tabs">
 
-                    <TableView fx:id="productTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-                        <columns>
-                            <TableColumn fx:id="colBarcode" text="Barcode" prefWidth="120"/>
-                            <TableColumn fx:id="colProductName" text="Product Name" prefWidth="200"/>
-                            <TableColumn fx:id="colCategory" text="Category" prefWidth="120"/>
-                            <TableColumn fx:id="colPrice" text="Price" prefWidth="100"/>
-                            <TableColumn fx:id="colCostPrice" text="Cost" prefWidth="100"/>
-                            <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-            </Tab>
+        <!-- PRODUCTS TAB -->
+        <Tab text="Products">
+            <VBox spacing="15" style="-fx-padding: 15 0 0 0;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <TextField fx:id="productSearchField"
+                               promptText="Search by name or barcode..."
+                               prefWidth="260" styleClass="search-field"/>
+                    <ComboBox fx:id="categoryFilter"
+                              promptText="All Categories"
+                              prefWidth="170" styleClass="dark-combo"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="+ Add Product"
+                            onAction="#handleAddProduct"
+                            styleClass="btn-primary-small"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <FlowPane fx:id="productGrid" hgap="18" vgap="18"
+                              style="-fx-padding: 4 2 10 2;"/>
+                </ScrollPane>
+            </VBox>
+        </Tab>
 
-            <!-- CATEGORIES TAB -->
-            <Tab text="Categories">
-                <VBox spacing="15">
-                    <padding>
-                        <Insets top="15" right="0" bottom="0" left="0"/>
-                    </padding>
-                    
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Button text="+ Add Category" onAction="#handleAddCategory" styleClass="btn-primary-small"/>
-                    </HBox>
+        <!-- CATEGORIES TAB -->
+        <Tab text="Categories">
+            <VBox spacing="15" style="-fx-padding: 15 0 0 0;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <TextField fx:id="categorySearchField"
+                               promptText="Search categories..."
+                               prefWidth="260" styleClass="search-field"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="+ Add Category"
+                            onAction="#handleAddCategory"
+                            styleClass="btn-primary-small"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <FlowPane fx:id="categoryGrid" hgap="18" vgap="18"
+                              style="-fx-padding: 4 2 10 2;"/>
+                </ScrollPane>
+            </VBox>
+        </Tab>
 
-                    <TableView fx:id="categoryTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-                        <columns>
-                            <TableColumn fx:id="colCatId" text="ID" prefWidth="80"/>
-                            <TableColumn fx:id="colCatName" text="Category Name" prefWidth="300"/>
-                            <TableColumn fx:id="colCatActions" text="Actions" prefWidth="120"/>
-                        </columns>
-                    </TableView>
-                </VBox>
-            </Tab>
-        </tabs>
     </TabPane>
 </VBox>

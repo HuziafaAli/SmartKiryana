@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.ReturnsController"
+      spacing="20"
+      styleClass="pos-container">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- LEFT: Search Bill -->
+    <VBox HBox.hgrow="ALWAYS" spacing="15">
+        <Text text="Process Item Return" styleClass="page-title"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Search Bill" styleClass="text-muted"/>
+            <TextField fx:id="billSearchField" promptText="Enter Bill ID..." HBox.hgrow="ALWAYS" styleClass="search-field"/>
+            <Button text="Search" onAction="#handleSearchBill" styleClass="btn-primary-small"/>
+        </HBox>
+
+        <!-- Found Bill Info -->
+        <VBox fx:id="billInfoBox" styleClass="section-panel" spacing="8" visible="false" managed="false">
+            <Text text="Found Bill" styleClass="section-title"/>
+            <HBox spacing="20">
+                <VBox spacing="3">
+                    <Label text="Bill ID" styleClass="text-muted,text-sm"/>
+                    <Label fx:id="billIdLabel" text="" styleClass="text-white,text-bold"/>
+                </VBox>
+                <VBox spacing="3">
+                    <Label text="Date" styleClass="text-muted,text-sm"/>
+                    <Label fx:id="billDateLabel" text="" styleClass="text-white"/>
+                </VBox>
+                <VBox spacing="3">
+                    <Label text="Total" styleClass="text-muted,text-sm"/>
+                    <Label fx:id="billTotalLabel" text="" styleClass="text-white,text-bold"/>
+                </VBox>
+                <VBox spacing="3">
+                    <Label text="Cashier" styleClass="text-muted,text-sm"/>
+                    <Label fx:id="billCashierLabel" text="" styleClass="text-white"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Bill Items -->
+        <TableView fx:id="billItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columns>
+                <TableColumn fx:id="colOrigItem" text="Item" prefWidth="180"/>
+                <TableColumn fx:id="colOrigQty" text="Qty" prefWidth="60"/>
+                <TableColumn fx:id="colOrigPrice" text="Price" prefWidth="90"/>
+                <TableColumn fx:id="colOrigTotal" text="Total" prefWidth="100"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+    <!-- RIGHT: Select Items to Return -->
+    <VBox prefWidth="380" spacing="15" styleClass="bill-panel">
+        <Text text="Select Items to Return" styleClass="section-title"/>
+
+        <TableView fx:id="returnItemsTable" VBox.vgrow="ALWAYS" styleClass="modern-table" prefHeight="300">
+            <columns>
+                <TableColumn fx:id="colRetItem" text="Item" prefWidth="120"/>
+                <TableColumn fx:id="colRetQty" text="Qty" prefWidth="50"/>
+                <TableColumn fx:id="colRetReturn" text="Return Qty" prefWidth="80"/>
+                <TableColumn fx:id="colRetSelect" text="" prefWidth="50"/>
+            </columns>
+        </TableView>
+
+        <VBox spacing="10" style="-fx-border-color: rgba(255,255,255,0.06); -fx-border-width: 1 0 0 0; -fx-padding: 15 0 0 0;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Reason:" styleClass="bill-label"/>
+                <TextField fx:id="reasonField" promptText="Return reason..." HBox.hgrow="ALWAYS" styleClass="dark-input" style="-fx-padding: 8;"/>
+            </HBox>
+            <HBox>
+                <Label text="Refund Amount" styleClass="return-refund-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="refundLabel" text="Rs. 0.00" styleClass="return-refund-value"/>
+            </HBox>
+            <Button text="Process Return" onAction="#handleProcessReturn" maxWidth="Infinity" styleClass="btn-process-return"/>
+        </VBox>
+    </VBox>
+</HBox>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<HBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.SalesTargetController"
+      spacing="20"
+      styleClass="pos-container">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <!-- LEFT: Set Target -->
+    <VBox HBox.hgrow="ALWAYS" spacing="20">
+        <Text text="Set Monthly Sales Target" styleClass="page-title"/>
+
+        <VBox styleClass="section-panel" spacing="15">
+            <Text text="Select Employee" styleClass="section-title"/>
+            <ComboBox fx:id="empSelector" promptText="Select Employee" maxWidth="Infinity" styleClass="dark-combo"/>
+
+            <Text text="Month" styleClass="section-title"/>
+            <HBox spacing="10">
+                <ComboBox fx:id="monthSelector" promptText="Month" HBox.hgrow="ALWAYS" styleClass="dark-combo"/>
+                <ComboBox fx:id="yearSelector" promptText="Year" prefWidth="120" styleClass="dark-combo"/>
+            </HBox>
+
+            <Text text="Sales Target (Rs. )" styleClass="section-title"/>
+            <TextField fx:id="targetField" promptText="Enter target amount..." styleClass="dark-input"/>
+
+            <Button text="Set Target" onAction="#handleSetTarget" maxWidth="Infinity" styleClass="btn-primary"/>
+        </VBox>
+
+        <!-- Previous Targets Table -->
+        <VBox styleClass="section-panel" spacing="10" VBox.vgrow="ALWAYS">
+            <Text text="Previous Targets" styleClass="section-title"/>
+            <TableView fx:id="targetsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                <columns>
+                    <TableColumn fx:id="colMonth" text="Month" prefWidth="140"/>
+                    <TableColumn fx:id="colTarget" text="Target" prefWidth="120"/>
+                    <TableColumn fx:id="colAchieved" text="Achieved" prefWidth="120"/>
+                    <TableColumn fx:id="colProgress" text="Progress" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </VBox>
+
+    <!-- RIGHT: Current Progress -->
+    <VBox prefWidth="350" spacing="20">
+        <VBox styleClass="section-panel" spacing="15" alignment="CENTER">
+            <Text text="Current Progress" styleClass="section-title"/>
+            <Label fx:id="selectedEmpLabel" text="Select an employee" styleClass="text-muted"/>
+
+            <VBox styleClass="progress-circle" alignment="CENTER" spacing="2">
+                <Label fx:id="progressLabel" text="0%" styleClass="progress-percent"/>
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="5">
+                <Label fx:id="progressInfoLabel" text="" styleClass="text-muted,text-sm"/>
+            </HBox>
+
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Sales Target (Rs. )" styleClass="text-muted,text-sm"/>
+                <Label fx:id="currentTargetLabel" text="Rs. 0" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            </VBox>
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Remaining" styleClass="text-muted,text-sm"/>
+                <Label fx:id="remainingLabel" text="Rs. 0" style="-fx-text-fill: #f59e0b; -fx-font-size: 14px;"/>
+            </VBox>
+        </VBox>
+    </VBox>
+</HBox>

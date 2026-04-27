@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.BillHistoryController"
+      spacing="20"
+      styleClass="inventory-container">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="Bill History" styleClass="page-title"/>
+    </HBox>
+
+    <!-- Filters -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <VBox spacing="5">
+            <Label text="Date Range" styleClass="text-muted,text-sm"/>
+            <HBox spacing="8">
+                <DatePicker fx:id="dateFrom" promptText="From" prefWidth="140" styleClass="dark-datepicker"/>
+                <DatePicker fx:id="dateTo" promptText="To" prefWidth="140" styleClass="dark-datepicker"/>
+            </HBox>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search Bill #, Customer..." prefWidth="250" styleClass="search-field"/>
+        <Button text="Filter" onAction="#handleFilter" styleClass="btn-primary-small"/>
+        <Button text="Reset" onAction="#handleReset" styleClass="btn-hold"/>
+    </HBox>
+
+    <!-- Stat Cards -->
+    <HBox spacing="15">
+        <VBox styleClass="stat-card,stat-card-blue" HBox.hgrow="ALWAYS">
+            <Label text="Total Sales" styleClass="stat-card-title"/>
+            <Label fx:id="totalSalesLabel" text="Rs. 0" styleClass="stat-card-value" style="-fx-font-size: 22px;"/>
+        </VBox>
+        <VBox styleClass="stat-card,stat-card-green" HBox.hgrow="ALWAYS">
+            <Label text="Total Orders" styleClass="stat-card-title"/>
+            <Label fx:id="totalOrdersLabel" text="0" styleClass="stat-card-value" style="-fx-font-size: 22px;"/>
+        </VBox>
+        <VBox styleClass="stat-card,stat-card-purple" HBox.hgrow="ALWAYS">
+            <Label text="Average Order Value" styleClass="stat-card-title"/>
+            <Label fx:id="avgOrderLabel" text="Rs. 0" styleClass="stat-card-value" style="-fx-font-size: 22px;"/>
+        </VBox>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="billTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="colId" text="Bill #" prefWidth="80"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="170"/>
+            <TableColumn fx:id="colCustomer" text="Customer" prefWidth="140"/>
+            <TableColumn fx:id="colAmount" text="Amount" prefWidth="110"/>
+            <TableColumn fx:id="colPayment" text="Payment" prefWidth="100"/>
+            <TableColumn fx:id="colCashier" text="Cashier" prefWidth="130"/>
+        </columns>
+    </TableView>
+</VBox>

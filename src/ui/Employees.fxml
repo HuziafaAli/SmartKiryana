@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ui.EmployeesController"
+      spacing="20"
+      styleClass="inventory-container">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="Employee Management" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search employees..." prefWidth="250" styleClass="search-field"/>
+        <Button text="+ Add Employee" onAction="#handleAddEmployee" styleClass="btn-primary-small"/>
+    </HBox>
+
+    <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="colEmpId" text="Employee ID" prefWidth="120"/>
+            <TableColumn fx:id="colEmpName" text="Name" prefWidth="180"/>
+            <TableColumn fx:id="colEmpRole" text="Role" prefWidth="120"/>
+            <TableColumn fx:id="colEmpPhone" text="Phone" prefWidth="140"/>
+            <TableColumn fx:id="colEmpStatus" text="Status" prefWidth="100"/>
+            <TableColumn fx:id="colEmpActions" text="Action" prefWidth="160"/>
+        </columns>
+    </TableView>
+</VBox>

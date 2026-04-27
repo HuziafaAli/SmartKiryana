@@ -178,4 +178,24 @@ public class SystemFacade {
     public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
         return reportController.getSalesHistory(allBills);
     }
+
+    // Controller access for Command pattern usage
+    public BillController getBillController() {
+        return billController;
+    }
+
+    public ReportController getReportController() {
+        return reportController;
+    }
+
+    // Utility: Find bill by ID
+    public Bill findBillById(int billId) {
+        List<Bill> allBills = getAllBills();
+        for (Bill b : allBills) {
+            if (b.getBillId() == billId) {
+                return b;
+            }
+        }
+        return null;
+    }
 }
