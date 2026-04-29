@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.scene.chart.*;
 import facade.SystemFacade;
 import model.*;
 
@@ -15,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class DashboardHomeController implements FacadeAware {
@@ -57,45 +59,192 @@ public class DashboardHomeController implements FacadeAware {
 
     private void loadDashboardData() {
         User user = systemFacade.getCurrentUser();
+        boolean isEmployee = false;
         if (user != null) {
             welcomeLabel.setText("Welcome, " + user.getFullName());
+            isEmployee = user.getRole().equalsIgnoreCase("EMPLOYEE");
         }
 
         List<Bill> allBills = systemFacade.getAllBills();
+        List<Bill> displayBills = allBills;
+        
+        // If employee, only show their own data
+        if (isEmployee) {
+            displayBills = allBills.stream()
+                .filter(b -> b.getUser() != null && b.getUser().getUserId() == user.getUserId())
+                .collect(Collectors.toList());
+        }
+
         List<InventoryItem> allItems = systemFacade.getAllInventoryItems();
         List<InventoryItem> lowStockItems = systemFacade.getLowStockItems();
 
-        // Today's Sales
+        // Stat Cards Row
         LocalDate today = LocalDate.now();
-        double todaySales = allBills.stream()
-                .filter(b -> b.getBillDate().toLocalDate().equals(today))
-                .mapToDouble(Bill::getTotalAmount).sum();
-        todaySalesLabel.setText(String.format("Rs. %,.0f", todaySales));
-
-        // Monthly Revenue
         int currentMonth = today.getMonthValue();
         int currentYear = today.getYear();
-        double monthlyRevenue = allBills.stream()
+
+        // 1. Today's Sales
+        double todaySales = displayBills.stream()
+                .filter(b -> b.getBillDate().toLocalDate().equals(today))
+                .mapToDouble(Bill::getTotalAmount).sum();
+        
+        // 2. Monthly Revenue / Contribution
+        double monthlyRevenue = displayBills.stream()
                 .filter(b -> b.getBillDate().getMonthValue() == currentMonth && b.getBillDate().getYear() == currentYear)
                 .mapToDouble(Bill::getTotalAmount).sum();
-        monthlyRevenueLabel.setText(String.format("Rs. %,.0f", monthlyRevenue));
 
-        // Low Stock & Total Products
-        lowStockLabel.setText(String.valueOf(lowStockItems.size()));
-        totalProductsLabel.setText(String.valueOf(allItems.size()));
+        if (isEmployee) {
+            // Customize labels for employee
+            ((Label)todaySalesLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Sales Today");
+            ((Label)monthlyRevenueLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Monthly Sales");
+            ((Label)lowStockLabel.getParent().getChildrenUnmodifiable().get(0)).setText("Performance Score");
+            ((Label)totalProductsLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Transactions");
+            
+            // Calculate Performance Score (Achievement %)
+            List<Employee> empList = new java.util.ArrayList<>();
+            empList.add((Employee)user);
+            List<PerformanceReport> reports = systemFacade.getPerformanceComparison(empList, currentMonth, currentYear, allBills);
+            double score = 0;
+            if (!reports.isEmpty()) {
+                score = reports.get(0).getAchievementPercentage();
+            }
+            
+            todaySalesLabel.setText(String.format("Rs. %,.0f", todaySales));
+            monthlyRevenueLabel.setText(String.format("Rs. %,.0f", monthlyRevenue));
+            lowStockLabel.setText(String.format("%.0f%%", Math.min(100.0, score)));
+            totalProductsLabel.setText(String.valueOf(displayBills.size()));
+            
+            // Update subtitles
+            todaySalesChange.setText("Keep it up!");
+            monthlyRevenueChange.setText("Monthly total contribution");
+            ((Label)lowStockLabel.getParent().getChildrenUnmodifiable().get(2)).setText("Target achievement");
+            ((Label)totalProductsLabel.getParent().getChildrenUnmodifiable().get(2)).setText("Total bills processed");
+
+        } else {
+            // Admin default view
+            todaySalesLabel.setText(String.format("Rs. %,.0f", todaySales));
+            monthlyRevenueLabel.setText(String.format("Rs. %,.0f", monthlyRevenue));
+            lowStockLabel.setText(String.valueOf(lowStockItems.size()));
+            totalProductsLabel.setText(String.valueOf(allItems.size()));
+        }
 
         // Recent Transactions (last 5)
-        List<Bill> recent = allBills.stream()
+        List<Bill> recent = displayBills.stream()
                 .sorted(Comparator.comparing(Bill::getBillDate).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
         recentBillsTable.setItems(FXCollections.observableArrayList(recent));
 
-        // Top Selling Products
-        loadTopProducts(allBills);
+        // Top Selling Products OR Performance Summary
+        if (isEmployee) {
+            loadPerformanceSummary(user, allBills);
+        } else {
+            loadTopProducts(allBills);
+        }
 
         // Stock Alerts
         loadStockAlerts(lowStockItems);
+
+        // Sales Overview Chart
+        loadSalesChart(displayBills);
+    }
+
+    private void loadPerformanceSummary(User user, List<Bill> allBills) {
+        topProductsList.getChildren().clear();
+        
+        // Change title of the panel
+        VBox parent = (VBox) topProductsList.getParent();
+        HBox header = (HBox) parent.getChildren().get(0);
+        ((javafx.scene.text.Text)header.getChildren().get(0)).setText("Performance Summary");
+        
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        int year = today.getYear();
+        
+        List<Employee> empList = new java.util.ArrayList<>();
+        empList.add((Employee)user);
+        List<PerformanceReport> reports = systemFacade.getPerformanceComparison(empList, month, year, allBills);
+        
+        if (!reports.isEmpty()) {
+            PerformanceReport report = reports.get(0);
+            long txCount = allBills.stream()
+                    .filter(b -> b.getUser() != null && b.getUser().getUserId() == user.getUserId())
+                    .filter(b -> b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year)
+                    .count();
+
+            double avgBill = txCount > 0 ? report.getTotalSales() / txCount : 0;
+            double peakSale = allBills.stream()
+                    .filter(b -> b.getUser() != null && b.getUser().getUserId() == user.getUserId())
+                    .filter(b -> b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year)
+                    .mapToDouble(Bill::getTotalAmount)
+                    .max().orElse(0);
+
+            double bonusAmount = report.getBonusAmount();
+            String statusMsg;
+            if (bonusAmount > 0) {
+                statusMsg = String.format("- Status: Rs. %,.0f Bonus Earned! (5%% of surplus)", bonusAmount);
+            } else {
+                double remaining = Math.max(0, report.getTargetAmount() - report.getTotalSales());
+                statusMsg = remaining > 0 ? 
+                    String.format("- Status: Rs. %,.0f left to earn bonus", remaining) :
+                    "- Status: Target hit! Next sale earns bonus!";
+            }
+
+            String[] metrics = {
+                "- Score: " + String.format("%.1f%%", Math.min(100.0, report.getAchievementPercentage())),
+                "- Transactions: " + txCount,
+                "- Avg Bill: Rs. " + String.format("%,.0f", avgBill),
+                "- Peak Sale: Rs. " + String.format("%,.0f", peakSale)
+            };
+
+            for (String metric : metrics) {
+                Label l = new Label(metric);
+                l.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 5 0;");
+                topProductsList.getChildren().add(l);
+            }
+        }
+    }
+
+    private void loadSalesChart(List<Bill> allBills) {
+        salesChartArea.getChildren().clear();
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+
+        barChart.setTitle(null);
+        barChart.setLegendVisible(false);
+        barChart.setAnimated(true);
+        barChart.getStyleClass().add("sales-bar-chart");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("EEE");
+
+        // Last 7 days sales
+        Map<LocalDate, Double> dailySales = new TreeMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 6; i >= 0; i--) {
+            dailySales.put(today.minusDays(i), 0.0);
+        }
+
+        for (Bill b : allBills) {
+            LocalDate date = b.getBillDate().toLocalDate();
+            if (dailySales.containsKey(date)) {
+                dailySales.put(date, dailySales.get(date) + b.getTotalAmount());
+            }
+        }
+
+        dailySales.forEach((date, amount) -> {
+            series.getData().add(new XYChart.Data<>(date.format(dayFormatter), amount));
+        });
+
+        barChart.getData().add(series);
+        barChart.setPrefHeight(250);
+        
+        // CSS for chart styling (if not in CSS file)
+        barChart.lookupAll(".default-color0.chart-bar").forEach(n -> n.setStyle("-fx-bar-fill: #3b82f6;"));
+        
+        salesChartArea.getChildren().add(barChart);
     }
 
     private void loadTopProducts(List<Bill> allBills) {
@@ -150,8 +299,14 @@ public class DashboardHomeController implements FacadeAware {
             Label name = new Label(item.getProduct().getName());
             name.getStyleClass().add("alert-item-name");
 
-            Label stock = new Label("Stock: " + item.getStockQuantity() + " (Min: " + item.getMinStockThreshold() + ")");
-            stock.getStyleClass().add("alert-item-stock");
+            Label stock;
+            if (item.isOverStock()) {
+                stock = new Label("Over Stock: " + item.getStockQuantity() + " (Max: " + item.getMaxStockThreshold() + ")");
+                stock.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 11px;"); // orange-ish for overstock
+            } else {
+                stock = new Label("Low Stock: " + item.getStockQuantity() + " (Min: " + item.getMinStockThreshold() + ")");
+                stock.getStyleClass().add("alert-item-stock");
+            }
 
             alertItem.getChildren().addAll(name, stock);
             alertsList.getChildren().add(alertItem);

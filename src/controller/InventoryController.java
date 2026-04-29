@@ -93,26 +93,6 @@ public class InventoryController {
         return success;
     }
 
-    public boolean reduceStock(String barcode, int quantityToReduce) {
-        InventoryItem itemExist = inventoryService.isProductExists(barcode);
-        if (itemExist == null) {
-            System.out.println("Invalid Barcode.");
-            return false;
-        }
-
-        boolean success = inventoryService.reduceStock(barcode, quantityToReduce);
-        if (success) {
-            System.out.println(itemExist.getProduct().getName() + " quantity reduced.");
-        } else {
-            System.out.println(itemExist.getProduct().getName() + " does not have enough stock.");
-        }
-        return success;
-    }
-
-    public InventoryItem isProductExists(String barcode) {
-        return inventoryService.isProductExists(barcode);
-    }
-
     public List<InventoryItem> getLowStockItems() {
         return inventoryService.getLowStockItems();
     }
@@ -123,6 +103,6 @@ public class InventoryController {
 
     public void checkAllStockLevels() {
         inventoryService.checkAllStockLevels();
-        System.out.println("Stock check complete. Alerts generated for low stock items.");
+        System.out.println("Stock check complete.");
     }
 }

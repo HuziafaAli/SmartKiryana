@@ -5,6 +5,7 @@ import controller.InventoryController;
 import controller.ReportController;
 import controller.UserController;
 import model.*;
+import observer.StockAlert;
 import command.Command;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -14,14 +15,16 @@ public class SystemFacade {
     private InventoryController inventoryController;
     private ReportController reportController;
     private UserController userController;
+    private StockAlert stockAlert;
 
     public SystemFacade(BillController billController, InventoryController inventoryController,
-            ReportController reportController, UserController userController) {
+            ReportController reportController, UserController userController, StockAlert stockAlert) {
 
         this.billController = billController;
         this.inventoryController = inventoryController;
         this.reportController = reportController;
         this.userController = userController;
+        this.stockAlert = stockAlert;
     }
 
     // Command Execution
@@ -53,6 +56,10 @@ public class SystemFacade {
 
     public boolean deactivateUser(int userId) {
         return userController.deactivateUser(userId);
+    }
+
+    public boolean activateUser(int userId) {
+        return userController.activateUser(userId);
     }
 
     public List<Employee> getAllEmployees() {
@@ -96,16 +103,11 @@ public class SystemFacade {
         return inventoryController.addStock(barcode, quantityToAdd);
     }
 
-    public boolean reduceStock(String barcode, int quantityToReduce) {
-        return inventoryController.reduceStock(barcode, quantityToReduce);
-    }
-
-    public InventoryItem isProductExists(String barcode) {
-        return inventoryController.isProductExists(barcode);
-    }
 
     public List<InventoryItem> getLowStockItems() {
-        return inventoryController.getLowStockItems();
+        // Refresh the observer, then return its pending alerts as a list
+        inventoryController.checkAllStockLevels();
+        return new java.util.ArrayList<>(stockAlert.getPendingAlerts());
     }
 
     public List<InventoryItem> getAllInventoryItems() {
@@ -153,18 +155,6 @@ public class SystemFacade {
         return billController.filterByDateRange(from, to);
     }
 
-    public List<Bill> filterByCategory(int categoryId) {
-        return billController.filterByCategory(categoryId);
-    }
-
-    public List<Bill> filterByEmployee(int employeeId) {
-        return billController.filterByEmployee(employeeId);
-    }
-
-    public List<Bill> filterByAmountRange(double minAmount, double maxAmount) {
-        return billController.filterByAmountRange(minAmount, maxAmount);
-    }
-
     // Reports & Performance
     public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
         return reportController.assignTarget(employee, month, year, targetAmount);
@@ -175,15 +165,10 @@ public class SystemFacade {
         return reportController.getPerformanceComparison(employees, month, year, allBills);
     }
 
-    public List<PerformanceReport> getTargetHistory(Employee employee, List<Bill> allBills) {
-        return reportController.getTargetHistory(employee, allBills);
+    public List<SalesTarget> getAllTargets() {
+        return reportController.getAllTargets();
     }
 
-    public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
-        return reportController.getSalesHistory(allBills);
-    }
-
-    // Controller access for Command pattern usage
     public BillController getBillController() {
         return billController;
     }

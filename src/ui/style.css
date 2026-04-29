@@ -3,104 +3,86 @@
 }
 
 /* ══════════════════════════════════════════════════
-   LOGIN SCREEN
+   NEW PREMIUM LOGIN SCREEN
    ══════════════════════════════════════════════════ */
-.root-container {
+.login-root {
     -fx-background-image: url("assets/bg.png");
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;
+    /* Adding a dark overlay to ensure readability */
+    -fx-background-color: rgba(0, 0, 0, 0.4);
 }
 
-.left-panel {
-    -fx-background-color: transparent;
+.bg-glow-1 {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 50%, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+    -fx-min-width: 800;
+    -fx-min-height: 800;
 }
 
-.brand-name-left {
-    -fx-font-family: "Segoe UI Light";
-    -fx-font-size: 64px;
-    -fx-fill: white;
-    -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 20, 0, 0, 0);
+.login-card {
+    -fx-background-color: rgba(20, 25, 41, 0.85);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.08);
+    -fx-border-width: 1;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 50, 0, 0, 20);
 }
 
-.brand-tagline {
-    -fx-font-size: 18px;
-    -fx-fill: rgba(255, 255, 255, 0.9);
-    -fx-font-style: italic;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 10, 0, 0, 0);
-}
-
-.right-panel {
-    -fx-background-color: rgba(0, 0, 0, 0.8);
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.7), 40, 0, -10, 0);
-    -fx-border-color: rgba(255, 255, 255, 0.1);
-    -fx-border-width: 0 0 0 1;
-}
-
-.logo-container {
-    -fx-alignment: CENTER;
-    -fx-padding: 0 0 5 0;
-}
-
-.logo-image {
-    -fx-preserve-ratio: true;
-}
-
-.form-title {
+.login-brand-title {
     -fx-font-family: "Segoe UI Semibold";
-    -fx-font-size: 32px;
+    -fx-font-size: 42px;
     -fx-fill: white;
     -fx-font-weight: bold;
 }
 
-.form-subtitle {
-    -fx-font-size: 14px;
-    -fx-fill: rgba(255, 255, 255, 0.4);
-}
-
-.field-label {
-    -fx-text-fill: rgba(255, 255, 255, 0.5);
+.login-field-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
     -fx-font-size: 11px;
     -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
 }
 
-.input-field {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
-    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.2) transparent;
-    -fx-border-width: 0 0 1 0;
+.login-input {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.15) transparent;
+    -fx-border-width: 0 0 1.5 0;
     -fx-text-fill: white;
     -fx-font-size: 15px;
-    -fx-padding: 12 5;
-    -fx-prompt-text-fill: rgba(255, 255, 255, 0.3);
+    -fx-padding: 12 2;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5);
 }
 
-.input-field:focused {
-    -fx-background-color: rgba(255, 255, 255, 0.12);
-    -fx-border-color: transparent transparent white transparent;
+.login-input:focused {
+    -fx-border-color: transparent transparent #3b82f6 transparent;
+    -fx-background-color: rgba(59, 130, 246, 0.04);
 }
 
-.btn-login {
-    -fx-background-color: #10b981;
+.login-submit-btn {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);
     -fx-text-fill: white;
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-padding: 14 0;
+    -fx-background-radius: 12;
+    -fx-padding: 16 0;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.3), 15, 0, 0, 4);
+    -fx-margin: 10 0 0 0;
 }
 
-.btn-login:hover {
-    -fx-background-color: #059669;
+.login-submit-btn:hover {
+    -fx-background-color: linear-gradient(to right, #60a5fa, #3b82f6);
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.5), 20, 0, 0, 6);
 }
 
 .status-label {
-    -fx-font-size: 14px;
+    -fx-font-size: 13px;
     -fx-alignment: CENTER;
+    -fx-padding: 10 0 0 0;
 }
 
 .status-error {
-    -fx-text-fill: #ff6b6b;
+    -fx-text-fill: #ef4444;
 }
 
 .status-success {
@@ -359,6 +341,23 @@
 
 .btn-danger:hover {
     -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+}
+
+.btn-activate {
+    -fx-background-color: transparent;
+    -fx-text-fill: #10b981;
+    -fx-border-color: rgba(16, 185, 129, 0.4);
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+}
+
+.btn-activate:hover {
+    -fx-background-color: #10b981;
     -fx-text-fill: white;
 }
 
@@ -1233,8 +1232,8 @@
     -fx-border-width: 1;
     -fx-border-radius: 14;
     -fx-padding: 16;
-    -fx-pref-width: 430;
-    -fx-min-width: 430;
+    -fx-pref-width: 380;
+    -fx-min-width: 380;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 16, 0, 0, 5);
 }
 
@@ -1264,11 +1263,18 @@
     -fx-font-weight: bold;
 }
 
-.employee-mini-metric,
-.sales-mini-metric {
+.employee-details-container {
     -fx-background-color: rgba(255, 255, 255, 0.035);
-    -fx-background-radius: 8;
-    -fx-padding: 8;
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.06);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.inv-card-divider-v {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-min-width: 1;
+    -fx-max-width: 1;
 }
 
 .employee-metric-value {
@@ -1416,11 +1422,16 @@
 }
 
 .text-muted {
-    -fx-text-fill: rgba(255, 255, 255, 0.4);
+    -fx-text-fill: #94a3b8;
+    -fx-fill: #94a3b8;
 }
 
 .text-sm {
     -fx-font-size: 12px;
+}
+
+.text-xs {
+    -fx-font-size: 10px;
 }
 
 .text-lg {
@@ -1437,4 +1448,42 @@
 
 .scroll-pane .viewport {
     -fx-background-color: transparent;
+}
+
+/* ══════════════════════════════════════════════════
+   CHARTS
+   ══════════════════════════════════════════════════ */
+.sales-bar-chart {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.sales-bar-chart .chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.sales-bar-chart .chart-vertical-grid-lines {
+    -fx-stroke: rgba(255, 255, 255, 0.05);
+}
+
+.sales-bar-chart .chart-horizontal-grid-lines {
+    -fx-stroke: rgba(255, 255, 255, 0.05);
+}
+
+.sales-bar-chart .axis {
+    -fx-tick-label-fill: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 10px;
+}
+
+.sales-bar-chart .axis-label {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.sales-bar-chart .default-color0.chart-bar {
+    -fx-background-color: linear-gradient(to top, #1e40af, #3b82f6);
+    -fx-background-radius: 4 4 0 0;
+}
+
+.sales-bar-chart .chart-bar:hover {
+    -fx-background-color: #60a5fa;
 }

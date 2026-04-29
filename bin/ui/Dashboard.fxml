@@ -4,8 +4,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -20,11 +18,8 @@
                 <Insets top="30" right="15" bottom="15" left="15"/>
             </padding>
 
-            <!-- Logo Area -->
+            <!-- Branding Area -->
             <VBox alignment="CENTER" spacing="8" style="-fx-padding: 0 0 30 0;">
-                <ImageView pickOnBounds="true" preserveRatio="true" fitWidth="60">
-                    <Image url="@assets/logo.png"/>
-                </ImageView>
                 <Text text="SmartKiryana" styleClass="sidebar-brand"/>
             </VBox>
 

@@ -8,11 +8,11 @@
 <VBox xmlns="http://javafx.com/javafx/8.0.171"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ui.DashboardHomeController"
-      spacing="25"
+      spacing="20"
       styleClass="inventory-container">
 
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets top="15" right="20" bottom="15" left="20"/>
     </padding>
 
     <!-- Page Header -->
@@ -46,60 +46,63 @@
         </VBox>
     </HBox>
 
-    <!-- Middle Row: Sales Overview + Top Selling -->
+    <!-- Main Content Area: Left Column (Sales & Tables), Right Column (Insights) -->
     <HBox spacing="20" VBox.vgrow="ALWAYS">
-        <!-- Sales Overview Panel -->
-        <VBox styleClass="section-panel" HBox.hgrow="ALWAYS" spacing="15">
-            <HBox alignment="CENTER_LEFT">
-                <Text text="Sales Overview" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label text="This Week" styleClass="text-muted,text-sm"/>
-            </HBox>
-            <VBox fx:id="salesChartArea" VBox.vgrow="ALWAYS" alignment="CENTER" style="-fx-min-height: 200;">
-                <Label text="Sales chart will appear here" styleClass="text-muted"/>
+        
+        <!-- LEFT COLUMN -->
+        <VBox spacing="20" HBox.hgrow="ALWAYS">
+            <!-- Sales Overview Panel -->
+            <VBox styleClass="section-panel" spacing="15" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <Text text="Sales Overview" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="This Week" styleClass="text-muted,text-sm"/>
+                </HBox>
+                <VBox fx:id="salesChartArea" VBox.vgrow="ALWAYS" alignment="CENTER" style="-fx-min-height: 250;">
+                    <Label text="Sales chart will appear here" styleClass="text-muted"/>
+                </VBox>
+            </VBox>
+
+            <!-- Recent Transactions -->
+            <VBox styleClass="section-panel" spacing="10">
+                <HBox alignment="CENTER_LEFT">
+                    <Text text="Recent Transactions" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                </HBox>
+                <TableView fx:id="recentBillsTable" prefHeight="220" styleClass="modern-table">
+                    <columns>
+                        <TableColumn fx:id="colBillId" text="Bill #" prefWidth="80"/>
+                        <TableColumn fx:id="colBillDate" text="Date" prefWidth="160"/>
+                        <TableColumn fx:id="colBillAmount" text="Amount" prefWidth="140"/>
+                        <TableColumn fx:id="colBillCashier" text="Cashier" prefWidth="180"/>
+                    </columns>
+                </TableView>
             </VBox>
         </VBox>
 
-        <!-- Top Selling Products -->
-        <VBox styleClass="section-panel" prefWidth="300" spacing="10">
-            <HBox alignment="CENTER_LEFT">
-                <Text text="Top Selling Products" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label text="This Month" styleClass="text-muted,text-sm"/>
-            </HBox>
-            <VBox fx:id="topProductsList" spacing="8" VBox.vgrow="ALWAYS"/>
-        </VBox>
-    </HBox>
+        <!-- RIGHT COLUMN -->
+        <VBox spacing="20" prefWidth="320">
+            <!-- Performance Summary / Top Selling -->
+            <VBox styleClass="section-panel" spacing="15">
+                <HBox alignment="CENTER_LEFT">
+                    <Text text="Performance Summary" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="This Month" styleClass="text-muted,text-sm"/>
+                </HBox>
+                <VBox fx:id="topProductsList" spacing="12"/>
+            </VBox>
 
-    <!-- Bottom Row: Recent Transactions + Stock Alerts -->
-    <HBox spacing="20">
-        <!-- Recent Transactions -->
-        <VBox styleClass="section-panel" HBox.hgrow="ALWAYS" spacing="10">
-            <HBox alignment="CENTER_LEFT">
-                <Text text="Recent Transactions" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Button text="View All" styleClass="btn-table-action"/>
-            </HBox>
-            <TableView fx:id="recentBillsTable" prefHeight="180" styleClass="modern-table">
-                <columns>
-                    <TableColumn fx:id="colBillId" text="Bill #" prefWidth="70"/>
-                    <TableColumn fx:id="colBillDate" text="Date" prefWidth="140"/>
-                    <TableColumn fx:id="colBillAmount" text="Amount" prefWidth="120"/>
-                    <TableColumn fx:id="colBillCashier" text="Cashier" prefWidth="140"/>
-                </columns>
-            </TableView>
-        </VBox>
-
-        <!-- Stock Alerts -->
-        <VBox styleClass="section-panel" prefWidth="280" spacing="10">
-            <HBox alignment="CENTER_LEFT">
-                <Text text="Stock Alerts" styleClass="section-title"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="alertCountLabel" text="" styleClass="badge-warning"/>
-            </HBox>
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                <VBox fx:id="alertsList" spacing="8"/>
-            </ScrollPane>
+            <!-- Stock Alerts -->
+            <VBox styleClass="section-panel" spacing="15" VBox.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <Text text="Stock Alerts" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="alertCountLabel" text="" styleClass="badge-warning"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                    <VBox fx:id="alertsList" spacing="8"/>
+                </ScrollPane>
+            </VBox>
         </VBox>
     </HBox>
 

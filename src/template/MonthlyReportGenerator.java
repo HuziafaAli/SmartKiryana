@@ -59,8 +59,12 @@ public class MonthlyReportGenerator extends ReportTemplate<MonthlyReport> {
     protected void calculateTotals() {
         productSalesMap.entrySet().stream()
                 .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
-                .limit(3)
-                .forEach(entry -> topProducts.add(entry.getKey()));
+                .limit(5) // Show top 5 instead of 10
+                .forEach(entry -> {
+                    Product p = entry.getKey();
+                    p.setSalesQuantity(entry.getValue());
+                    topProducts.add(p);
+                });
     }
 
     @Override

@@ -7,6 +7,7 @@ import dao.*;
 import service.*;
 import controller.*;
 import facade.SystemFacade;
+import observer.StockAlert;
 import util.DatabaseConnection;
 import ui.LoginController;
 
@@ -32,6 +33,12 @@ public class Main extends Application {
 
         AuthService authService = new AuthService(userDAO);
         InventoryService inventoryService = new InventoryService(categoryDAO, inventoryDAO);
+
+        // Wire up the Observer pattern: StockAlert listens for low-stock events
+        StockAlert stockAlert = new StockAlert();
+        inventoryService.addObserver(stockAlert);
+        inventoryService.checkAllStockLevels(); // Fire alerts for any already-low items
+
         BillingService billingService = new BillingService(inventoryService, billDAO, returnDAO);
         ReportService reportService = new ReportService(authService, salesTargetDAO);
 
@@ -40,7 +47,7 @@ public class Main extends Application {
         BillController billController = new BillController(billingService);
         ReportController reportController = new ReportController(reportService);
 
-        this.systemFacade = new SystemFacade(billController, inventoryController, reportController, userController);
+        this.systemFacade = new SystemFacade(billController, inventoryController, reportController, userController, stockAlert);
     }
 
     @Override

@@ -22,100 +22,79 @@
         </VBox>
     </HBox>
 
-    <HBox spacing="15" VBox.vgrow="ALWAYS">
-        <VBox prefWidth="430" spacing="12" styleClass="target-form-panel">
-            <VBox spacing="3">
-                <Text text="Set Monthly Target" styleClass="section-title"/>
-                <Label text="Choose an employee, period, and target amount." styleClass="text-muted"/>
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <!-- LEFT COLUMN: Profile, Target Summary, and Assignment Form -->
+        <VBox prefWidth="380" spacing="15">
+            <!-- Selected Employee Card -->
+            <VBox styleClass="target-hero-card">
+                <Label text="Selected Employee" styleClass="inv-card-field-label"/>
+                <Label fx:id="selectedEmpLabel" text="Select an employee" styleClass="target-employee-name"/>
+                <Label fx:id="periodLabel" text="Current period" styleClass="text-muted"/>
             </VBox>
 
-            <VBox spacing="4">
-                <Label text="Employee" styleClass="field-label"/>
-                <ComboBox fx:id="empSelector" promptText="Select Employee" maxWidth="Infinity" styleClass="dark-combo"/>
+            <!-- Current Target Card -->
+            <VBox styleClass="target-hero-card">
+                <Label text="Current Target" styleClass="inv-card-field-label"/>
+                <Label fx:id="currentTargetLabel" text="Rs. 0" styleClass="target-amount-main"/>
+                <Label fx:id="progressInfoLabel" text="No target set" styleClass="text-muted"/>
             </VBox>
 
-            <HBox spacing="10">
-                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="Month" styleClass="field-label"/>
-                    <ComboBox fx:id="monthSelector" promptText="Month" maxWidth="Infinity" styleClass="dark-combo"/>
+            <!-- Set Monthly Target Form -->
+            <VBox spacing="12" styleClass="target-form-panel" VBox.vgrow="ALWAYS">
+                <VBox spacing="3">
+                    <Text text="Set Monthly Target" styleClass="section-title"/>
+                    <Label text="Assign a new goal for the period." styleClass="text-muted"/>
                 </VBox>
-                <VBox spacing="4" prefWidth="130">
-                    <Label text="Year" styleClass="field-label"/>
-                    <ComboBox fx:id="yearSelector" promptText="Year" maxWidth="Infinity" styleClass="dark-combo"/>
+
+                <VBox spacing="4">
+                    <Label text="Employee" styleClass="field-label"/>
+                    <ComboBox fx:id="empSelector" promptText="Select Employee" maxWidth="Infinity" styleClass="dark-combo"/>
                 </VBox>
-            </HBox>
 
-            <VBox spacing="4">
-                <Label text="Target Amount" styleClass="field-label"/>
-                <TextField fx:id="targetField" promptText="Enter target amount..." styleClass="dark-input"/>
+                <HBox spacing="10">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Month" styleClass="field-label"/>
+                        <ComboBox fx:id="monthSelector" promptText="Month" maxWidth="Infinity" styleClass="dark-combo"/>
+                    </VBox>
+                    <VBox spacing="4" prefWidth="110">
+                        <Label text="Year" styleClass="field-label"/>
+                        <ComboBox fx:id="yearSelector" promptText="Year" maxWidth="Infinity" styleClass="dark-combo"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="4">
+                    <Label text="Target Amount" styleClass="field-label"/>
+                    <TextField fx:id="targetField" promptText="Enter target amount..." styleClass="dark-input"/>
+                </VBox>
+
+                <Region VBox.vgrow="ALWAYS"/>
+
+                <Button text="Set Target" onAction="#handleSetTarget" maxWidth="Infinity" styleClass="btn-pay"/>
             </VBox>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <VBox spacing="6" styleClass="target-note-card">
-                <Label text="Target Rule" styleClass="inv-card-field-label"/>
-                <Label text="Bonus is calculated when achieved sales exceed the assigned target." styleClass="target-note-text"/>
-            </VBox>
-
-            <Button text="Set Target" onAction="#handleSetTarget" maxWidth="Infinity" styleClass="btn-pay"/>
         </VBox>
 
-        <VBox HBox.hgrow="ALWAYS" spacing="12">
-            <HBox spacing="12">
-                <VBox styleClass="target-hero-card" HBox.hgrow="ALWAYS">
-                    <Label text="Selected Employee" styleClass="inv-card-field-label"/>
-                    <Label fx:id="selectedEmpLabel" text="Select an employee" styleClass="target-employee-name"/>
-                    <Label fx:id="periodLabel" text="Current period" styleClass="text-muted"/>
-                </VBox>
-                <VBox styleClass="target-hero-card" HBox.hgrow="ALWAYS">
-                    <Label text="Current Target" styleClass="inv-card-field-label"/>
-                    <Label fx:id="currentTargetLabel" text="Rs. 0" styleClass="target-amount-main"/>
-                    <Label fx:id="progressInfoLabel" text="No target set" styleClass="text-muted"/>
-                </VBox>
+        <!-- RIGHT COLUMN: Full History Dashboard -->
+        <VBox HBox.hgrow="ALWAYS" spacing="15" styleClass="target-history-panel">
+            <HBox alignment="CENTER_LEFT">
+                <Text text="Previous Targets History" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="historyCountLabel" text="Select an employee" styleClass="text-muted"/>
             </HBox>
 
-            <HBox spacing="12" VBox.vgrow="ALWAYS">
-                <VBox styleClass="target-progress-panel" alignment="CENTER" spacing="10" HBox.hgrow="ALWAYS">
-                    <Text text="Achievement" styleClass="section-title"/>
-                    <VBox fx:id="progressRing" styleClass="progress-circle" alignment="CENTER" spacing="2">
-                        <Label fx:id="progressLabel" text="0%" styleClass="progress-percent"/>
-                        <Label text="completed" styleClass="progress-label"/>
-                    </VBox>
-                    <Label fx:id="achievementMessageLabel" text="Select an employee to view progress." styleClass="target-message"/>
-                </VBox>
-
-                <VBox styleClass="target-progress-panel" spacing="10" prefWidth="330">
-                    <Text text="Progress Details" styleClass="section-title"/>
-
-                    <VBox spacing="6" styleClass="target-detail-card">
-                        <Label text="Achieved Sales" styleClass="inv-card-field-label"/>
-                        <Label fx:id="achievedLabel" text="Rs. 0" styleClass="target-detail-value"/>
-                    </VBox>
-
-                    <VBox spacing="6" styleClass="target-detail-card">
-                        <Label text="Remaining" styleClass="inv-card-field-label"/>
-                        <Label fx:id="remainingLabel" text="Rs. 0" styleClass="target-detail-warning"/>
-                    </VBox>
-
-                    <VBox spacing="6" styleClass="target-detail-card">
-                        <Label text="Bonus Estimate" styleClass="inv-card-field-label"/>
-                        <Label fx:id="bonusLabel" text="Rs. 0" styleClass="target-detail-bonus"/>
-                    </VBox>
-                </VBox>
-            </HBox>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                <FlowPane fx:id="targetHistoryFlow" hgap="20" vgap="20" style="-fx-padding: 5;"/>
+            </ScrollPane>
         </VBox>
     </HBox>
 
-    <VBox spacing="10" styleClass="target-history-panel" VBox.vgrow="ALWAYS">
-        <HBox alignment="CENTER_LEFT">
-            <Text text="Previous Targets" styleClass="section-title"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="historyCountLabel" text="Select an employee" styleClass="text-muted"/>
-        </HBox>
-
-        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                    style="-fx-background-color: transparent; -fx-border-color: transparent;">
-            <FlowPane fx:id="targetHistoryFlow" hgap="14" vgap="14" style="-fx-padding: 2;"/>
-        </ScrollPane>
-    </VBox>
+    <!-- Hidden elements for controller compatibility -->
+    <HBox visible="false" managed="false">
+        <VBox fx:id="progressRing"/>
+        <Label fx:id="progressLabel"/>
+        <Label fx:id="achievementMessageLabel"/>
+        <Label fx:id="achievedLabel"/>
+        <Label fx:id="remainingLabel"/>
+        <Label fx:id="bonusLabel"/>
+    </HBox>
 </VBox>

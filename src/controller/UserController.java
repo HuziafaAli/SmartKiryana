@@ -65,6 +65,16 @@ public class UserController {
         return success;
     }
 
+    public boolean activateUser(int userId) {
+        boolean success = authService.activateUser(userId);
+        if (success) {
+            System.out.println("Employee activated successfully.");
+        } else {
+            System.out.println("Failed to activate. Access Denied or Employee does not exist.");
+        }
+        return success;
+    }
+
     public List<Employee> getAllEmployees() {
         return authService.getAllEmployees();
     }

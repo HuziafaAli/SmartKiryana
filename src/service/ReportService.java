@@ -46,40 +46,25 @@ public class ReportService {
 
     public PerformanceReport generatePerformanceReport(Employee emp, int month, int year,
             List<Bill> allBills) {
+        List<SalesTarget> targetDatabase = salesTargetDAO.findAll();
+        return generatePerformanceReport(emp, month, year, allBills, targetDatabase);
+    }
+
+    private PerformanceReport generatePerformanceReport(Employee emp, int month, int year,
+            List<Bill> allBills, List<SalesTarget> targetDatabase) {
 
         if (!Validator.isNotNull(emp) || !Validator.isValidMonth(month)
                 || !Validator.isValidYear(year)) {
             return null;
         }
 
-        List<SalesTarget> targetDatabase = salesTargetDAO.findAll();
-
         ReportTemplate<PerformanceReport> generator = new PerformanceReportGenerator(emp, month, year, allBills,
                 targetDatabase);
-        PerformanceReport report = generator.generate();
-
-        return report;
+        return generator.generate();
     }
 
-    public List<PerformanceReport> getTargetHistory(Employee emp, List<Bill> allBills) {
-        List<PerformanceReport> reports = new ArrayList<>();
-
-        if (!Validator.isNotNull(emp)) {
-            return reports;
-        }
-
-        List<SalesTarget> targets = salesTargetDAO.findByEmployee(emp.getUserId());
-        for (SalesTarget target : targets) {
-            PerformanceReport report = generatePerformanceReport(
-                    emp,
-                    target.getMonth(),
-                    target.getYear(),
-                    allBills);
-            if (report != null) {
-                reports.add(report);
-            }
-        }
-        return reports;
+    public List<SalesTarget> getAllTargets() {
+        return salesTargetDAO.findAll();
     }
 
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
@@ -95,20 +80,5 @@ public class ReportService {
         return report;
     }
 
-    public List<SalesRecord> getSalesHistory(List<Bill> allBills) {
-        List<SalesRecord> history = new ArrayList<>();
 
-        for (Bill bill : allBills) {
-            SalesRecord record = new SalesRecord(
-                    bill.getBillId(),
-                    bill.getBillId(),
-                    bill.getUser() != null ? bill.getUser().getFullName() : "Unknown",
-                    bill.getBillDate(),
-                    bill.getTotalAmount(),
-                    bill.getItems().size());
-            history.add(record);
-        }
-
-        return history;
-    }
 }

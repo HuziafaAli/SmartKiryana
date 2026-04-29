@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 
 public class EmployeesController implements FacadeAware {
 
-    @FXML private FlowPane employeeGrid;
-    @FXML private TextField searchField;
+    @FXML
+    private FlowPane employeeGrid;
+    @FXML
+    private TextField searchField;
 
     private SystemFacade systemFacade;
     private final ObservableList<Employee> empList = FXCollections.observableArrayList();
@@ -97,42 +99,57 @@ public class EmployeesController implements FacadeAware {
 
         top.getChildren().addAll(avatar, identity, status);
 
-        HBox details = new HBox(8,
-                metric("Role", emp.getRole(), 96),
-                metric("Phone", emp.getPhone(), 132),
-                metric("CNIC", emp.getCnic() == null ? "N/A" : emp.getCnic(), 150));
+        HBox details = new HBox(0);
+        details.getStyleClass().add("employee-details-container");
+        details.getChildren().addAll(
+                metric("Role", emp.getRole()),
+                dividerVertical(),
+                metric("Phone", emp.getPhone()),
+                dividerVertical(),
+                metric("CNIC", emp.getCnic() == null ? "N/A" : emp.getCnic()));
         VBox.setMargin(details, new javafx.geometry.Insets(14, 0, 14, 0));
 
         Button editBtn = new Button("Edit");
         editBtn.getStyleClass().add("btn-table-action");
         editBtn.setOnAction(e -> handleEdit(emp));
 
-        Button deactivateBtn = new Button("Deactivate");
-        deactivateBtn.getStyleClass().add("btn-danger");
-        deactivateBtn.setDisable(!emp.isActive());
-        deactivateBtn.setOnAction(e -> handleDeactivate(emp));
+        Button actionBtn;
+        if (emp.isActive()) {
+            actionBtn = new Button("Deactivate");
+            actionBtn.getStyleClass().add("btn-danger");
+            actionBtn.setOnAction(e -> handleDeactivate(emp));
+        } else {
+            actionBtn = new Button("Activate");
+            actionBtn.getStyleClass().add("btn-activate");
+            actionBtn.setOnAction(e -> handleActivate(emp));
+        }
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        HBox actions = new HBox(8, editBtn, spacer, deactivateBtn);
+        HBox actions = new HBox(8, editBtn, spacer, actionBtn);
         actions.setAlignment(Pos.CENTER_LEFT);
 
         card.getChildren().addAll(top, divider(), details, divider(), actions);
         return card;
     }
 
-    private VBox metric(String labelText, String valueText, double width) {
+    private Region dividerVertical() {
+        Region region = new Region();
+        region.getStyleClass().add("inv-card-divider-v");
+        return region;
+    }
+
+    private VBox metric(String labelText, String valueText) {
         VBox box = new VBox(3);
-        box.getStyleClass().add("employee-mini-metric");
-        box.setPrefWidth(width);
-        box.setMinWidth(width);
-        box.setMaxWidth(width);
+        HBox.setHgrow(box, Priority.ALWAYS);
+        box.setAlignment(Pos.CENTER_LEFT);
+        box.setPadding(new javafx.geometry.Insets(8));
         Label label = new Label(labelText);
         label.getStyleClass().add("inv-card-field-label");
         Label value = new Label(valueText);
         value.getStyleClass().add("employee-metric-value");
         value.setWrapText(false);
-        value.setMaxWidth(width - 16);
+        value.setEllipsisString("...");
         box.getChildren().addAll(label, value);
         return box;
     }
@@ -155,19 +172,30 @@ public class EmployeesController implements FacadeAware {
 
     @FXML
     private void handleAddEmployee() {
-        TextField usernameF = new TextField(); usernameF.setPromptText("Username");
-        TextField passwordF = new TextField(); passwordF.setPromptText("Password");
-        TextField nameF = new TextField(); nameF.setPromptText("Full Name");
-        TextField phoneF = new TextField(); phoneF.setPromptText("Phone (03XX-XXXXXXX)");
-        TextField cnicF = new TextField(); cnicF.setPromptText("CNIC (XXXXX-XXXXXXX-X)");
+        TextField usernameF = new TextField();
+        usernameF.setPromptText("Username");
+        TextField passwordF = new TextField();
+        passwordF.setPromptText("Password");
+        TextField nameF = new TextField();
+        nameF.setPromptText("Full Name");
+        TextField phoneF = new TextField();
+        phoneF.setPromptText("Phone (03XX-XXXXXXX)");
+        TextField cnicF = new TextField();
+        cnicF.setPromptText("CNIC (XXXXX-XXXXXXX-X)");
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
-        grid.setHgap(10); grid.setVgap(10);
-        grid.add(new Label("Username:"), 0, 0); grid.add(usernameF, 1, 0);
-        grid.add(new Label("Password:"), 0, 1); grid.add(passwordF, 1, 1);
-        grid.add(new Label("Full Name:"), 0, 2); grid.add(nameF, 1, 2);
-        grid.add(new Label("Phone:"), 0, 3); grid.add(phoneF, 1, 3);
-        grid.add(new Label("CNIC:"), 0, 4); grid.add(cnicF, 1, 4);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Username:"), 0, 0);
+        grid.add(usernameF, 1, 0);
+        grid.add(new Label("Password:"), 0, 1);
+        grid.add(passwordF, 1, 1);
+        grid.add(new Label("Full Name:"), 0, 2);
+        grid.add(nameF, 1, 2);
+        grid.add(new Label("Phone:"), 0, 3);
+        grid.add(phoneF, 1, 3);
+        grid.add(new Label("CNIC:"), 0, 4);
+        grid.add(cnicF, 1, 4);
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Add New Employee");
@@ -179,8 +207,11 @@ public class EmployeesController implements FacadeAware {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             boolean success = systemFacade.addEmployee(usernameF.getText(), passwordF.getText(),
                     nameF.getText(), phoneF.getText(), cnicF.getText());
-            if (success) { refreshData(); }
-            else { showAlert("Error", "Failed to add employee. Check inputs and permissions."); }
+            if (success) {
+                refreshData();
+            } else {
+                showAlert("Error", "Failed to add employee. Check inputs and permissions.");
+            }
         }
     }
 
@@ -191,11 +222,16 @@ public class EmployeesController implements FacadeAware {
         TextField passwordF = new TextField(emp.getPassword());
 
         javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
-        grid.setHgap(10); grid.setVgap(10);
-        grid.add(new Label("Full Name:"), 0, 0); grid.add(nameF, 1, 0);
-        grid.add(new Label("Phone:"), 0, 1); grid.add(phoneF, 1, 1);
-        grid.add(new Label("Username:"), 0, 2); grid.add(usernameF, 1, 2);
-        grid.add(new Label("Password:"), 0, 3); grid.add(passwordF, 1, 3);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.add(new Label("Full Name:"), 0, 0);
+        grid.add(nameF, 1, 0);
+        grid.add(new Label("Phone:"), 0, 1);
+        grid.add(phoneF, 1, 1);
+        grid.add(new Label("Username:"), 0, 2);
+        grid.add(usernameF, 1, 2);
+        grid.add(new Label("Password:"), 0, 3);
+        grid.add(passwordF, 1, 3);
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Edit Employee - " + emp.getFullName());
@@ -207,22 +243,45 @@ public class EmployeesController implements FacadeAware {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             boolean success = systemFacade.updateEmployee(emp.getUserId(), nameF.getText(),
                     phoneF.getText(), usernameF.getText(), passwordF.getText());
-            if (success) { refreshData(); }
-            else { showAlert("Error", "Failed to update employee."); }
+            if (success) {
+                refreshData();
+            } else {
+                showAlert("Error", "Failed to update employee.");
+            }
         }
     }
 
     private void handleDeactivate(Employee emp) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Deactivate Employee");
-        confirm.setContentText("Deactivate " + emp.getFullName() + "?");
+        confirm.setContentText("Deactivate " + emp.getFullName() + "? This will prevent them from logging in.");
         DialogStyler.style(confirm);
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             boolean success = systemFacade.deactivateUser(emp.getUserId());
-            if (success) { refreshData(); }
-            else { showAlert("Error", "Failed to deactivate."); }
+            if (success) {
+                refreshData();
+            } else {
+                showAlert("Error", "Failed to deactivate.");
+            }
+        }
+    }
+
+    private void handleActivate(Employee emp) {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Activate Employee");
+        confirm.setContentText("Activate " + emp.getFullName() + "?");
+        DialogStyler.style(confirm);
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            boolean success = systemFacade.activateUser(emp.getUserId());
+            if (success) {
+                refreshData();
+            } else {
+                showAlert("Error", "Failed to activate.");
+            }
         }
     }
 

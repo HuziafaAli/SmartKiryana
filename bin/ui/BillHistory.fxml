@@ -16,7 +16,7 @@
     </padding>
 
     <HBox alignment="CENTER_LEFT" spacing="15">
-        <Text text="Bill History" styleClass="page-title"/>
+        <Text text="Transaction History" styleClass="page-title"/>
     </HBox>
 
     <!-- Filters -->
@@ -50,15 +50,28 @@
         </VBox>
     </HBox>
 
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <Text text="Sales Records" styleClass="section-title"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="resultCountLabel" text="0 records" styleClass="text-muted"/>
-    </HBox>
-
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-border-color: transparent;">
-        <FlowPane fx:id="billGrid" hgap="18" vgap="18"
-                  style="-fx-padding: 4 2 10 2;"/>
-    </ScrollPane>
+    <TabPane fx:id="historyTabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="inventory-tabs">
+        <Tab text="Sales">
+            <VBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <HBox alignment="CENTER_LEFT">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="salesCountLabel" text="0 records" styleClass="text-muted"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <FlowPane fx:id="billGrid" hgap="18" vgap="18" style="-fx-padding: 4 2 10 2;"/>
+                </ScrollPane>
+            </VBox>
+        </Tab>
+        <Tab text="Returns">
+            <VBox spacing="10" style="-fx-padding: 10 0 0 0;">
+                <HBox alignment="CENTER_LEFT">
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="returnsCountLabel" text="0 records" styleClass="text-muted"/>
+                </HBox>
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <FlowPane fx:id="returnsGrid" hgap="18" vgap="18" style="-fx-padding: 4 2 10 2;"/>
+                </ScrollPane>
+            </VBox>
+        </Tab>
+    </TabPane>
 </VBox>

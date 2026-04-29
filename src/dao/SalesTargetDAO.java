@@ -11,6 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class SalesTargetDAO {
 
@@ -68,13 +72,14 @@ public class SalesTargetDAO {
 
     public List<SalesTarget> findAll() {
         List<SalesTarget> targets = new ArrayList<>();
+        Map<Integer, model.User> userCache = new HashMap<>();
         String query = "SELECT * FROM sales_targets ORDER BY year DESC, month DESC, target_id DESC";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                targets.add(mapRow(rs));
+                targets.add(mapRow(rs, userCache));
             }
 
         } catch (SQLException e) {
@@ -85,17 +90,18 @@ public class SalesTargetDAO {
 
     public List<SalesTarget> findByEmployee(int employeeId) {
         List<SalesTarget> targets = new ArrayList<>();
+        Map<Integer, model.User> userCache = new HashMap<>();
         String query = "SELECT * FROM sales_targets WHERE employee_id = ? ORDER BY year DESC, month DESC, target_id DESC";
         try (Connection conn = DatabaseConnection.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, employeeId);
             ResultSet rs = stmt.executeQuery();
-            java.util.Set<String> seenPeriods = new java.util.HashSet<>();
+            Set<String> seenPeriods = new HashSet<>();
             while (rs.next()) {
                 String periodKey = rs.getInt("year") + "-" + rs.getInt("month");
                 if (seenPeriods.add(periodKey)) {
-                    targets.add(mapRow(rs));
+                    targets.add(mapRow(rs, userCache));
                 }
             }
 
@@ -124,10 +130,16 @@ public class SalesTargetDAO {
         return 0;
     }
 
-
-    private SalesTarget mapRow(ResultSet rs) throws SQLException {
+    private SalesTarget mapRow(ResultSet rs, Map<Integer, model.User> userCache) throws SQLException {
         int employeeId = rs.getInt("employee_id");
-        Employee emp = (Employee) userDAO.findById(employeeId);
+        Employee emp;
+
+        if (userCache.containsKey(employeeId)) {
+            emp = (Employee) userCache.get(employeeId);
+        } else {
+            emp = (Employee) userDAO.findById(employeeId);
+            userCache.put(employeeId, emp);
+        }
 
         SalesTarget target = new SalesTarget(
                 rs.getInt("target_id"),

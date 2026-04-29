@@ -22,8 +22,6 @@ public class POSController implements FacadeAware {
     @FXML
     private Label subTotalLabel;
     @FXML
-    private Label taxLabel;
-    @FXML
     private Label totalLabel;
     @FXML
     private TextField discountField;
@@ -220,11 +218,9 @@ public class POSController implements FacadeAware {
         if (bill != null) {
             double subtotal = bill.getItems().stream().mapToDouble(BillItem::getSubtotal).sum();
             subTotalLabel.setText(String.format("Rs. %.2f", subtotal));
-            taxLabel.setText(String.format("Rs. %.2f", bill.getTaxAmount()));
             totalLabel.setText(String.format("Rs. %.2f", bill.getTotalAmount()));
         } else {
             subTotalLabel.setText("Rs. 0.00");
-            taxLabel.setText("Rs. 0.00");
             totalLabel.setText("Rs. 0.00");
         }
     }
@@ -249,8 +245,13 @@ public class POSController implements FacadeAware {
                 double cashAmount = Double.parseDouble(cash);
                 Bill finalized = systemFacade.checkOut(cashAmount);
                 if (finalized != null) {
+                    // Auto-save PDF
+                    String pdfPath = util.ReceiptPDFService.saveReceiptAsPDF(finalized);
+                    
                     double change = finalized.getreturnCash();
-                    showInfo("Payment Successful", String.format("Change: Rs. %.2f\nThank you!", change));
+                    String successMsg = String.format("Change: Rs. %.2f\n\nReceipt saved to:\n%s", change, pdfPath);
+                    showInfo("Payment Successful", successMsg);
+                    
                     systemFacade.startNewBill(systemFacade.getCurrentUser());
                     refreshBill();
                     loadProductGrid();

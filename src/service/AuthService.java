@@ -106,6 +106,25 @@ public class AuthService {
         return false;
     }
 
+    public boolean activateUser(int userId) {
+        if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
+            return false;
+        }
+
+        if (!Validator.isPositiveQuantity(userId)) {
+            return false;
+        }
+
+        List<User> allUsers = userDAO.findAll();
+        for (User u : allUsers) {
+            if (u.getUserId() == userId) {
+                u.setActive(true);
+                return userDAO.update(u);
+            }
+        }
+        return false;
+    }
+
     public List<Employee> getAllEmployees() {
         List<User> allUsers = userDAO.findAll();
         List<Employee> tempEmp = new ArrayList<>();

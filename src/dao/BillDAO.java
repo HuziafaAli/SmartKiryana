@@ -12,8 +12,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class BillDAO {
 
@@ -32,8 +36,8 @@ public class BillDAO {
             conn.setAutoCommit(false);
 
             try (PreparedStatement billStmt = conn.prepareStatement(billQuery, Statement.RETURN_GENERATED_KEYS);
-                 PreparedStatement itemStmt = conn.prepareStatement(itemQuery);
-                 PreparedStatement productUpdateStmt = conn.prepareStatement(productUpdateQuery)) {
+                    PreparedStatement itemStmt = conn.prepareStatement(itemQuery);
+                    PreparedStatement productUpdateStmt = conn.prepareStatement(productUpdateQuery)) {
 
                 billStmt.setInt(1, bill.getUser() != null ? bill.getUser().getUserId() : 0);
                 billStmt.setTimestamp(2, Timestamp.valueOf(bill.getBillDate()));
@@ -86,7 +90,8 @@ public class BillDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                Bill bill = mapBillRow(rs);
+                Map<Integer, model.User> tempCache = new HashMap<>();
+                Bill bill = mapBillRow(rs, tempCache);
                 bill.setItems(findBillItems(billId));
                 return bill;
             }
@@ -98,7 +103,8 @@ public class BillDAO {
     }
 
     public List<Bill> findAll() {
-        java.util.Map<Integer, Bill> billMap = new java.util.LinkedHashMap<>();
+        Map<Integer, Bill> billMap = new LinkedHashMap<>();
+        Map<Integer, model.User> userCache = new HashMap<>();
         String query = "SELECT b.*, bi.bill_item_id, bi.quantity, bi.unit_price, "
                 + "p.product_id, p.barcode, p.product_name, p.price, p.cost_price, "
                 + "c.category_id, c.category_name "
@@ -115,14 +121,15 @@ public class BillDAO {
             while (rs.next()) {
                 int billId = rs.getInt("bill_id");
                 Bill bill = billMap.get(billId);
-                
+
                 if (bill == null) {
-                    bill = mapBillRow(rs);
+                    bill = mapBillRow(rs, userCache);
                     billMap.put(billId, bill);
                 }
 
                 int billItemId = rs.getInt("bill_item_id");
-                if (rs.wasNull()) continue;
+                if (rs.wasNull())
+                    continue;
 
                 ProductCategory category = new ProductCategory(
                         rs.getInt("category_id"),
@@ -150,8 +157,6 @@ public class BillDAO {
         }
         return new ArrayList<>(billMap.values());
     }
-
-
 
     private List<BillItem> findBillItems(int billId) {
         List<BillItem> items = new ArrayList<>();
@@ -197,7 +202,7 @@ public class BillDAO {
         return items;
     }
 
-    private Bill mapBillRow(ResultSet rs) throws SQLException {
+    private Bill mapBillRow(ResultSet rs, Map<Integer, model.User> userCache) throws SQLException {
         Bill bill = new Bill();
         bill.setBillId(rs.getInt("bill_id"));
         bill.setBillDate(rs.getTimestamp("bill_date").toLocalDateTime());
@@ -209,7 +214,10 @@ public class BillDAO {
 
         int userId = rs.getInt("user_id");
         if (userId > 0) {
-            bill.setUser(userDAO.findById(userId));
+            if (!userCache.containsKey(userId)) {
+                userCache.put(userId, userDAO.findById(userId));
+            }
+            bill.setUser(userCache.get(userId));
         }
 
         return bill;

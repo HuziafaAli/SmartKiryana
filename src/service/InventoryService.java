@@ -143,10 +143,16 @@ public class InventoryService {
         int newQuantity = itemExist.getStockQuantity() + quantityToAdd;
         boolean success = inventoryDAO.updateStock(barcode, newQuantity);
 
-        if (success && newQuantity >= itemExist.getMinStockThreshold()) {
+        if (success) {
             InventoryItem updatedItem = isProductExists(barcode);
-            for (StockObserver obs : observers) {
-                obs.onStockRefilled(updatedItem);
+            if (updatedItem.isOverStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockOver(updatedItem);
+                }
+            } else if (!updatedItem.isLowStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockNormal(updatedItem);
+                }
             }
         }
         return success;
@@ -185,12 +191,16 @@ public class InventoryService {
         int newQuantity = itemExist.getStockQuantity() - quantityToReduce;
         boolean success = inventoryDAO.updateStock(barcode, newQuantity);
 
-        // Observer trigger: notify if stock is now low
+        // Observer trigger: notify if stock is now low or normal
         if (success) {
-            itemExist.setStockQuantity(newQuantity);
-            if (itemExist.isLowStock()) {
+            InventoryItem updatedItem = isProductExists(barcode);
+            if (updatedItem.isLowStock()) {
                 for (StockObserver obs : observers) {
-                    obs.onStockLow(itemExist);
+                    obs.onStockLow(updatedItem);
+                }
+            } else if (!updatedItem.isOverStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockNormal(updatedItem);
                 }
             }
         }
@@ -234,6 +244,14 @@ public class InventoryService {
             if (item.isLowStock()) {
                 for (StockObserver obs : observers) {
                     obs.onStockLow(item);
+                }
+            } else if (item.isOverStock()) {
+                for (StockObserver obs : observers) {
+                    obs.onStockOver(item);
+                }
+            } else {
+                for (StockObserver obs : observers) {
+                    obs.onStockNormal(item);
                 }
             }
         }

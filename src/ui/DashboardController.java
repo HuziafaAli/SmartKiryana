@@ -15,17 +15,27 @@ import java.io.IOException;
 
 public class DashboardController {
 
-    @FXML private StackPane contentArea;
-    @FXML private Label userNameLabel;
-    @FXML private Label userRoleLabel;
+    @FXML
+    private StackPane contentArea;
+    @FXML
+    private Label userNameLabel;
+    @FXML
+    private Label userRoleLabel;
 
-    @FXML private Button navDashboard;
-    @FXML private Button navPOS;
-    @FXML private Button navInventory;
-    @FXML private Button navSales;
-    @FXML private Button navEmployees;
-    @FXML private Button navReports;
-    @FXML private Button navSalesTarget;
+    @FXML
+    private Button navDashboard;
+    @FXML
+    private Button navPOS;
+    @FXML
+    private Button navInventory;
+    @FXML
+    private Button navSales;
+    @FXML
+    private Button navEmployees;
+    @FXML
+    private Button navReports;
+    @FXML
+    private Button navSalesTarget;
 
     private Button activeNavButton;
     private SystemFacade systemFacade;
@@ -36,25 +46,59 @@ public class DashboardController {
         if (user != null) {
             userNameLabel.setText(user.getFullName());
             userRoleLabel.setText(user.getRole());
-        }
-        activeNavButton = navDashboard;
 
-        // Show appropriate default view based on role
-        if (user != null && user.getRole().equalsIgnoreCase("EMPLOYEE")) {
-            setActiveNav(navReports);
-            loadView("Reports.fxml");
-        } else {
-            showDashboardHome();
+            if (user.getRole().equalsIgnoreCase("EMPLOYEE")) {
+                navEmployees.setVisible(false);
+                navEmployees.setManaged(false);
+                navSalesTarget.setVisible(false);
+                navSalesTarget.setManaged(false);
+            }
         }
+
+        showDashboardHome();
     }
 
-    @FXML private void showDashboardHome() { setActiveNav(navDashboard); loadView("DashboardHome.fxml"); }
-    @FXML private void showPOS() { setActiveNav(navPOS); loadView("POS.fxml"); }
-    @FXML private void showInventory() { setActiveNav(navInventory); loadView("Inventory.fxml"); }
-    @FXML private void showSales() { setActiveNav(navSales); loadView("BillHistory.fxml"); }
-    @FXML private void showEmployees() { setActiveNav(navEmployees); loadView("Employees.fxml"); }
-    @FXML private void showReports() { setActiveNav(navReports); loadView("Reports.fxml"); }
-    @FXML private void showSalesTarget() { setActiveNav(navSalesTarget); loadView("SalesTarget.fxml"); }
+    @FXML
+    private void showDashboardHome() {
+        setActiveNav(navDashboard);
+        loadView("DashboardHome.fxml");
+    }
+
+    @FXML
+    private void showPOS() {
+        setActiveNav(navPOS);
+        loadView("POS.fxml");
+    }
+
+    @FXML
+    private void showInventory() {
+        setActiveNav(navInventory);
+        loadView("Inventory.fxml");
+    }
+
+    @FXML
+    private void showSales() {
+        setActiveNav(navSales);
+        loadView("BillHistory.fxml");
+    }
+
+    @FXML
+    private void showEmployees() {
+        setActiveNav(navEmployees);
+        loadView("Employees.fxml");
+    }
+
+    @FXML
+    private void showReports() {
+        setActiveNav(navReports);
+        loadView("Reports.fxml");
+    }
+
+    @FXML
+    private void showSalesTarget() {
+        setActiveNav(navSalesTarget);
+        loadView("SalesTarget.fxml");
+    }
 
     private void setActiveNav(Button button) {
         if (activeNavButton != null) {

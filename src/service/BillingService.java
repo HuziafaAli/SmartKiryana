@@ -213,40 +213,6 @@ public class BillingService {
         return filtered;
     }
 
-    public List<Bill> filterByCategory(int categoryId) {
-        List<Bill> allBills = billDAO.findAll();
-        List<Bill> filtered = new ArrayList<>();
-        for (Bill b : allBills) {
-            for (BillItem item : b.getItems()) {
-                if (item.getProduct().getCategory().getCategoryId() == categoryId) {
-                    filtered.add(b);
-                    break;
-                }
-            }
-        }
-        return filtered;
-    }
 
-    public List<Bill> filterByEmployee(int employeeId) {
-        List<Bill> allBills = billDAO.findAll();
-        List<Bill> filtered = new ArrayList<>();
-        for (Bill b : allBills) {
-            if (b.getUser() != null && b.getUser().getUserId() == employeeId) {
-                filtered.add(b);
-            }
-        }
-        return filtered;
-    }
-
-    public List<Bill> filterByAmountRange(double minAmount, double maxAmount) {
-        List<Bill> allBills = billDAO.findAll();
-        List<Bill> filtered = new ArrayList<>();
-        for (Bill b : allBills) {
-            if (b.getTotalAmount() >= minAmount && b.getTotalAmount() <= maxAmount) {
-                filtered.add(b);
-            }
-        }
-        return filtered;
-    }
 }
 

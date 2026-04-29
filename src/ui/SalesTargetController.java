@@ -10,32 +10,62 @@ import model.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 
 public class SalesTargetController implements FacadeAware {
 
-    @FXML private ComboBox<Employee> empSelector;
-    @FXML private ComboBox<String> monthSelector;
-    @FXML private ComboBox<String> yearSelector;
-    @FXML private TextField targetField;
+    @FXML
+    private ComboBox<Employee> empSelector;
+    @FXML
+    private ComboBox<String> monthSelector;
+    @FXML
+    private ComboBox<String> yearSelector;
+    @FXML
+    private TextField targetField;
 
-    @FXML private Label selectedEmpLabel;
-    @FXML private Label periodLabel;
-    @FXML private Label progressLabel;
-    @FXML private Label progressInfoLabel;
-    @FXML private Label currentTargetLabel;
-    @FXML private Label achievedLabel;
-    @FXML private Label remainingLabel;
-    @FXML private Label bonusLabel;
-    @FXML private Label achievementMessageLabel;
-    @FXML private Label historyCountLabel;
-    @FXML private VBox progressRing;
-    @FXML private FlowPane targetHistoryFlow;
+    @FXML
+    private Label selectedEmpLabel;
+    @FXML
+    private Label periodLabel;
+    @FXML
+    private Label progressLabel;
+    @FXML
+    private Label progressInfoLabel;
+    @FXML
+    private Label currentTargetLabel;
+    @FXML
+    private Label achievedLabel;
+    @FXML
+    private Label remainingLabel;
+    @FXML
+    private Label bonusLabel;
+    @FXML
+    private Label achievementMessageLabel;
+    @FXML
+    private Label historyCountLabel;
+    @FXML
+    private VBox progressRing;
+    @FXML
+    private FlowPane targetHistoryFlow;
+
+    private List<Bill> allBillsCache;
+    private List<SalesTarget> allTargetsCache;
+    private List<PerformanceReport> currentHistoryReports;
 
     private SystemFacade systemFacade;
 
     private static final String[] MONTHS = {
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
     };
 
     public void initialize() {
@@ -62,7 +92,8 @@ public class SalesTargetController implements FacadeAware {
             @Override
             protected void updateItem(Employee e, boolean empty) {
                 super.updateItem(e, empty);
-                setText(empty || e == null ? "" : e.getFullName() + " (EMP" + String.format("%03d", e.getUserId()) + ")");
+                setText(empty || e == null ? ""
+                        : e.getFullName() + " (EMP" + String.format("%03d", e.getUserId()) + ")");
             }
         });
         empSelector.setButtonCell(new ListCell<Employee>() {
@@ -90,20 +121,82 @@ public class SalesTargetController implements FacadeAware {
         if (emp == null) {
             selectedEmpLabel.setText("Select an employee");
             setEmptyProgress();
-            renderTargetHistory(null);
+            renderTargetHistoryUI(null, null);
             return;
         }
 
         selectedEmpLabel.setText(emp.getFullName());
-        renderTargetHistory(emp);
 
-        List<Bill> allBills = systemFacade.getAllBills();
-        List<PerformanceReport> reports = systemFacade.getPerformanceComparison(
-                java.util.Collections.singletonList(emp),
-                month,
-                year,
-                allBills);
+        if (allBillsCache == null || allTargetsCache == null) {
+            progressLabel.setText("...");
+            Task<Void> initialFetchTask = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    allBillsCache = systemFacade.getAllBills();
+                    allTargetsCache = systemFacade.getAllTargets();
+                    return null;
+                }
+            };
+            initialFetchTask.setOnSucceeded(e -> {
+                calculateAndShowProgressLocally(emp, month, year);
+            });
+            new Thread(initialFetchTask).start();
+        } else {
+            calculateAndShowProgressLocally(emp, month, year);
+        }
+    }
 
+    private void calculateAndShowProgressLocally(Employee emp, int month, int year) {
+        // Instant Calculation on UI thread or small background task
+        double totalSales = 0;
+        for (Bill b : allBillsCache) {
+            if (b.getUser() != null && b.getUser().getUserId() == emp.getUserId() &&
+                    b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year) {
+                totalSales += b.getTotalAmount();
+            }
+        }
+
+        double targetAmt = 0;
+        for (SalesTarget t : allTargetsCache) {
+            if (t.getEmployee().getUserId() == emp.getUserId() && t.getMonth() == month && t.getYear() == year) {
+                targetAmt = t.getTargetAmount();
+                break;
+            }
+        }
+
+        double bonus = (targetAmt > 0 && totalSales > targetAmt) ? (totalSales - targetAmt) * 0.05 : 0;
+        PerformanceReport currentReport = new PerformanceReport(0, emp, month, year, totalSales, targetAmt, bonus);
+
+        updateCurrentProgressUI(Collections.singletonList(currentReport));
+
+        // History calculation locally
+        List<PerformanceReport> history = new ArrayList<>();
+        Set<String> seenPeriods = new HashSet<>();
+        for (SalesTarget t : allTargetsCache) {
+            if (t.getEmployee().getUserId() == emp.getUserId()) {
+                String key = t.getMonth() + "-" + t.getYear();
+                if (seenPeriods.add(key)) {
+                    double hTotalSales = 0;
+                    for (Bill b : allBillsCache) {
+                        if (b.getUser() != null && b.getUser().getUserId() == emp.getUserId() &&
+                                b.getBillDate().getMonthValue() == t.getMonth()
+                                && b.getBillDate().getYear() == t.getYear()) {
+                            hTotalSales += b.getTotalAmount();
+                        }
+                    }
+                    double hBonus = (t.getTargetAmount() > 0 && hTotalSales > t.getTargetAmount())
+                            ? (hTotalSales - t.getTargetAmount()) * 0.05
+                            : 0;
+                    history.add(new PerformanceReport(0, emp, t.getMonth(), t.getYear(), hTotalSales,
+                            t.getTargetAmount(), hBonus));
+                }
+            }
+        }
+        currentHistoryReports = history;
+        renderTargetHistoryUI(emp, currentHistoryReports);
+    }
+
+    private void updateCurrentProgressUI(List<PerformanceReport> reports) {
         if (!reports.isEmpty()) {
             PerformanceReport current = reports.get(0);
             double pct = current.getAchievementPercentage();
@@ -114,13 +207,15 @@ public class SalesTargetController implements FacadeAware {
             achievedLabel.setText(String.format("Rs. %,.0f", current.getTotalSales()));
             remainingLabel.setText(String.format("Rs. %,.0f", remaining));
             bonusLabel.setText(String.format("Rs. %,.0f", current.getBonusAmount()));
-            progressInfoLabel.setText(String.format("Rs. %,.0f / Rs. %,.0f", current.getTotalSales(), current.getTargetAmount()));
+            progressInfoLabel.setText(
+                    String.format("Rs. %,.0f / Rs. %,.0f", current.getTotalSales(), current.getTargetAmount()));
 
             String borderColor = pct >= 100 ? "#10b981" : pct >= 50 ? "#3b82f6" : "#ef4444";
             progressRing.setStyle(
                     "-fx-background-color: #141929; -fx-background-radius: 200; " +
-                    "-fx-min-width: 150; -fx-min-height: 150; -fx-max-width: 150; -fx-max-height: 150; " +
-                    "-fx-alignment: CENTER; -fx-border-color: " + borderColor + "; -fx-border-width: 6; -fx-border-radius: 200;");
+                            "-fx-min-width: 150; -fx-min-height: 150; -fx-max-width: 150; -fx-max-height: 150; " +
+                            "-fx-alignment: CENTER; -fx-border-color: " + borderColor
+                            + "; -fx-border-width: 6; -fx-border-radius: 200;");
 
             if (pct >= 100) {
                 achievementMessageLabel.setText("Target achieved. Bonus is active for this period.");
@@ -145,7 +240,7 @@ public class SalesTargetController implements FacadeAware {
         progressRing.setStyle("");
     }
 
-    private void renderTargetHistory(Employee emp) {
+    private void renderTargetHistoryUI(Employee emp, List<PerformanceReport> reports) {
         targetHistoryFlow.getChildren().clear();
 
         if (emp == null) {
@@ -154,7 +249,6 @@ public class SalesTargetController implements FacadeAware {
             return;
         }
 
-        List<PerformanceReport> reports = systemFacade.getTargetHistory(emp, systemFacade.getAllBills());
         historyCountLabel.setText(reports.size() + (reports.size() == 1 ? " target" : " targets"));
 
         if (reports.isEmpty()) {
@@ -183,7 +277,7 @@ public class SalesTargetController implements FacadeAware {
         Label target = new Label("Target: Rs. " + String.format("%,.0f", report.getTargetAmount()));
         target.getStyleClass().add("text-muted");
 
-        Label pct = new Label(String.format("%.0f%%", report.getAchievementPercentage()));
+        Label pct = new Label(String.format("%.0f%%", Math.min(100.0, report.getAchievementPercentage())));
         pct.getStyleClass().add(report.getAchievementPercentage() >= 100 ? "badge-active" : "badge-info");
 
         title.getChildren().addAll(period, target);
@@ -191,7 +285,9 @@ public class SalesTargetController implements FacadeAware {
 
         HBox metrics = new HBox(8,
                 historyMetric("Achieved", String.format("Rs. %,.0f", report.getTotalSales()), false),
-                historyMetric("Remaining", String.format("Rs. %,.0f", Math.max(0, report.getTargetAmount() - report.getTotalSales())), true),
+                historyMetric("Remaining",
+                        String.format("Rs. %,.0f", Math.max(0, report.getTargetAmount() - report.getTotalSales())),
+                        true),
                 historyMetric("Bonus", String.format("Rs. %,.0f", report.getBonusAmount()), false));
         VBox.setMargin(metrics, new javafx.geometry.Insets(12, 0, 0, 0));
 
@@ -234,6 +330,11 @@ public class SalesTargetController implements FacadeAware {
             return;
         }
 
+        if (!emp.isActive()) {
+            showAlert("Inactive Employee", "First activate the employee.");
+            return;
+        }
+
         String amountText = targetField.getText().trim();
         if (amountText.isEmpty()) {
             showAlert("Enter Amount", "Please enter a target amount.");
@@ -245,19 +346,45 @@ public class SalesTargetController implements FacadeAware {
             int month = monthSelector.getSelectionModel().getSelectedIndex() + 1;
             int year = Integer.parseInt(yearSelector.getValue());
 
-            boolean success = systemFacade.assignTarget(emp, month, year, amount);
-            if (success) {
-                Alert info = new Alert(Alert.AlertType.INFORMATION);
-                info.setTitle("Success");
-                info.setContentText("Target of Rs. " + String.format("%,.0f", amount) + " assigned to " + emp.getFullName());
-                DialogStyler.style(info);
-                info.showAndWait();
-                targetField.clear();
-                loadEmployeeProgress();
-                renderTargetHistory(emp);
-            } else {
-                showAlert("Failed", "Failed to assign target. Only admins can assign targets.");
+            // Optimistic UI Update
+            SalesTarget newTarget = new SalesTarget(0, emp, month, year, amount);
+
+            // Remove old target for same period if exists in cache
+            if (allTargetsCache != null) {
+                allTargetsCache.removeIf(t -> t.getEmployee().getUserId() == emp.getUserId() && t.getMonth() == month
+                        && t.getYear() == year);
+                allTargetsCache.add(0, newTarget);
             }
+
+            // Instantly show progress from local cache
+            calculateAndShowProgressLocally(emp, month, year);
+
+            // Background update
+            Task<Boolean> assignTask = new Task<>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    return systemFacade.assignTarget(emp, month, year, amount);
+                }
+            };
+            assignTask.setOnSucceeded(e -> {
+                if (assignTask.getValue()) {
+                    targetField.clear();
+                    // Silently refresh the real target IDs and database state in background
+                    Task<Void> refreshTask = new Task<>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            allTargetsCache = systemFacade.getAllTargets();
+                            return null;
+                        }
+                    };
+                    new Thread(refreshTask).start();
+                } else {
+                    showAlert("Failed", "Failed to assign target. Only admins can assign targets.");
+                    loadEmployeeProgress(); // Revert on failure
+                }
+            });
+            new Thread(assignTask).start();
+
         } catch (NumberFormatException e) {
             showAlert("Invalid Amount", "Please enter a valid number.");
         }

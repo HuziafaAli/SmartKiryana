@@ -130,75 +130,7 @@ public class ReturnTransactionDAO {
         return new ArrayList<>(returnMap.values());
     }
 
-    public ReturnTransaction findById(int id) {
-        String query = "SELECT * FROM return_transactions WHERE return_id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                ReturnTransaction tx = mapRow(rs);
-                tx.setReturnedItems(findReturnItems(id));
-                return tx;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private List<ReturnItem> findReturnItems(int returnId) {
-        List<ReturnItem> items = new ArrayList<>();
-        String query = "SELECT ri.return_item_id, ri.return_quantity, "
-                + "bi.bill_item_id, bi.quantity, bi.unit_price, "
-                + "p.product_id, p.barcode, p.product_name, p.price, p.cost_price, "
-                + "c.category_id, c.category_name "
-                + "FROM return_items ri "
-                + "JOIN bill_items bi ON ri.bill_item_id = bi.bill_item_id "
-                + "JOIN products p ON bi.barcode = p.barcode "
-                + "JOIN product_categories c ON p.category_id = c.category_id "
-                + "WHERE ri.return_id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, returnId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                ProductCategory category = new ProductCategory(
-                        rs.getInt("category_id"),
-                        rs.getString("category_name"));
-
-                Product product = new Product(
-                        rs.getInt("product_id"),
-                        rs.getString("barcode"),
-                        rs.getString("product_name"),
-                        category,
-                        rs.getDouble("price"),
-                        rs.getDouble("cost_price"));
-
-                BillItem originalItem = new BillItem(
-                        rs.getInt("bill_item_id"),
-                        product,
-                        rs.getInt("quantity"),
-                        rs.getDouble("unit_price"));
-
-                ReturnItem returnItem = new ReturnItem(
-                        rs.getInt("return_item_id"),
-                        originalItem,
-                        rs.getInt("return_quantity"));
-
-                items.add(returnItem);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return items;
-    }
 
     private ReturnTransaction mapRow(ResultSet rs) throws SQLException {
         ReturnTransaction tx = new ReturnTransaction();

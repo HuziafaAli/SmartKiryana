@@ -86,21 +86,5 @@ public class BillController {
         return filtered;
     }
 
-    public List<Bill> filterByCategory(int categoryId) {
-        List<Bill> filtered = billingService.filterByCategory(categoryId);
-        System.out.println("Found " + filtered.size() + " sales for category ID " + categoryId + ".");
-        return filtered;
-    }
 
-    public List<Bill> filterByEmployee(int employeeId) {
-        List<Bill> filtered = billingService.filterByEmployee(employeeId);
-        System.out.println("Found " + filtered.size() + " sales processed by employee ID " + employeeId + ".");
-        return filtered;
-    }
-
-    public List<Bill> filterByAmountRange(double minAmount, double maxAmount) {
-        List<Bill> filtered = billingService.filterByAmountRange(minAmount, maxAmount);
-        System.out.println("Found " + filtered.size() + " sales in the amount range " + minAmount + " - " + maxAmount + ".");
-        return filtered;
-    }
 }

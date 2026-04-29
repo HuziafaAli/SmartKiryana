@@ -4,66 +4,56 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 
-<HBox xmlns="http://javafx.com/javafx/8.0.171"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ui.LoginController"
-      stylesheets="ui/style.css"
-      styleClass="root-container">
+<StackPane xmlns="http://javafx.com/javafx/8.0.171"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="ui.LoginController"
+           stylesheets="ui/style.css"
+           styleClass="login-root">
 
-    <!-- LEFT PANEL: Dynamic space for branding -->
-    <VBox styleClass="left-panel" HBox.hgrow="ALWAYS" alignment="BOTTOM_LEFT">
-        <padding>
-            <Insets bottom="80.0" left="80.0" right="20.0" top="80.0"/>
-        </padding>
-        <Text text="SmartKiryana" styleClass="brand-name-left"/>
-        <Text text="Your smart grocery companion." styleClass="brand-tagline"/>
+    <!-- Background Decorative Elements (Optional, could be added in CSS) -->
+    <VBox alignment="CENTER" spacing="0">
+        <Region fx:id="bgCircle1" styleClass="bg-glow-1"/>
     </VBox>
 
-    <!-- RIGHT PANEL: Glassmorphic Login Form -->
-    <VBox styleClass="right-panel" alignment="CENTER" minWidth="600" maxWidth="600">
-        <padding>
-            <Insets bottom="60.0" left="60.0" right="60.0" top="60.0"/>
-        </padding>
+    <VBox alignment="CENTER">
+        <VBox styleClass="login-card" alignment="CENTER" maxWidth="450">
+            <padding>
+                <Insets top="50" right="50" bottom="50" left="50"/>
+            </padding>
 
-        <!-- Logo and Header -->
-        <VBox spacing="2.0" alignment="CENTER" styleClass="logo-container">
-            <ImageView pickOnBounds="true" preserveRatio="true" fitWidth="200" styleClass="logo-image">
-                <Image url="@assets/logo.png"/>
-            </ImageView>
-            <VBox alignment="CENTER" spacing="0.0">
-                <Text text="SmartKiryana" styleClass="form-title"/>
-                <Text text="Login to continue" styleClass="form-subtitle"/>
-            </VBox>
-        </VBox>
-
-        <!-- Form Fields -->
-        <VBox spacing="30.0" style="-fx-padding: 50 0 0 0;" alignment="CENTER_LEFT">
-            <VBox spacing="10.0">
-                <Label text="USERNAME" styleClass="field-label"/>
-                <TextField fx:id="usernameField"
-                           promptText="Enter your username"
-                           styleClass="input-field"/>
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="10">
+                <Text text="SmartKiryana" styleClass="login-brand-title"/>
+                <Text text="Log in to your account" styleClass="text-muted,text-sm"/>
             </VBox>
 
-            <VBox spacing="10.0">
-                <Label text="PASSWORD" styleClass="field-label"/>
-                <PasswordField fx:id="passwordField"
-                               promptText="Enter your password"
-                               styleClass="input-field"/>
-            </VBox>
+            <!-- Form -->
+            <VBox spacing="25" alignment="CENTER_LEFT" style="-fx-padding: 40 0 0 0;">
+                <VBox spacing="8">
+                    <Label text="USERNAME" styleClass="login-field-label"/>
+                    <TextField fx:id="usernameField"
+                               promptText="Enter your username"
+                               styleClass="login-input"/>
+                </VBox>
 
-            <VBox spacing="20.0" alignment="CENTER">
+                <VBox spacing="8">
+                    <Label text="PASSWORD" styleClass="login-field-label"/>
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Enter your password"
+                                   styleClass="login-input"/>
+                </VBox>
+
                 <Button onAction="#handleLogin"
-                        text="LOGIN"
+                        text="SIGN IN"
                         maxWidth="Infinity"
-                        styleClass="btn-login"/>
+                        styleClass="login-submit-btn"/>
 
                 <Label fx:id="statusLabel" text="" styleClass="status-label" wrapText="true"/>
             </VBox>
+
+            <Region prefHeight="40"/>
+            <Text text="© 2024 SmartKiryana Management" styleClass="text-muted,text-xs"/>
         </VBox>
     </VBox>
-
-</HBox>
+</StackPane>

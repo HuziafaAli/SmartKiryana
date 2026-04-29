@@ -1,8 +1,15 @@
 package ui;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 import facade.SystemFacade;
 import model.*;
@@ -14,7 +21,9 @@ import java.util.List;
 public class ReportsController implements FacadeAware {
 
     @FXML private Text pageTitle;
+    @FXML private TabPane reportTabs;
     @FXML private ComboBox<Employee> employeeSelector;
+    @FXML private HBox employeeSelectionBox;
     @FXML private ComboBox<String> monthSelector;
     @FXML private ComboBox<String> yearSelector;
 
@@ -28,7 +37,16 @@ public class ReportsController implements FacadeAware {
     @FXML private Label targetAmountLabel;
     @FXML private Label achievementLabel;
     @FXML private Label bonusLabel;
+    @FXML private Label peakSaleLabel;
     @FXML private Label summaryLabel;
+
+    // Monthly Report Fields
+    @FXML private Label monthlyTotalSales;
+    @FXML private Label monthlyTotalReturns;
+    @FXML private Label monthlyNetRevenue;
+    @FXML private Label monthlyAvgDaily;
+    @FXML private VBox categoryBreakdownBox;
+    @FXML private FlowPane topProductsGrid;
 
     private SystemFacade systemFacade;
     private Employee currentEmployee;
@@ -54,20 +72,23 @@ public class ReportsController implements FacadeAware {
         User user = facade.getCurrentUser();
 
         if (user != null && user.getRole().equalsIgnoreCase("EMPLOYEE")) {
-            // Employee sees own performance only
             currentEmployee = (Employee) user;
-            employeeSelector.setVisible(false);
+            employeeSelectionBox.setVisible(false);
+            employeeSelectionBox.setManaged(false);
+            
+            // Remove Monthly Report tab for employees
+            reportTabs.getTabs().removeIf(tab -> tab.getText().equals("Monthly Report"));
+            
             empNameLabel.setText(user.getFullName());
             empRoleLabel.setText("Cashier");
             pageTitle.setText("My Performance");
             handleGenerate();
         } else {
-            // Admin can select any employee
-            employeeSelector.setVisible(true);
+            employeeSelectionBox.setVisible(true);
+            employeeSelectionBox.setManaged(true);
             List<Employee> employees = facade.getAllEmployees();
             employeeSelector.setItems(FXCollections.observableArrayList(employees));
 
-            // Custom display
             employeeSelector.setCellFactory(lv -> new ListCell<Employee>() {
                 @Override
                 protected void updateItem(Employee e, boolean empty) {
@@ -101,17 +122,23 @@ public class ReportsController implements FacadeAware {
 
     @FXML
     private void handleGenerate() {
+        int month = monthSelector.getSelectionModel().getSelectedIndex() + 1;
+        int year = Integer.parseInt(yearSelector.getValue());
+
+        if (reportTabs.getSelectionModel().getSelectedIndex() == 0) {
+            generatePerformanceReport(month, year);
+        } else {
+            generateMonthlyReport(month, year);
+        }
+    }
+
+    private void generatePerformanceReport(int month, int year) {
         if (currentEmployee == null) {
             showAlert("Select Employee", "Please select an employee first.");
             return;
         }
 
-        int month = monthSelector.getSelectionModel().getSelectedIndex() + 1;
-        int year = Integer.parseInt(yearSelector.getValue());
-
         List<Bill> allBills = systemFacade.getAllBills();
-
-        // Use Command Pattern
         GenerateReportCommand cmd = new GenerateReportCommand(
                 systemFacade.getReportController(), currentEmployee, 2, month, year);
         cmd.setBill(allBills);
@@ -120,7 +147,6 @@ public class ReportsController implements FacadeAware {
         PerformanceReport report = cmd.getPerformanceReport();
 
         if (report != null) {
-            // Count transactions for this employee in the month
             long txCount = allBills.stream()
                     .filter(b -> b.getUser() != null && b.getUser().getUserId() == currentEmployee.getUserId())
                     .filter(b -> b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year)
@@ -133,39 +159,168 @@ public class ReportsController implements FacadeAware {
             avgBillLabel.setText(String.format("Rs. %,.2f", avgBill));
 
             double pct = report.getAchievementPercentage();
-            progressPercent.setText(String.format("%.0f%%", pct));
+            double displayPct = Math.min(100.0, pct);
+            progressPercent.setText(String.format("%.0f%%", displayPct));
             targetAmountLabel.setText(String.format("Rs. %,.0f", report.getTargetAmount()));
             salesTargetInfo.setText(String.format("Rs. %,.0f / Rs. %,.0f", report.getTotalSales(), report.getTargetAmount()));
-            achievementLabel.setText(String.format("%.1f%%", pct));
+            achievementLabel.setText(String.format("%.1f%%", displayPct));
             bonusLabel.setText(String.format("Rs. %,.0f", report.getBonusAmount()));
 
-            // Update progress circle border color based on achievement
-            String borderColor;
-            if (pct >= 100) borderColor = "#10b981";
-            else if (pct >= 50) borderColor = "#3b82f6";
-            else borderColor = "#ef4444";
-
+            String borderColor = (pct >= 100) ? "#10b981" : (pct >= 50) ? "#3b82f6" : "#ef4444";
             progressPercent.getParent().setStyle(
                     "-fx-background-color: #141929; -fx-background-radius: 200; " +
                     "-fx-min-width: 180; -fx-min-height: 180; -fx-max-width: 180; -fx-max-height: 180; " +
                     "-fx-alignment: CENTER; -fx-border-color: " + borderColor + "; -fx-border-width: 6; -fx-border-radius: 200;");
 
+            double peakSale = allBills.stream()
+                    .filter(b -> b.getUser() != null && b.getUser().getUserId() == currentEmployee.getUserId())
+                    .filter(b -> b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year)
+                    .mapToDouble(Bill::getTotalAmount)
+                    .max().orElse(0);
+            peakSaleLabel.setText(String.format("Rs. %,.0f", peakSale));
+
+            double bonusAmount = report.getBonusAmount();
+            String status;
+            if (bonusAmount > 0) {
+                status = String.format("Status: Great job! You've earned a bonus of Rs. %,.0f. " +
+                        "Every additional sale increases your bonus by 5%% of the amount!", bonusAmount);
+            } else {
+                double remaining = Math.max(0, report.getTargetAmount() - report.getTotalSales());
+                if (remaining > 0) {
+                    status = String.format("Status: No bonus yet. You need Rs. %,.0f more in sales " +
+                            "to hit your target and start earning a 5%% bonus!", remaining);
+                } else {
+                    status = "Status: Target reached! Your next sale will start earning you a 5% bonus!";
+                }
+            }
+
             summaryLabel.setText(String.format(
-                    "%s achieved Rs. %,.0f out of Rs. %,.0f target (%.1f%%) in %s %d.\n" +
-                    "Total transactions: %d | Average bill: Rs. %,.2f\n" +
-                    "Bonus earned: Rs. %,.0f",
-                    currentEmployee.getFullName(), report.getTotalSales(), report.getTargetAmount(),
-                    pct, MONTHS[month - 1], year, txCount, avgBill, report.getBonusAmount()));
+                    "- Performance Score: %.1f%%\n" +
+                    "- Transactions Processed: %d\n" +
+                    "- Average Transaction Value: Rs. %,.2f\n" +
+                    "- Monthly Peak Sale: Rs. %,.0f\n" +
+                    "- Total Sales Contribution: Rs. %,.0f\n\n" +
+                    "%s",
+                    pct, txCount, avgBill, peakSale, report.getTotalSales(), status));
         } else {
             summaryLabel.setText("No performance data available for the selected period.");
-            totalSalesLabel.setText("Rs. 0");
-            transactionsLabel.setText("0");
-            avgBillLabel.setText("Rs. 0");
-            progressPercent.setText("0%");
-            targetAmountLabel.setText("Rs. 0");
-            achievementLabel.setText("0%");
-            bonusLabel.setText("Rs. 0");
+            clearPerformanceUI();
         }
+    }
+
+    private void clearPerformanceUI() {
+        totalSalesLabel.setText("Rs. 0");
+        transactionsLabel.setText("0");
+        avgBillLabel.setText("Rs. 0");
+        progressPercent.setText("0%");
+        targetAmountLabel.setText("Rs. 0");
+        achievementLabel.setText("0%");
+        bonusLabel.setText("Rs. 0");
+    }
+
+    private void generateMonthlyReport(int month, int year) {
+        List<Bill> allBills = systemFacade.getAllBills();
+        List<ReturnTransaction> allReturns = systemFacade.getAllReturns();
+
+        GenerateReportCommand cmd = new GenerateReportCommand(
+                systemFacade.getReportController(), null, 1, month, year);
+        cmd.setBill(allBills);
+        cmd.setReturn(allReturns);
+        systemFacade.executeCommand(cmd);
+
+        MonthlyReport report = cmd.getMonthlyReport();
+
+        if (report != null) {
+            monthlyTotalSales.setText(String.format("Rs. %,.0f", report.getTotalSales()));
+            monthlyTotalReturns.setText(String.format("Rs. %,.0f", report.getTotalReturns()));
+            monthlyNetRevenue.setText(String.format("Rs. %,.0f", report.getNetRevenue()));
+            
+            // Average Daily Sales
+            int daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
+            double avgDaily = report.getTotalSales() / daysInMonth;
+            monthlyAvgDaily.setText(String.format("Rs. %,.0f", avgDaily));
+
+            renderTopProductsGrid(report.getTopProducts());
+            populateCategoryBreakdown(allBills, month, year);
+        } else {
+            monthlyTotalSales.setText("Rs. 0");
+            monthlyTotalReturns.setText("Rs. 0");
+            monthlyNetRevenue.setText("Rs. 0");
+            monthlyAvgDaily.setText("Rs. 0");
+            topProductsGrid.getChildren().clear();
+            categoryBreakdownBox.getChildren().clear();
+        }
+    }
+
+    private void renderTopProductsGrid(List<Product> products) {
+        topProductsGrid.getChildren().clear();
+        for (Product p : products) {
+            VBox card = new VBox(8);
+            card.setStyle("-fx-background-color: #1e293b; -fx-padding: 15; -fx-background-radius: 10; -fx-min-width: 180; -fx-max-width: 180; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);");
+            
+            Label nameLabel = new Label(p.getName());
+            nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+            nameLabel.setWrapText(true);
+            nameLabel.setMinHeight(40);
+            
+            Label catLabel = new Label(p.getCategory() != null ? p.getCategory().getCategoryName() : "General");
+            catLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 11px; -fx-background-color: rgba(255,255,255,0.05); -fx-padding: 2 6; -fx-background-radius: 4;");
+            
+            HBox priceQty = new HBox(10);
+            Label price = new Label(String.format("Rs. %,.0f", p.getPrice()));
+            price.setStyle("-fx-text-fill: #3b82f6; -fx-font-weight: bold;");
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Label qty = new Label(p.getSalesQuantity() + " sold");
+            qty.setStyle("-fx-text-fill: #10b981; -fx-font-size: 12px;");
+            
+            priceQty.getChildren().addAll(price, spacer, qty);
+            
+            card.getChildren().addAll(catLabel, nameLabel, priceQty);
+            topProductsGrid.getChildren().add(card);
+        }
+    }
+
+    private void populateCategoryBreakdown(List<Bill> allBills, int month, int year) {
+        categoryBreakdownBox.getChildren().clear();
+        java.util.Map<String, Double> catSales = new java.util.HashMap<>();
+        
+        allBills.stream()
+            .filter(b -> b.getBillDate().getMonthValue() == month && b.getBillDate().getYear() == year)
+            .forEach(b -> {
+                for (BillItem item : b.getItems()) {
+                    String catName = item.getProduct().getCategory() != null ? item.getProduct().getCategory().getCategoryName() : "General";
+                    catSales.put(catName, catSales.getOrDefault(catName, 0.0) + item.getSubtotal());
+                }
+            });
+            
+        double total = catSales.values().stream().mapToDouble(Double::doubleValue).sum();
+        
+        catSales.entrySet().stream()
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            .forEach(entry -> {
+                double percent = total > 0 ? (entry.getValue() / total) * 100 : 0;
+                
+                VBox item = new VBox(5);
+                HBox top = new HBox();
+                Label name = new Label(entry.getKey());
+                name.setStyle("-fx-text-fill: #e2e8f0; -fx-font-weight: bold;");
+                Region s = new Region();
+                HBox.setHgrow(s, Priority.ALWAYS);
+                Label val = new Label(String.format("Rs. %,.0f", entry.getValue()));
+                val.setStyle("-fx-text-fill: #94a3b8;");
+                top.getChildren().addAll(name, s, val);
+                
+                ProgressBar pb = new ProgressBar(percent / 100.0);
+                pb.setMaxWidth(Double.MAX_VALUE);
+                pb.setPrefHeight(6);
+                pb.setStyle("-fx-accent: #3b82f6;");
+                
+                item.getChildren().addAll(top, pb);
+                categoryBreakdownBox.getChildren().add(item);
+            });
     }
 
     private void showAlert(String title, String msg) {
