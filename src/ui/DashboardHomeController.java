@@ -21,24 +21,40 @@ import java.util.stream.Collectors;
 
 public class DashboardHomeController implements FacadeAware {
 
-    @FXML private Label welcomeLabel;
-    @FXML private Label todaySalesLabel;
-    @FXML private Label todaySalesChange;
-    @FXML private Label monthlyRevenueLabel;
-    @FXML private Label monthlyRevenueChange;
-    @FXML private Label lowStockLabel;
-    @FXML private Label totalProductsLabel;
-    @FXML private Label alertCountLabel;
+    @FXML
+    private Label welcomeLabel;
+    @FXML
+    private Label todaySalesLabel;
+    @FXML
+    private Label todaySalesChange;
+    @FXML
+    private Label monthlyRevenueLabel;
+    @FXML
+    private Label monthlyRevenueChange;
+    @FXML
+    private Label lowStockLabel;
+    @FXML
+    private Label totalProductsLabel;
+    @FXML
+    private Label alertCountLabel;
 
-    @FXML private TableView<Bill> recentBillsTable;
-    @FXML private TableColumn<Bill, String> colBillId;
-    @FXML private TableColumn<Bill, String> colBillDate;
-    @FXML private TableColumn<Bill, String> colBillAmount;
-    @FXML private TableColumn<Bill, String> colBillCashier;
+    @FXML
+    private TableView<Bill> recentBillsTable;
+    @FXML
+    private TableColumn<Bill, String> colBillId;
+    @FXML
+    private TableColumn<Bill, String> colBillDate;
+    @FXML
+    private TableColumn<Bill, String> colBillAmount;
+    @FXML
+    private TableColumn<Bill, String> colBillCashier;
 
-    @FXML private VBox topProductsList;
-    @FXML private VBox alertsList;
-    @FXML private VBox salesChartArea;
+    @FXML
+    private VBox topProductsList;
+    @FXML
+    private VBox alertsList;
+    @FXML
+    private VBox salesChartArea;
 
     private SystemFacade systemFacade;
     private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm a");
@@ -46,7 +62,8 @@ public class DashboardHomeController implements FacadeAware {
     public void initialize() {
         colBillId.setCellValueFactory(c -> new SimpleStringProperty("BLL-" + c.getValue().getBillId()));
         colBillDate.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getBillDate().format(dtf)));
-        colBillAmount.setCellValueFactory(c -> new SimpleStringProperty(String.format("Rs. %.2f", c.getValue().getTotalAmount())));
+        colBillAmount.setCellValueFactory(
+                c -> new SimpleStringProperty(String.format("Rs. %.2f", c.getValue().getTotalAmount())));
         colBillCashier.setCellValueFactory(c -> new SimpleStringProperty(
                 c.getValue().getUser() != null ? c.getValue().getUser().getFullName() : "N/A"));
     }
@@ -67,12 +84,12 @@ public class DashboardHomeController implements FacadeAware {
 
         List<Bill> allBills = systemFacade.getAllBills();
         List<Bill> displayBills = allBills;
-        
+
         // If employee, only show their own data
         if (isEmployee) {
             displayBills = allBills.stream()
-                .filter(b -> b.getUser() != null && b.getUser().getUserId() == user.getUserId())
-                .collect(Collectors.toList());
+                    .filter(b -> b.getUser() != null && b.getUser().getUserId() == user.getUserId())
+                    .collect(Collectors.toList());
         }
 
         List<InventoryItem> allItems = systemFacade.getAllInventoryItems();
@@ -87,45 +104,49 @@ public class DashboardHomeController implements FacadeAware {
         double todaySales = displayBills.stream()
                 .filter(b -> b.getBillDate().toLocalDate().equals(today))
                 .mapToDouble(Bill::getTotalAmount).sum();
-        
+
         // 2. Monthly Revenue / Contribution
         double monthlyRevenue = displayBills.stream()
-                .filter(b -> b.getBillDate().getMonthValue() == currentMonth && b.getBillDate().getYear() == currentYear)
+                .filter(b -> b.getBillDate().getMonthValue() == currentMonth
+                        && b.getBillDate().getYear() == currentYear)
                 .mapToDouble(Bill::getTotalAmount).sum();
 
         if (isEmployee) {
             // Customize labels for employee
-            ((Label)todaySalesLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Sales Today");
-            ((Label)monthlyRevenueLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Monthly Sales");
-            ((Label)lowStockLabel.getParent().getChildrenUnmodifiable().get(0)).setText("Performance Score");
-            ((Label)totalProductsLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Transactions");
-            
+            ((Label) todaySalesLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Sales Today");
+            ((Label) monthlyRevenueLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Monthly Sales");
+            ((Label) lowStockLabel.getParent().getChildrenUnmodifiable().get(0)).setText("Performance Score");
+            ((Label) totalProductsLabel.getParent().getChildrenUnmodifiable().get(0)).setText("My Transactions");
+
             // Calculate Performance Score (Achievement %)
             List<Employee> empList = new java.util.ArrayList<>();
-            empList.add((Employee)user);
-            List<PerformanceReport> reports = systemFacade.getPerformanceComparison(empList, currentMonth, currentYear, allBills);
+            empList.add((Employee) user);
+            List<PerformanceReport> reports = systemFacade.getPerformanceComparison(empList, currentMonth, currentYear,
+                    allBills);
             double score = 0;
             if (!reports.isEmpty()) {
                 score = reports.get(0).getAchievementPercentage();
             }
-            
+
             todaySalesLabel.setText(String.format("Rs. %,.0f", todaySales));
             monthlyRevenueLabel.setText(String.format("Rs. %,.0f", monthlyRevenue));
             lowStockLabel.setText(String.format("%.0f%%", Math.min(100.0, score)));
             totalProductsLabel.setText(String.valueOf(displayBills.size()));
-            
+
             // Update subtitles
-            if (todaySalesChange != null) todaySalesChange.setText("Keep it up!");
-            if (monthlyRevenueChange != null) monthlyRevenueChange.setText("Monthly total contribution");
-            
+            if (todaySalesChange != null)
+                todaySalesChange.setText("Keep it up!");
+            if (monthlyRevenueChange != null)
+                monthlyRevenueChange.setText("Monthly total contribution");
+
             var lowStockChildren = lowStockLabel.getParent().getChildrenUnmodifiable();
             if (lowStockChildren.size() > 2 && lowStockChildren.get(2) instanceof Label) {
-                ((Label)lowStockChildren.get(2)).setText("Target achievement");
+                ((Label) lowStockChildren.get(2)).setText("Target achievement");
             }
-            
+
             var totalProdChildren = totalProductsLabel.getParent().getChildrenUnmodifiable();
             if (totalProdChildren.size() > 2 && totalProdChildren.get(2) instanceof Label) {
-                ((Label)totalProdChildren.get(2)).setText("Total bills processed");
+                ((Label) totalProdChildren.get(2)).setText("Total bills processed");
             }
 
         } else {
@@ -159,20 +180,20 @@ public class DashboardHomeController implements FacadeAware {
 
     private void loadPerformanceSummary(User user, List<Bill> allBills) {
         topProductsList.getChildren().clear();
-        
+
         // Change title of the panel
         VBox parent = (VBox) topProductsList.getParent();
         HBox header = (HBox) parent.getChildren().get(0);
-        ((javafx.scene.text.Text)header.getChildren().get(0)).setText("Performance Summary");
-        
+        ((javafx.scene.text.Text) header.getChildren().get(0)).setText("Performance Summary");
+
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
-        
+
         List<Employee> empList = new java.util.ArrayList<>();
-        empList.add((Employee)user);
+        empList.add((Employee) user);
         List<PerformanceReport> reports = systemFacade.getPerformanceComparison(empList, month, year, allBills);
-        
+
         if (!reports.isEmpty()) {
             PerformanceReport report = reports.get(0);
             long txCount = allBills.stream()
@@ -193,16 +214,16 @@ public class DashboardHomeController implements FacadeAware {
                 statusMsg = String.format("- Status: Rs. %,.0f Bonus Earned! (5%% of surplus)", bonusAmount);
             } else {
                 double remaining = Math.max(0, report.getTargetAmount() - report.getTotalSales());
-                statusMsg = remaining > 0 ? 
-                    String.format("- Status: Rs. %,.0f left to earn bonus", remaining) :
-                    "- Status: Target hit! Next sale earns bonus!";
+                statusMsg = remaining > 0 ? String.format("- Status: Rs. %,.0f left to earn bonus", remaining)
+                        : "- Status: Target hit! Next sale earns bonus!";
             }
 
             String[] metrics = {
-                "- Score: " + String.format("%.1f%%", Math.min(100.0, report.getAchievementPercentage())),
-                "- Transactions: " + txCount,
-                "- Avg Bill: Rs. " + String.format("%,.0f", avgBill),
-                "- Peak Sale: Rs. " + String.format("%,.0f", peakSale)
+                    "- Score: " + String.format("%.1f%%", Math.min(100.0, report.getAchievementPercentage())),
+                    "- Transactions: " + txCount,
+                    "- Avg Bill: Rs. " + String.format("%,.0f", avgBill),
+                    "- Peak Sale: Rs. " + String.format("%,.0f", peakSale),
+                    statusMsg
             };
 
             for (String metric : metrics) {
@@ -248,10 +269,10 @@ public class DashboardHomeController implements FacadeAware {
 
         barChart.getData().add(series);
         barChart.setPrefHeight(250);
-        
+
         // CSS for chart styling (if not in CSS file)
         barChart.lookupAll(".default-color0.chart-bar").forEach(n -> n.setStyle("-fx-bar-fill: #3b82f6;"));
-        
+
         salesChartArea.getChildren().add(barChart);
     }
 
@@ -309,10 +330,12 @@ public class DashboardHomeController implements FacadeAware {
 
             Label stock;
             if (item.isOverStock()) {
-                stock = new Label("Over Stock: " + item.getStockQuantity() + " (Max: " + item.getMaxStockThreshold() + ")");
+                stock = new Label(
+                        "Over Stock: " + item.getStockQuantity() + " (Max: " + item.getMaxStockThreshold() + ")");
                 stock.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 11px;"); // orange-ish for overstock
             } else {
-                stock = new Label("Low Stock: " + item.getStockQuantity() + " (Min: " + item.getMinStockThreshold() + ")");
+                stock = new Label(
+                        "Low Stock: " + item.getStockQuantity() + " (Min: " + item.getMinStockThreshold() + ")");
                 stock.getStyleClass().add("alert-item-stock");
             }
 
