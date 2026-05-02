@@ -8,6 +8,7 @@ import model.*;
 import observer.StockAlert;
 import command.Command;
 import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 
 public class SystemFacade {
@@ -103,11 +104,10 @@ public class SystemFacade {
         return inventoryController.addStock(barcode, quantityToAdd);
     }
 
-
     public List<InventoryItem> getLowStockItems() {
         // Refresh the observer, then return its pending alerts as a list
         inventoryController.checkAllStockLevels();
-        return new java.util.ArrayList<>(stockAlert.getPendingAlerts());
+        return new ArrayList<>(stockAlert.getPendingAlerts());
     }
 
     public List<InventoryItem> getAllInventoryItems() {

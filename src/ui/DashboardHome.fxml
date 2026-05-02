@@ -35,9 +35,8 @@
             <Label fx:id="monthlyRevenueChange" text="" styleClass="stat-card-subtitle"/>
         </VBox>
         <VBox styleClass="stat-card,stat-card-red" HBox.hgrow="ALWAYS">
-            <Label text="Low Stock Items" styleClass="stat-card-title"/>
+            <Label text="Stock Alerts Items" styleClass="stat-card-title"/>
             <Label fx:id="lowStockLabel" text="0" styleClass="stat-card-value"/>
-            <Label text="Items below threshold" styleClass="stat-card-subtitle"/>
         </VBox>
         <VBox styleClass="stat-card,stat-card-purple" HBox.hgrow="ALWAYS">
             <Label text="Total Products" styleClass="stat-card-title"/>

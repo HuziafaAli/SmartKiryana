@@ -115,10 +115,18 @@ public class DashboardHomeController implements FacadeAware {
             totalProductsLabel.setText(String.valueOf(displayBills.size()));
             
             // Update subtitles
-            todaySalesChange.setText("Keep it up!");
-            monthlyRevenueChange.setText("Monthly total contribution");
-            ((Label)lowStockLabel.getParent().getChildrenUnmodifiable().get(2)).setText("Target achievement");
-            ((Label)totalProductsLabel.getParent().getChildrenUnmodifiable().get(2)).setText("Total bills processed");
+            if (todaySalesChange != null) todaySalesChange.setText("Keep it up!");
+            if (monthlyRevenueChange != null) monthlyRevenueChange.setText("Monthly total contribution");
+            
+            var lowStockChildren = lowStockLabel.getParent().getChildrenUnmodifiable();
+            if (lowStockChildren.size() > 2 && lowStockChildren.get(2) instanceof Label) {
+                ((Label)lowStockChildren.get(2)).setText("Target achievement");
+            }
+            
+            var totalProdChildren = totalProductsLabel.getParent().getChildrenUnmodifiable();
+            if (totalProdChildren.size() > 2 && totalProdChildren.get(2) instanceof Label) {
+                ((Label)totalProdChildren.get(2)).setText("Total bills processed");
+            }
 
         } else {
             // Admin default view

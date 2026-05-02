@@ -110,8 +110,27 @@ public class POSController implements FacadeAware {
             return;
         }
 
-        productGrid.getChildren().clear();
         List<InventoryItem> items = systemFacade.getAllInventoryItems();
+
+        // Auto-add feature for Barcode Scanners:
+        // If the query is an EXACT match for a barcode, add it immediately and clear
+        // search.
+        for (InventoryItem inv : items) {
+            if (inv.getProduct().getBarcode().equalsIgnoreCase(query)) {
+                String result = systemFacade.scanItem(inv.getProduct().getBarcode(), 1);
+                if (result.contains("successfully") || result.contains("Updated")) {
+                    refreshBill();
+                    searchField.clear(); // clear for the next scan
+                    loadProductGrid(); // reset grid
+                } else {
+                    showAlert("Cannot Add Item", result);
+                }
+                return; // Stop processing further since we found an exact barcode match
+            }
+        }
+
+        // If not an exact barcode match, just filter the grid
+        productGrid.getChildren().clear();
         for (InventoryItem inv : items) {
             Product p = inv.getProduct();
             if (p.getName().toLowerCase().contains(query.toLowerCase()) || p.getBarcode().contains(query)) {
@@ -247,11 +266,11 @@ public class POSController implements FacadeAware {
                 if (finalized != null) {
                     // Auto-save PDF
                     String pdfPath = util.ReceiptPDFService.saveReceiptAsPDF(finalized);
-                    
+
                     double change = finalized.getreturnCash();
                     String successMsg = String.format("Change: Rs. %.2f\n\nReceipt saved to:\n%s", change, pdfPath);
                     showInfo("Payment Successful", successMsg);
-                    
+
                     systemFacade.startNewBill(systemFacade.getCurrentUser());
                     refreshBill();
                     loadProductGrid();

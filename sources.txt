@@ -51,4 +51,5 @@ C:\SmartKiryana\src\ui\ReturnsController.java
 C:\SmartKiryana\src\ui\SalesTargetController.java
 C:\SmartKiryana\src\util\DatabaseConnection.java
 C:\SmartKiryana\src\util\ReceiptPDFService.java
+C:\SmartKiryana\src\util\ReportPDFService.java
 C:\SmartKiryana\src\util\Validator.java

@@ -20,6 +20,7 @@
         <ComboBox fx:id="monthSelector" promptText="Month" prefWidth="120" styleClass="dark-combo"/>
         <ComboBox fx:id="yearSelector" promptText="Year" prefWidth="100" styleClass="dark-combo"/>
         <Button text="Generate" onAction="#handleGenerate" styleClass="btn-primary-small"/>
+        <Button text="Export PDF" onAction="#handleExportPDF" styleClass="btn-primary-small" style="-fx-background-color: #ef4444;"/>
     </HBox>
 
     <TabPane fx:id="reportTabs" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS" styleClass="inventory-tabs">

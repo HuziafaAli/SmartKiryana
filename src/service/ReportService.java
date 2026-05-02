@@ -7,10 +7,8 @@ import model.PerformanceReport;
 import model.SalesTarget;
 import model.Bill;
 import model.ReturnTransaction;
-import model.SalesRecord;
 import dao.SalesTargetDAO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import template.MonthlyReportGenerator;

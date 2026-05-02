@@ -1,10 +1,8 @@
 package ui;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.FlowPane;
@@ -129,6 +127,43 @@ public class ReportsController implements FacadeAware {
             generatePerformanceReport(month, year);
         } else {
             generateMonthlyReport(month, year);
+        }
+    }
+
+    @FXML
+    private void handleExportPDF() {
+        int monthIndex = monthSelector.getSelectionModel().getSelectedIndex() + 1;
+        int year = Integer.parseInt(yearSelector.getValue());
+        String monthName = monthSelector.getValue();
+
+        if (reportTabs.getSelectionModel().getSelectedIndex() == 0) {
+            showAlert("Unsupported", "PDF Export is currently only available for the Monthly Report tab.");
+            return;
+        }
+
+        List<Bill> allBills = systemFacade.getAllBills();
+        List<ReturnTransaction> allReturns = systemFacade.getAllReturns();
+
+        GenerateReportCommand cmd = new GenerateReportCommand(
+                systemFacade.getReportController(), null, 1, monthIndex, year);
+        cmd.setBill(allBills);
+        cmd.setReturn(allReturns);
+        systemFacade.executeCommand(cmd);
+
+        MonthlyReport report = cmd.getMonthlyReport();
+        if (report != null) {
+            String path = util.ReportPDFService.exportMonthlyReport(report, monthName, year);
+            if (path != null) {
+                Alert a = new Alert(Alert.AlertType.INFORMATION);
+                a.setTitle("Export Success");
+                a.setContentText("Monthly report exported successfully to:\n" + path);
+                DialogStyler.style(a);
+                a.showAndWait();
+            } else {
+                showAlert("Export Failed", "Could not generate PDF report.");
+            }
+        } else {
+            showAlert("No Data", "No data available for the selected month to export.");
         }
     }
 
