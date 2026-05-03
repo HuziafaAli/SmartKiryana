@@ -15,7 +15,14 @@ import java.util.List;
 
 public class InventoryItemDAO {
 
-    // Save a new product along with its inventory entry
+    private static List<InventoryItem> cachedItems = null;
+    private static boolean isCacheDirty = true;
+
+    public static void invalidateCache() {
+        isCacheDirty = true;
+    }
+
+    // Inserts a new product and its inventory record in one transaction
     public boolean save(InventoryItem item) {
         String productQuery = "INSERT INTO products (barcode, product_name, category_id, price, cost_price, sales_quantity) VALUES (?, ?, ?, ?, ?, ?)";
         String inventoryQuery = "INSERT INTO inventory_items (barcode, stock_quantity, min_stock, max_stock) VALUES (?, ?, ?, ?)";
@@ -26,7 +33,6 @@ public class InventoryItemDAO {
             try (PreparedStatement productStmt = conn.prepareStatement(productQuery, Statement.RETURN_GENERATED_KEYS);
                     PreparedStatement inventoryStmt = conn.prepareStatement(inventoryQuery, Statement.RETURN_GENERATED_KEYS)) {
 
-                // Insert into products table
                 Product p = item.getProduct();
                 productStmt.setString(1, p.getBarcode());
                 productStmt.setString(2, p.getName());
@@ -41,7 +47,6 @@ public class InventoryItemDAO {
                     p.setProductId(productKeys.getInt(1));
                 }
 
-                // Insert into inventory_items table
                 inventoryStmt.setString(1, p.getBarcode());
                 inventoryStmt.setInt(2, item.getStockQuantity());
                 inventoryStmt.setInt(3, item.getMinStockThreshold());
@@ -54,6 +59,7 @@ public class InventoryItemDAO {
                 }
 
                 conn.commit();
+                invalidateCache();
                 return true;
 
             } catch (SQLException e) {
@@ -67,7 +73,7 @@ public class InventoryItemDAO {
         }
     }
 
-    // Find an inventory item by its product barcode
+    // Looks up an inventory item by its product barcode
     public InventoryItem findByBarcode(String barcode) {
         String query = "SELECT i.inventory_id, i.stock_quantity, i.min_stock, i.max_stock, "
                 + "p.product_id, p.barcode, p.product_name, p.price, p.cost_price, p.sales_quantity, "
@@ -93,7 +99,7 @@ public class InventoryItemDAO {
         return null;
     }
 
-    // Find a product by its barcode even if it is not in the inventory
+    // Finds a product record by barcode even if its not in the inventory table
     public Product findProductByBarcode(String barcode) {
         String query = "SELECT p.product_id, p.barcode, p.product_name, p.price, p.cost_price, p.sales_quantity, "
                 + "c.category_id, c.category_name "
@@ -128,8 +134,11 @@ public class InventoryItemDAO {
         return null;
     }
 
-    // Fetch all inventory items
+    // Returns all inventory items with product details, using cache when available
     public List<InventoryItem> findAll() {
+        if (!isCacheDirty && cachedItems != null) {
+            return new ArrayList<>(cachedItems);
+        }
         List<InventoryItem> items = new ArrayList<>();
         String query = "SELECT i.inventory_id, i.stock_quantity, i.min_stock, i.max_stock, "
                 + "p.product_id, p.barcode, p.product_name, p.price, p.cost_price, p.sales_quantity, "
@@ -149,10 +158,12 @@ public class InventoryItemDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return items;
+        cachedItems = items;
+        isCacheDirty = false;
+        return new ArrayList<>(cachedItems);
     }
 
-    // Update product details (name, price, cost price)
+    // Updates product name, selling price, and cost price
     public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
         String query = "UPDATE products SET product_name = ?, price = ?, cost_price = ? WHERE barcode = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -162,7 +173,9 @@ public class InventoryItemDAO {
             stmt.setDouble(2, newPrice);
             stmt.setDouble(3, newCostPrice);
             stmt.setString(4, barcode);
-            return stmt.executeUpdate() > 0;
+            boolean success = stmt.executeUpdate() > 0;
+            if (success) invalidateCache();
+            return success;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -170,7 +183,7 @@ public class InventoryItemDAO {
         }
     }
 
-    // Update stock quantity in the database
+    // Overwrites the stock quantity for a given barcode
     public boolean updateStock(String barcode, int newQuantity) {
         String query = "UPDATE inventory_items SET stock_quantity = ? WHERE barcode = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -178,7 +191,9 @@ public class InventoryItemDAO {
 
             stmt.setInt(1, newQuantity);
             stmt.setString(2, barcode);
-            return stmt.executeUpdate() > 0;
+            boolean success = stmt.executeUpdate() > 0;
+            if (success) invalidateCache();
+            return success;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -186,7 +201,7 @@ public class InventoryItemDAO {
         }
     }
 
-    // Insert only the inventory row (useful for restoring deleted stock)
+    // Creates an inventory row for an already existing product
     public boolean insertInventoryOnly(InventoryItem item) {
         String inventoryQuery = "INSERT INTO inventory_items (barcode, stock_quantity, min_stock, max_stock) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -202,6 +217,7 @@ public class InventoryItemDAO {
             if (rs.next()) {
                 item.setInventoryId(rs.getInt(1));
             }
+            if (success) invalidateCache();
             return success;
 
         } catch (SQLException e) {
@@ -210,7 +226,7 @@ public class InventoryItemDAO {
         }
     }
 
-    // Delete an inventory entry (keeps the product in the master table)
+    // Removes the inventory entry but keeps the product in the master table
     public boolean delete(String barcode) {
         String inventoryQuery = "DELETE FROM inventory_items WHERE barcode = ?";
 
@@ -218,7 +234,9 @@ public class InventoryItemDAO {
              PreparedStatement invStmt = conn.prepareStatement(inventoryQuery)) {
 
             invStmt.setString(1, barcode);
-            return invStmt.executeUpdate() > 0;
+            boolean success = invStmt.executeUpdate() > 0;
+            if (success) invalidateCache();
+            return success;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -226,9 +244,7 @@ public class InventoryItemDAO {
         }
     }
 
-
-
-    // Helper: Convert a database row into a Java object
+    // Converts a database row into an InventoryItem with its Product and Category
     private InventoryItem mapRow(ResultSet rs) throws SQLException {
         ProductCategory category = new ProductCategory(
                 rs.getInt("category_id"),

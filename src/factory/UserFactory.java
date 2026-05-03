@@ -4,6 +4,7 @@ import model.User;
 import model.Employee;
 import model.Admin;
 
+// Creates the correct User subclass based on the role string
 public class UserFactory {
 
     public static User createUser(String role, int userId, String username, String password, String fullName, String phone, String cnic) {

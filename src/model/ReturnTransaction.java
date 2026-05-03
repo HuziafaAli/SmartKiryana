@@ -27,13 +27,13 @@ public class ReturnTransaction {
         this.refundAmount = 0.0;
     }
 
-    // Business Logic 
-
+    // Adds a returned item and recalculates the total refund
     public void addReturnedItem(ReturnItem item) {
         returnedItems.add(item);
         calculateRefund();
     }
 
+    // Sums up refund subtotals from all returned items
     public void calculateRefund() {
         double sum = 0;
         for (ReturnItem item : returnedItems) {
@@ -41,8 +41,6 @@ public class ReturnTransaction {
         }
         this.refundAmount = sum;
     }
-
-    // Getters & Setters 
 
     public int getReturnId() {
         return returnId;

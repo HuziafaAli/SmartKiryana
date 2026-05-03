@@ -23,14 +23,13 @@ public class ReceiptPDFService {
 
     private static final String RECEIPT_DIR = "receipts";
 
+    // Generates a formatted PDF receipt and saves it to the receipts folder
     public static String saveReceiptAsPDF(Bill bill) {
-        // Ensure directory exists
         File dir = new File(RECEIPT_DIR);
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        // Valid name: Receipt_BillID_YYYYMMDD_HHmm.pdf
         String fileName = String.format("Receipt_Bill%d_%s.pdf", 
                 bill.getBillId(), 
                 bill.getBillDate().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")));
@@ -41,12 +40,10 @@ public class ReceiptPDFService {
             PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
-            // Fonts
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Color.BLACK);
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12, Color.BLACK);
             Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Color.BLACK);
 
-            // Header
             Paragraph title = new Paragraph("SMART KIRYANA", titleFont);
             title.setAlignment(Element.ALIGN_CENTER);
             document.add(title);
@@ -55,7 +52,6 @@ public class ReceiptPDFService {
             address.setAlignment(Element.ALIGN_CENTER);
             document.add(address);
 
-            // Info Table
             PdfPTable infoTable = new PdfPTable(2);
             infoTable.setWidthPercentage(100);
             infoTable.addCell(createNoBorderCell("Bill ID: #" + bill.getBillId(), normalFont, Element.ALIGN_LEFT));
@@ -65,12 +61,10 @@ public class ReceiptPDFService {
             document.add(infoTable);
             document.add(new Paragraph("\n"));
 
-            // Items Table
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
             table.setWidths(new float[]{3, 1, 1, 1});
 
-            // Table Headers
             table.addCell(new Phrase("Item", headerFont));
             table.addCell(new Phrase("Qty", headerFont));
             table.addCell(new Phrase("Price", headerFont));
@@ -85,7 +79,6 @@ public class ReceiptPDFService {
             document.add(table);
             document.add(new Paragraph("\n"));
 
-            // Summary
             PdfPTable summary = new PdfPTable(2);
             summary.setWidthPercentage(40);
             summary.setHorizontalAlignment(Element.ALIGN_RIGHT);

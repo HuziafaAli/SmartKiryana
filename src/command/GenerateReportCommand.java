@@ -9,6 +9,7 @@ import model.PerformanceReport;
 
 import java.util.List;
 
+// Encapsulates a report generation request so it can be executed on demand
 public class GenerateReportCommand implements Command {
 
     private ReportController reportController;
@@ -17,8 +18,7 @@ public class GenerateReportCommand implements Command {
     private List<ReturnTransaction> allReturns;
     private int month;
     private int year;
-    private int reportType; // 1 for monthlyReport
-                            // 2 for performanceReport
+    private int reportType;
     private MonthlyReport monthlyReport;
     private PerformanceReport performanceReport;
 
@@ -38,6 +38,7 @@ public class GenerateReportCommand implements Command {
         this.allReturns = allReturns;
     }
 
+    // Runs the appropriate report generation based on reportType
     @Override
     public void execute() {
         if (reportType == 1) {

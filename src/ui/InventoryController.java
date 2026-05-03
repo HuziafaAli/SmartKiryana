@@ -18,17 +18,11 @@ import java.util.stream.Collectors;
 
 public class InventoryController implements FacadeAware {
 
-    @FXML
-    private TextField productSearchField;
-    @FXML
-    private ComboBox<String> categoryFilter;
-    @FXML
-    private FlowPane productGrid;
-
-    @FXML
-    private TextField categorySearchField;
-    @FXML
-    private FlowPane categoryGrid;
+    @FXML private TextField productSearchField;
+    @FXML private ComboBox<String> categoryFilter;
+    @FXML private FlowPane productGrid;
+    @FXML private TextField categorySearchField;
+    @FXML private FlowPane categoryGrid;
 
     private SystemFacade systemFacade;
     private List<InventoryItem> allItems;
@@ -45,14 +39,13 @@ public class InventoryController implements FacadeAware {
         refreshData();
     }
 
+    // Fetches all inventory data and updates category filters and display grids
     private void refreshData() {
         allItems = systemFacade.getAllInventoryItems();
         allCategories = systemFacade.getAllCategories();
 
         ObservableList<String> catNames = FXCollections.observableArrayList("All Categories");
-        catNames.addAll(allCategories.stream()
-                .map(ProductCategory::getCategoryName)
-                .collect(Collectors.toList()));
+        catNames.addAll(allCategories.stream().map(ProductCategory::getCategoryName).collect(Collectors.toList()));
         categoryFilter.setItems(catNames);
         categoryFilter.setValue("All Categories");
         categoryFilter.setOnAction(e -> filterProducts());
@@ -65,6 +58,7 @@ public class InventoryController implements FacadeAware {
         loadProductCards();
     }
 
+    // Renders product cards based on the current search text and category filter
     private void loadProductCards() {
         productGrid.getChildren().clear();
         String query = productSearchField.getText();
@@ -75,8 +69,7 @@ public class InventoryController implements FacadeAware {
                     || item.getProduct().getName().toLowerCase().contains(query.toLowerCase())
                     || item.getProduct().getBarcode().contains(query);
             boolean matchCat = selectedCat == null || selectedCat.equals("All Categories")
-                    || (item.getProduct().getCategory() != null
-                            && item.getProduct().getCategory().getCategoryName().equals(selectedCat));
+                    || (item.getProduct().getCategory() != null && item.getProduct().getCategory().getCategoryName().equals(selectedCat));
             return matchSearch && matchCat;
         }).collect(Collectors.toList());
 
@@ -87,19 +80,15 @@ public class InventoryController implements FacadeAware {
 
     private VBox createProductCard(InventoryItem item) {
         Product p = item.getProduct();
-
         VBox card = new VBox(0);
         card.getStyleClass().add("inv-product-card");
 
-        Label catPill = new Label(
-                p.getCategory() != null ? p.getCategory().getCategoryName() : "Uncategorized");
+        Label catPill = new Label(p.getCategory() != null ? p.getCategory().getCategoryName() : "Uncategorized");
         catPill.getStyleClass().add("inv-card-cat-pill");
 
         Label statusBadge = buildStatusBadge(item);
-
         Region topSpacer = new Region();
         HBox.setHgrow(topSpacer, Priority.ALWAYS);
-
         HBox topRow = new HBox(8, catPill, topSpacer, statusBadge);
         topRow.setAlignment(Pos.CENTER_LEFT);
 
@@ -145,29 +134,22 @@ public class InventoryController implements FacadeAware {
 
         Region btnSpacer = new Region();
         HBox.setHgrow(btnSpacer, Priority.ALWAYS);
-
         HBox actionsRow = new HBox(8, editBtn, stockBtn, btnSpacer, delBtn);
         actionsRow.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(actionsRow, new javafx.geometry.Insets(12, 0, 0, 0));
 
-        card.getChildren().addAll(topRow, nameLabel, barcodeLabel,
-                div1, statsRow, div2, actionsRow);
+        card.getChildren().addAll(topRow, nameLabel, barcodeLabel, div1, statsRow, div2, actionsRow);
 
         DropShadow restShadow = makeShadow(0.50, 18, 6);
         DropShadow hoverShadow = makeShadow(0.70, 28, 12);
         card.setEffect(restShadow);
-        card.setOnMouseEntered(e -> {
-            card.setEffect(hoverShadow);
-            card.setTranslateY(-3);
-        });
-        card.setOnMouseExited(e -> {
-            card.setEffect(restShadow);
-            card.setTranslateY(0);
-        });
+        card.setOnMouseEntered(e -> { card.setEffect(hoverShadow); card.setTranslateY(-3); });
+        card.setOnMouseExited(e -> { card.setEffect(restShadow); card.setTranslateY(0); });
 
         return card;
     }
 
+    // Displays a dialog to input and save a new product into inventory
     @FXML
     private void handleAddProduct() {
         List<ProductCategory> cats = systemFacade.getAllCategories();
@@ -184,84 +166,63 @@ public class InventoryController implements FacadeAware {
         maxF.setText("100");
 
         GridPane grid = dialogGrid();
-        grid.add(new Label("Barcode:"), 0, 0);
-        grid.add(barcodeF, 1, 0);
-        grid.add(new Label("Name:"), 0, 1);
-        grid.add(nameF, 1, 1);
-        grid.add(new Label("Category:"), 0, 2);
-        grid.add(catBox, 1, 2);
-        grid.add(new Label("Price:"), 0, 3);
-        grid.add(priceF, 1, 3);
-        grid.add(new Label("Cost Price:"), 0, 4);
-        grid.add(costF, 1, 4);
-        grid.add(new Label("Min Stock:"), 0, 5);
-        grid.add(minF, 1, 5);
-        grid.add(new Label("Max Stock:"), 0, 6);
-        grid.add(maxF, 1, 6);
+        grid.add(new Label("Barcode:"), 0, 0); grid.add(barcodeF, 1, 0);
+        grid.add(new Label("Name:"), 0, 1); grid.add(nameF, 1, 1);
+        grid.add(new Label("Category:"), 0, 2); grid.add(catBox, 1, 2);
+        grid.add(new Label("Price:"), 0, 3); grid.add(priceF, 1, 3);
+        grid.add(new Label("Cost Price:"), 0, 4); grid.add(costF, 1, 4);
+        grid.add(new Label("Min Stock:"), 0, 5); grid.add(minF, 1, 5);
+        grid.add(new Label("Max Stock:"), 0, 6); grid.add(maxF, 1, 6);
 
         Dialog<ButtonType> dialog = buildDialog("Add New Product", grid);
         applyDialogStyle(dialog);
         dialog.showAndWait().ifPresent(btn -> {
-            if (btn != ButtonType.OK)
-                return;
+            if (btn != ButtonType.OK) return;
             try {
                 ProductCategory selCat = catBox.getValue();
-                if (selCat == null) {
-                    showAlert("Error", "Please select a category.");
-                    return;
-                }
+                if (selCat == null) { showAlert("Error", "Please select a category."); return; }
 
                 boolean ok = systemFacade.addProduct(
                         barcodeF.getText(), nameF.getText(), selCat.getCategoryId(),
-                        Double.parseDouble(priceF.getText()),
-                        Double.parseDouble(costF.getText()),
-                        Integer.parseInt(minF.getText()),
-                        Integer.parseInt(maxF.getText()));
+                        Double.parseDouble(priceF.getText()), Double.parseDouble(costF.getText()),
+                        Integer.parseInt(minF.getText()), Integer.parseInt(maxF.getText()));
 
-                if (ok)
-                    refreshData();
-                else
-                    showAlert("Error", "Failed to add product.");
+                if (ok) refreshData();
+                else showAlert("Error", "Failed to add product.");
             } catch (NumberFormatException e) {
                 showAlert("Error", "Invalid number format.");
             }
         });
     }
 
+    // Displays a dialog to update an existing product's details
     private void handleEditProduct(InventoryItem item) {
         Product p = item.getProduct();
-
         TextField nameF = new TextField(p.getName());
         TextField priceF = new TextField(String.valueOf(p.getPrice()));
         TextField costF = new TextField(String.valueOf(p.getCostPrice()));
 
         GridPane grid = dialogGrid();
-        grid.add(new Label("Name:"), 0, 0);
-        grid.add(nameF, 1, 0);
-        grid.add(new Label("Price:"), 0, 1);
-        grid.add(priceF, 1, 1);
-        grid.add(new Label("Cost:"), 0, 2);
-        grid.add(costF, 1, 2);
+        grid.add(new Label("Name:"), 0, 0); grid.add(nameF, 1, 0);
+        grid.add(new Label("Price:"), 0, 1); grid.add(priceF, 1, 1);
+        grid.add(new Label("Cost:"), 0, 2); grid.add(costF, 1, 2);
 
         Dialog<ButtonType> dialog = buildDialog("Edit Product — " + p.getBarcode(), grid);
         applyDialogStyle(dialog);
         dialog.showAndWait().ifPresent(btn -> {
-            if (btn != ButtonType.OK)
-                return;
+            if (btn != ButtonType.OK) return;
             try {
                 boolean ok = systemFacade.updateProduct(p.getBarcode(), nameF.getText(),
-                        Double.parseDouble(priceF.getText()),
-                        Double.parseDouble(costF.getText()));
-                if (ok)
-                    refreshData();
-                else
-                    showAlert("Error", "Failed to update.");
+                        Double.parseDouble(priceF.getText()), Double.parseDouble(costF.getText()));
+                if (ok) refreshData();
+                else showAlert("Error", "Failed to update.");
             } catch (NumberFormatException e) {
                 showAlert("Error", "Invalid number.");
             }
         });
     }
 
+    // Prompts the user to add new incoming stock quantity for a product
     private void handleAddStock(InventoryItem item) {
         TextInputDialog d = new TextInputDialog("10");
         d.setTitle("Add Stock");
@@ -270,31 +231,26 @@ public class InventoryController implements FacadeAware {
         applyDialogStyle(d);
         d.showAndWait().ifPresent(qty -> {
             try {
-                boolean ok = systemFacade.addStock(
-                        item.getProduct().getBarcode(), Integer.parseInt(qty));
-                if (ok)
-                    refreshData();
-                else
-                    showAlert("Error", "Failed to add stock.");
+                boolean ok = systemFacade.addStock(item.getProduct().getBarcode(), Integer.parseInt(qty));
+                if (ok) refreshData();
+                else showAlert("Error", "Failed to add stock.");
             } catch (NumberFormatException e) {
                 showAlert("Error", "Invalid number.");
             }
         });
     }
 
+    // Requests confirmation to permanently delete a product from inventory
     private void handleDeleteProduct(InventoryItem item) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Delete Product");
         confirm.setContentText("Delete \"" + item.getProduct().getName() + "\"?");
         applyDialogStyle(confirm);
         confirm.showAndWait().ifPresent(btn -> {
-            if (btn != ButtonType.OK)
-                return;
+            if (btn != ButtonType.OK) return;
             boolean ok = systemFacade.deleteProduct(item.getProduct().getBarcode());
-            if (ok)
-                refreshData();
-            else
-                showAlert("Error", "Failed to delete.");
+            if (ok) refreshData();
+            else showAlert("Error", "Failed to delete.");
         });
     }
 
@@ -302,6 +258,7 @@ public class InventoryController implements FacadeAware {
         loadCategoryCards();
     }
 
+    // Renders the product categories grid filtered by the search text
     private void loadCategoryCards() {
         categoryGrid.getChildren().clear();
         String query = categorySearchField.getText().toLowerCase();
@@ -318,13 +275,7 @@ public class InventoryController implements FacadeAware {
 
         String initial = cat.getCategoryName().isEmpty() ? "?" : cat.getCategoryName().substring(0, 1).toUpperCase();
         Label iconBox = new Label(initial);
-        iconBox.setStyle(
-                "-fx-background-color: rgba(139,92,246,0.18);" +
-                        "-fx-background-radius: 10;" +
-                        "-fx-text-fill: #a78bfa;" +
-                        "-fx-font-size: 18px;" +
-                        "-fx-padding: 8 10;" +
-                        "-fx-alignment: CENTER;");
+        iconBox.setStyle("-fx-background-color: rgba(139,92,246,0.18); -fx-background-radius: 10; -fx-text-fill: #a78bfa; -fx-font-size: 18px; -fx-padding: 8 10; -fx-alignment: CENTER;");
         VBox.setMargin(iconBox, new javafx.geometry.Insets(0, 0, 12, 0));
 
         Label nameLabel = new Label(cat.getCategoryName());
@@ -363,18 +314,13 @@ public class InventoryController implements FacadeAware {
         DropShadow restShadow = makeShadow(0.50, 18, 6);
         DropShadow hoverShadow = makeShadow(0.70, 28, 12);
         card.setEffect(restShadow);
-        card.setOnMouseEntered(e -> {
-            card.setEffect(hoverShadow);
-            card.setTranslateY(-3);
-        });
-        card.setOnMouseExited(e -> {
-            card.setEffect(restShadow);
-            card.setTranslateY(0);
-        });
+        card.setOnMouseEntered(e -> { card.setEffect(hoverShadow); card.setTranslateY(-3); });
+        card.setOnMouseExited(e -> { card.setEffect(restShadow); card.setTranslateY(0); });
 
         return card;
     }
 
+    // Prompts for a name and creates a new product category
     @FXML
     private void handleAddCategory() {
         TextInputDialog d = new TextInputDialog();
@@ -385,14 +331,13 @@ public class InventoryController implements FacadeAware {
         d.showAndWait().ifPresent(name -> {
             if (!name.trim().isEmpty()) {
                 boolean ok = systemFacade.addCategory(name.trim());
-                if (ok)
-                    refreshData();
-                else
-                    showAlert("Error", "Failed to add category.");
+                if (ok) refreshData();
+                else showAlert("Error", "Failed to add category.");
             }
         });
     }
 
+    // Prompts to rename an existing product category
     private void handleEditCategory(ProductCategory cat) {
         TextInputDialog d = new TextInputDialog(cat.getCategoryName());
         d.setTitle("Edit Category");
@@ -402,29 +347,23 @@ public class InventoryController implements FacadeAware {
         d.showAndWait().ifPresent(name -> {
             if (!name.trim().isEmpty()) {
                 boolean ok = systemFacade.updateCategory(cat.getCategoryId(), name.trim());
-                if (ok)
-                    refreshData();
-                else
-                    showAlert("Error", "Failed to update category.");
+                if (ok) refreshData();
+                else showAlert("Error", "Failed to update category.");
             }
         });
     }
 
+    // Requests confirmation to permanently delete a product category
     private void handleDeleteCategory(ProductCategory cat) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Delete Category");
-        confirm.setContentText(
-                "Delete \"" + cat.getCategoryName() + "\"?\n" +
-                        "This will fail if any products use this category.");
+        confirm.setContentText("Delete \"" + cat.getCategoryName() + "\"?\nThis will fail if any products use this category.");
         applyDialogStyle(confirm);
         confirm.showAndWait().ifPresent(btn -> {
-            if (btn != ButtonType.OK)
-                return;
+            if (btn != ButtonType.OK) return;
             boolean ok = systemFacade.deleteCategory(cat.getCategoryId());
-            if (ok)
-                refreshData();
-            else
-                showAlert("Error", "Cannot delete — category may be in use.");
+            if (ok) refreshData();
+            else showAlert("Error", "Cannot delete — category may be in use.");
         });
     }
 
@@ -442,11 +381,8 @@ public class InventoryController implements FacadeAware {
     private Region verticalDivider() {
         Region r = new Region();
         r.setStyle("-fx-background-color: rgba(255,255,255,0.07);");
-        r.setPrefWidth(1);
-        r.setMinWidth(1);
-        r.setMaxWidth(1);
-        r.setPrefHeight(36);
-        r.setMaxHeight(36);
+        r.setPrefWidth(1); r.setMinWidth(1); r.setMaxWidth(1);
+        r.setPrefHeight(36); r.setMaxHeight(36);
         HBox.setMargin(r, new javafx.geometry.Insets(0, 10, 0, 0));
         return r;
     }
@@ -469,9 +405,7 @@ public class InventoryController implements FacadeAware {
     private DropShadow makeShadow(double opacity, double radius, double offsetY) {
         DropShadow s = new DropShadow();
         s.setColor(Color.color(0, 0, 0, opacity));
-        s.setRadius(radius);
-        s.setOffsetX(0);
-        s.setOffsetY(offsetY);
+        s.setRadius(radius); s.setOffsetX(0); s.setOffsetY(offsetY);
         return s;
     }
 
@@ -483,8 +417,7 @@ public class InventoryController implements FacadeAware {
 
     private GridPane dialogGrid() {
         GridPane g = new GridPane();
-        g.setHgap(10);
-        g.setVgap(10);
+        g.setHgap(10); g.setVgap(10);
         return g;
     }
 
@@ -503,9 +436,6 @@ public class InventoryController implements FacadeAware {
 
     private void showAlert(String title, String msg) {
         Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle(title);
-        a.setContentText(msg);
-        applyDialogStyle(a);
-        a.showAndWait();
+        a.setTitle(title); a.setContentText(msg); applyDialogStyle(a); a.showAndWait();
     }
 }

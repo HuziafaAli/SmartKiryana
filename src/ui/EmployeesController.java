@@ -15,10 +15,8 @@ import java.util.stream.Collectors;
 
 public class EmployeesController implements FacadeAware {
 
-    @FXML
-    private FlowPane employeeGrid;
-    @FXML
-    private TextField searchField;
+    @FXML private FlowPane employeeGrid;
+    @FXML private TextField searchField;
 
     private SystemFacade systemFacade;
     private final ObservableList<Employee> empList = FXCollections.observableArrayList();
@@ -33,11 +31,13 @@ public class EmployeesController implements FacadeAware {
         refreshData();
     }
 
+    // Fetches all employees from the database and updates the UI grid
     private void refreshData() {
         empList.setAll(systemFacade.getAllEmployees());
         renderEmployees(empList);
     }
 
+    // Filters the displayed employees based on a text search query
     private void filterEmployees(String query) {
         if (query == null || query.trim().isEmpty()) {
             renderEmployees(empList);
@@ -54,6 +54,7 @@ public class EmployeesController implements FacadeAware {
         renderEmployees(filtered);
     }
 
+    // Clears the grid and populates it with employee profile cards
     private void renderEmployees(List<Employee> employees) {
         employeeGrid.getChildren().clear();
 
@@ -170,6 +171,7 @@ public class EmployeesController implements FacadeAware {
         return (first + second).toUpperCase();
     }
 
+    // Opens a dialog to create a new employee and saves them to the database
     @FXML
     private void handleAddEmployee() {
         TextField usernameF = new TextField();
@@ -215,6 +217,7 @@ public class EmployeesController implements FacadeAware {
         }
     }
 
+    // Opens a dialog to modify an existing employee's details
     private void handleEdit(Employee emp) {
         TextField nameF = new TextField(emp.getFullName());
         TextField phoneF = new TextField(emp.getPhone());
@@ -251,6 +254,7 @@ public class EmployeesController implements FacadeAware {
         }
     }
 
+    // Disables an employee's login access
     private void handleDeactivate(Employee emp) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Deactivate Employee");
@@ -268,6 +272,7 @@ public class EmployeesController implements FacadeAware {
         }
     }
 
+    // Restores an employee's login access
     private void handleActivate(Employee emp) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Activate Employee");

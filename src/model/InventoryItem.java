@@ -28,6 +28,7 @@ public class InventoryItem {
         return stockQuantity >= maxStockThreshold;
     }
 
+    // Returns a human-readable stock status label
     public String getStatus() {
         if (isLowStock())
             return "Low Stock";
@@ -40,6 +41,7 @@ public class InventoryItem {
         this.stockQuantity += amount;
     }
 
+    // Reduces stock only if enough is available, returns false otherwise
     public boolean reduceStockQuantity(int amount) {
         if (this.stockQuantity >= amount) {
             this.stockQuantity -= amount;
@@ -54,8 +56,6 @@ public class InventoryItem {
         }
         return false;
     }
-
-    // Getters & Setters
 
     public int getInventoryId() {
         return inventoryId;

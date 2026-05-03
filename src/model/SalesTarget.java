@@ -21,16 +21,13 @@ public class SalesTarget {
         this.achievedAmount = 0.0; 
     }
 
-    // Business Logic
-    
+    // Returns how much of the target has been reached as a percentage
     public double getAchievementPercentage() {
         if (targetAmount == 0) {
             return 0.0;
         }
         return (achievedAmount / targetAmount) * 100.0;
     }
-
-    // Getters & Setters
 
     public int getTargetId() {
         return targetId;

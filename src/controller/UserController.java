@@ -13,6 +13,7 @@ public class UserController {
         this.authService = authService;
     }
 
+    // Authenticates a user and starts their session
     public boolean login(String username, String password) {
         boolean success = authService.login(username, password);
         if (success) {
@@ -23,6 +24,7 @@ public class UserController {
         return success;
     }
 
+    // Clears the current user session
     public boolean logout() {
         boolean success = authService.logout();
         if (success) {
@@ -35,6 +37,7 @@ public class UserController {
         return authService.getCurrentUser();
     }
 
+    // Registers a new employee account (admin-only)
     public boolean addEmployee(String username, String password, String fullName, String phone, String cnic) {
         boolean success = authService.addEmployee(username, password, fullName, phone, cnic);
         if (success) {
@@ -45,6 +48,7 @@ public class UserController {
         return success;
     }
 
+    // Updates an existing employee's profile details
     public boolean updateEmployee(int userId, String newFullName, String newPhone, String newUsername, String newPassword) {
         boolean success = authService.updateEmployee(userId, newFullName, newPhone, newUsername, newPassword);
         if (success) {
@@ -55,6 +59,7 @@ public class UserController {
         return success;
     }
 
+    // Disables an employee account so they can no longer log in
     public boolean deactivateUser(int userId) {
         boolean success = authService.deactivateUser(userId);
         if (success) {
@@ -65,6 +70,7 @@ public class UserController {
         return success;
     }
 
+    // Re-enables a previously deactivated employee account
     public boolean activateUser(int userId) {
         boolean success = authService.activateUser(userId);
         if (success) {

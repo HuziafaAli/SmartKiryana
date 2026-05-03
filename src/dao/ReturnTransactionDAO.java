@@ -18,12 +18,20 @@ import java.util.List;
 
 public class ReturnTransactionDAO {
 
+    private static List<ReturnTransaction> cachedReturns = null;
+    private static boolean isCacheDirty = true;
+
+    public static void invalidateCache() {
+        isCacheDirty = true;
+    }
+
     private BillDAO billDAO;
 
     public ReturnTransactionDAO(BillDAO billDAO) {
         this.billDAO = billDAO;
     }
 
+    // Saves a return transaction and all its line items in a single transaction
     public boolean save(ReturnTransaction returnTx) {
         String returnQuery = "INSERT INTO return_transactions (original_bill_id, refund_amount, return_date, reason) VALUES (?, ?, ?, ?)";
         String itemQuery = "INSERT INTO return_items (return_id, bill_item_id, return_quantity) VALUES (?, ?, ?)";
@@ -55,6 +63,7 @@ public class ReturnTransactionDAO {
                 }
 
                 conn.commit();
+                invalidateCache();
                 return true;
 
             } catch (SQLException e) {
@@ -68,7 +77,11 @@ public class ReturnTransactionDAO {
         }
     }
 
+    // Loads all return transactions with their items, using cache when available
     public List<ReturnTransaction> findAll() {
+        if (!isCacheDirty && cachedReturns != null) {
+            return new ArrayList<>(cachedReturns);
+        }
         java.util.Map<Integer, ReturnTransaction> returnMap = new java.util.LinkedHashMap<>();
         String query = "SELECT rt.*, ri.return_item_id, ri.return_quantity, "
                 + "bi.bill_item_id, bi.quantity, bi.unit_price, "
@@ -127,11 +140,12 @@ public class ReturnTransactionDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>(returnMap.values());
+        cachedReturns = new ArrayList<>(returnMap.values());
+        isCacheDirty = false;
+        return new ArrayList<>(cachedReturns);
     }
 
-
-
+    // Converts a result set row into a ReturnTransaction linked to its original bill
     private ReturnTransaction mapRow(ResultSet rs) throws SQLException {
         ReturnTransaction tx = new ReturnTransaction();
         tx.setReturnId(rs.getInt("return_id"));

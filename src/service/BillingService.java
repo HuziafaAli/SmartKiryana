@@ -30,6 +30,7 @@ public class BillingService {
         this.inventoryService = inventoryService;
     }
 
+    // Initializes a new empty bill for the given cashier
     public Bill startNewBill(User cashier) {
         currentBill = new Bill(0, cashier);
         return currentBill;
@@ -39,6 +40,7 @@ public class BillingService {
         return currentBill;
     }
 
+    // Adds an item to the current bill or increases its quantity if already added
     public String scanItem(String barcode, int quantity) {
         if (currentBill == null) {
             return "No active bill. Please start a new bill first.";
@@ -87,6 +89,7 @@ public class BillingService {
         }
     }
 
+    // Sets the flat discount on the active bill
     public boolean applyDiscount(double amount) {
         if (!Validator.isPositiveAmount(amount))
             return false;
@@ -98,6 +101,7 @@ public class BillingService {
         return false;
     }
 
+    // Removes a line item from the current bill by barcode
     public boolean removeItem(String barcode) {
         if (currentBill == null || !Validator.isValidBarcode(barcode)) {
             return false;
@@ -120,6 +124,7 @@ public class BillingService {
         return true;
     }
 
+    // Finalizes the sale, deducts inventory, and persists the bill
     public Bill checkOut(double cashProvided) {
         if (currentBill == null)
             return null;
@@ -156,6 +161,7 @@ public class BillingService {
         return billDAO.findAll();
     }
 
+    // Validates return items against the original bill and restores stock
     public ReturnTransaction processReturn(Bill originalBill, List<ReturnItem> items, String reason) {
         if (originalBill == null || items == null || items.isEmpty()) {
             return null;
@@ -191,7 +197,6 @@ public class BillingService {
             
             boolean stockAdded = inventoryService.addStock(barcode, qty);
             if (!stockAdded) {
-                // The item was deleted from inventory! Recreate the row so stock isn't lost.
                 inventoryService.restoreDeletedStock(barcode, qty);
             }
         }
@@ -200,8 +205,7 @@ public class BillingService {
         return returnTx;
     }
 
-    // Filtering: Service fetches all bills then applies logic in Java
-
+    // Filters all bills to only those within the given date window
     public List<Bill> filterByDateRange(LocalDateTime from, LocalDateTime to) {
         List<Bill> allBills = billDAO.findAll();
         List<Bill> filtered = new ArrayList<>();
@@ -212,7 +216,4 @@ public class BillingService {
         }
         return filtered;
     }
-
-
 }
-

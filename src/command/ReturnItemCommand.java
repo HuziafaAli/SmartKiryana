@@ -7,6 +7,7 @@ import model.ReturnTransaction;
 
 import java.util.List;
 
+// Encapsulates a product return operation so it can be executed as a command
 public class ReturnItemCommand implements Command {
 
     private BillController billController;
@@ -22,6 +23,7 @@ public class ReturnItemCommand implements Command {
         this.reason = reason;
     }
 
+    // Delegates the return processing to the bill controller
     @Override
     public void execute() {
         this.resultTransaction = billController.processReturn(originalBill, items, reason);

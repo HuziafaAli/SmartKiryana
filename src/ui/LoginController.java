@@ -28,6 +28,7 @@ public class LoginController {
         this.systemFacade = systemFacade;
     }
 
+    // Validates credentials and navigates to the dashboard on success
     @FXML
     private void handleLogin() {
         String username = usernameField.getText();
@@ -43,20 +44,18 @@ public class LoginController {
         if (success) {
             showStatus("Login Successful! Transitioning...", false);
             System.out.println("Login Success for: " + systemFacade.getCurrentUser().getFullName());
-            
-            // Transition to Dashboard
             navigateToDashboard();
         } else {
             showStatus("Invalid username or password.", true);
         }
     }
 
+    // Loads the main dashboard and injects the facade
     private void navigateToDashboard() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Dashboard.fxml"));
             Parent root = loader.load();
 
-            // Inject the facade into DashboardController
             DashboardController dashboardController = loader.getController();
             dashboardController.setSystemFacade(systemFacade);
 

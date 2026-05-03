@@ -14,6 +14,7 @@ public class InventoryController {
         inventoryService = IS;
     }
 
+    // Adds a new product category to the system
     public boolean addCategory(String name) {
         boolean success = inventoryService.addCategory(name);
         if (success) {
@@ -24,6 +25,7 @@ public class InventoryController {
         return success;
     }
 
+    // Renames an existing category by its ID
     public boolean updateCategory(int id, String newName) {
         boolean success = inventoryService.updateCategory(id, newName);
         if (success) {
@@ -34,6 +36,7 @@ public class InventoryController {
         return success;
     }
 
+    // Deletes a category only if no products depend on it
     public boolean deleteCategory(int id) {
         boolean success = inventoryService.deleteCategory(id);
         if (success) {
@@ -48,6 +51,7 @@ public class InventoryController {
         return inventoryService.getAllCategories();
     }
 
+    // Registers a new product with its inventory entry
     public boolean addProduct(String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
         boolean success = inventoryService.addProduct(barcode, name, categoryId, price, costPrice, minStock,
@@ -60,6 +64,7 @@ public class InventoryController {
         return success;
     }
 
+    // Updates product details like name and pricing
     public boolean updateProduct(String barcode, String newName, double newPrice, double newCostPrice) {
         boolean success = inventoryService.updateProduct(barcode, newName, newPrice, newCostPrice);
         if (success) {
@@ -70,6 +75,7 @@ public class InventoryController {
         return success;
     }
 
+    // Removes a product from the active inventory
     public boolean deleteProduct(String barcode) {
         boolean success = inventoryService.deleteProduct(barcode);
         if (success) {
@@ -80,6 +86,7 @@ public class InventoryController {
         return success;
     }
 
+    // Increases stock quantity for a product and triggers observer alerts
     public boolean addStock(String barcode, int quantityToAdd) {
         boolean success = inventoryService.addStock(barcode, quantityToAdd);
         if (success) {
@@ -101,6 +108,7 @@ public class InventoryController {
         return inventoryService.getAllInventoryItems();
     }
 
+    // Runs a full stock level check and fires observer notifications
     public void checkAllStockLevels() {
         inventoryService.checkAllStockLevels();
         System.out.println("Stock check complete.");

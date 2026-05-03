@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
 
+// Concrete observer that collects and displays stock level alerts
 public class StockAlert implements StockObserver {
 
     private Map<String, InventoryItem> pendingAlerts;
@@ -14,6 +15,7 @@ public class StockAlert implements StockObserver {
         this.pendingAlerts = new HashMap<>();
     }
 
+    // Logs a low-stock warning if the item's level has changed
     @Override
     public void onStockLow(InventoryItem item) {
         if (!pendingAlerts.containsKey(item.getProduct().getBarcode()) || 
@@ -39,6 +41,7 @@ public class StockAlert implements StockObserver {
         System.out.println("All alerts have been acknowledged and cleared.");
     }
 
+    // Logs an overstock warning if the item's level has changed
     @Override
     public void onStockOver(InventoryItem item) {
         if (!pendingAlerts.containsKey(item.getProduct().getBarcode()) || 
@@ -55,6 +58,7 @@ public class StockAlert implements StockObserver {
         }
     }
 
+    // Clears a previous alert when stock returns to acceptable levels
     @Override
     public void onStockNormal(InventoryItem item) {
         if (pendingAlerts.remove(item.getProduct().getBarcode()) != null) {

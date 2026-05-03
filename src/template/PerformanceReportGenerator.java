@@ -33,6 +33,7 @@ public class PerformanceReportGenerator extends ReportTemplate<PerformanceReport
         this.foundTarget = null;
     }
 
+    // Totals the employee's sales for the period and finds their assigned target
     @Override
     protected void gatherData() {
         for (Bill b : allBills) {
@@ -52,6 +53,7 @@ public class PerformanceReportGenerator extends ReportTemplate<PerformanceReport
         }
     }
 
+    // Calculates the 5% bonus if the employee exceeded their target
     @Override
     protected void calculateTotals() {
         if (foundTarget != null) {

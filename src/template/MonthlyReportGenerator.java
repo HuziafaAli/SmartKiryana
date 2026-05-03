@@ -35,6 +35,7 @@ public class MonthlyReportGenerator extends ReportTemplate<MonthlyReport> {
         this.topProducts = new ArrayList<>();
     }
 
+    // Sums up sales and returns for the target month, and tracks per-product quantities
     @Override
     protected void gatherData() {
         for (Bill b : allBills) {
@@ -55,11 +56,12 @@ public class MonthlyReportGenerator extends ReportTemplate<MonthlyReport> {
         }
     }
 
+    // Ranks products by quantity sold and picks the top 5
     @Override
     protected void calculateTotals() {
         productSalesMap.entrySet().stream()
                 .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
-                .limit(5) // Show top 5 instead of 10
+                .limit(5)
                 .forEach(entry -> {
                     Product p = entry.getKey();
                     p.setSalesQuantity(entry.getValue());

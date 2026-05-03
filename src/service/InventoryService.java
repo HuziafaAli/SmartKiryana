@@ -23,8 +23,6 @@ public class InventoryService {
         this.observers = new ArrayList<>();
     }
 
-    // Category CRUD
-
     public boolean addCategory(String name) {
         if (!Validator.isNotEmpty(name))
             return false;
@@ -46,6 +44,7 @@ public class InventoryService {
         return false;
     }
 
+    // Deletes a category only if no products are using it
     public boolean deleteCategory(int id) {
         List<ProductCategory> allCategories = categoryDAO.findAll();
         List<InventoryItem> allItems = inventoryDAO.findAll();
@@ -73,8 +72,7 @@ public class InventoryService {
         return categoryDAO.findAll();
     }
 
-    // Product CRUD
-
+    // Validates inputs, checks for duplicate barcodes, and creates a new product with inventory
     public boolean addProduct(String barcode, String name, int categoryId,
             double price, double costPrice, int minStock, int maxStock) {
 
@@ -83,12 +81,10 @@ public class InventoryService {
             return false;
         }
 
-        // Check if barcode already exists
         if (inventoryDAO.findByBarcode(barcode) != null) {
             return false;
         }
 
-        // Find the category
         List<ProductCategory> allCategories = categoryDAO.findAll();
         for (ProductCategory c : allCategories) {
             if (c.getCategoryId() == categoryId) {
@@ -127,8 +123,7 @@ public class InventoryService {
         return inventoryDAO.delete(barcode);
     }
 
-    // Stock Management
-
+    // Increases stock and fires observer alerts for overstock or normal
     public boolean addStock(String barcode, int quantityToAdd) {
         if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantityToAdd)) {
             return false;
@@ -139,7 +134,6 @@ public class InventoryService {
             return false;
         }
 
-        // Business logic: calculate new quantity in Java
         int newQuantity = itemExist.getStockQuantity() + quantityToAdd;
         boolean success = inventoryDAO.updateStock(barcode, newQuantity);
 
@@ -158,6 +152,7 @@ public class InventoryService {
         return success;
     }
 
+    // Re-creates an inventory row for a product that was previously deleted
     public boolean restoreDeletedStock(String barcode, int quantity) {
         if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantity)) {
             return false;
@@ -172,6 +167,7 @@ public class InventoryService {
         return inventoryDAO.insertInventoryOnly(item);
     }
 
+    // Decreases stock and fires observer alerts for low stock
     public boolean reduceStock(String barcode, int quantityToReduce) {
         if (!Validator.isValidBarcode(barcode) || !Validator.isPositiveQuantity(quantityToReduce)) {
             return false;
@@ -182,16 +178,13 @@ public class InventoryService {
             return false;
         }
 
-        // Business logic: check if enough stock exists
         if (itemExist.getStockQuantity() < quantityToReduce) {
             return false;
         }
 
-        // Business logic: calculate new quantity in Java
         int newQuantity = itemExist.getStockQuantity() - quantityToReduce;
         boolean success = inventoryDAO.updateStock(barcode, newQuantity);
 
-        // Observer trigger: notify if stock is now low or normal
         if (success) {
             InventoryItem updatedItem = isProductExists(barcode);
             if (updatedItem.isLowStock()) {
@@ -208,14 +201,11 @@ public class InventoryService {
         return success;
     }
 
-    // Observer Management
-
     public void addObserver(StockObserver observer) {
         observers.add(observer);
     }
 
-    // Lookup & Queries
-
+    // Checks if a product exists in inventory by its barcode
     public InventoryItem isProductExists(String barcode) {
         if (!Validator.isValidBarcode(barcode))
             return null;
@@ -223,6 +213,7 @@ public class InventoryService {
         return inventoryDAO.findByBarcode(barcode);
     }
 
+    // Returns only items whose stock is at or below the minimum threshold
     public List<InventoryItem> getLowStockItems() {
         List<InventoryItem> allItems = inventoryDAO.findAll();
         List<InventoryItem> lowStockItems = new ArrayList<>();
@@ -238,6 +229,7 @@ public class InventoryService {
         return inventoryDAO.findAll();
     }
 
+    // Scans every item and notifies observers about low, over, or normal stock
     public void checkAllStockLevels() {
         List<InventoryItem> allItems = inventoryDAO.findAll();
         for (InventoryItem item : allItems) {

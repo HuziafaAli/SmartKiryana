@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 
+// Single entry point that delegates all UI requests to the appropriate controller
 public class SystemFacade {
     private BillController billController;
     private InventoryController inventoryController;
@@ -28,12 +29,11 @@ public class SystemFacade {
         this.stockAlert = stockAlert;
     }
 
-    // Command Execution
+    // Runs any Command object (report generation, returns, etc.)
     public void executeCommand(Command command) {
         command.execute();
     }
 
-    // User & Authentication
     public boolean login(String username, String password) {
         return userController.login(username, password);
     }
@@ -67,7 +67,6 @@ public class SystemFacade {
         return userController.getAllEmployees();
     }
 
-    // Inventory: Categories
     public boolean addCategory(String name) {
         return inventoryController.addCategory(name);
     }
@@ -84,7 +83,6 @@ public class SystemFacade {
         return inventoryController.getAllCategories();
     }
 
-    // Inventory: Products
     public boolean addProduct(String barcode, String name, int categoryId, double price,
             double costPrice, int minStock, int maxStock) {
         return inventoryController.addProduct(barcode, name, categoryId, price, costPrice, minStock,
@@ -99,13 +97,12 @@ public class SystemFacade {
         return inventoryController.deleteProduct(barcode);
     }
 
-    // Inventory: Stock
     public boolean addStock(String barcode, int quantityToAdd) {
         return inventoryController.addStock(barcode, quantityToAdd);
     }
 
+    // Refreshes stock alerts and returns currently flagged items
     public List<InventoryItem> getLowStockItems() {
-        // Refresh the observer, then return its pending alerts as a list
         inventoryController.checkAllStockLevels();
         return new ArrayList<>(stockAlert.getPendingAlerts());
     }
@@ -118,7 +115,6 @@ public class SystemFacade {
         inventoryController.checkAllStockLevels();
     }
 
-    // POS & Billing
     public Bill startNewBill(User cashier) {
         return billController.startNewBill(cashier);
     }
@@ -155,7 +151,6 @@ public class SystemFacade {
         return billController.filterByDateRange(from, to);
     }
 
-    // Reports & Performance
     public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
         return reportController.assignTarget(employee, month, year, targetAmount);
     }
@@ -177,7 +172,7 @@ public class SystemFacade {
         return reportController;
     }
 
-    // Utility: Find bill by ID
+    // Searches the bill cache for a specific bill by ID
     public Bill findBillById(int billId) {
         List<Bill> allBills = getAllBills();
         for (Bill b : allBills) {

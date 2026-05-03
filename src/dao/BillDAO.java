@@ -21,12 +21,20 @@ import java.util.LinkedHashMap;
 
 public class BillDAO {
 
+    private static List<Bill> cachedBills = null;
+    private static boolean isCacheDirty = true;
+
+    public static void invalidateCache() {
+        isCacheDirty = true;
+    }
+
     private UserDAO userDAO;
 
     public BillDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 
+    // Persists the bill, its items, and updates product sales counters in one transaction
     public boolean save(Bill bill) {
         String billQuery = "INSERT INTO bills (user_id, bill_date, total_amount, tax_amount, discount_amount, cash_provided, return_cash) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String itemQuery = "INSERT INTO bill_items (bill_id, barcode, quantity, unit_price) VALUES (?, ?, ?, ?)";
@@ -68,6 +76,7 @@ public class BillDAO {
                 }
 
                 conn.commit();
+                invalidateCache();
                 return true;
 
             } catch (SQLException e) {
@@ -81,6 +90,7 @@ public class BillDAO {
         }
     }
 
+    // Looks up a single bill by its ID including all line items
     public Bill findById(int billId) {
         String query = "SELECT * FROM bills WHERE bill_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -102,7 +112,11 @@ public class BillDAO {
         return null;
     }
 
+    // Returns all bills with their items, using an in-memory cache when possible
     public List<Bill> findAll() {
+        if (!isCacheDirty && cachedBills != null) {
+            return new ArrayList<>(cachedBills);
+        }
         Map<Integer, Bill> billMap = new LinkedHashMap<>();
         Map<Integer, model.User> userCache = new HashMap<>();
         String query = "SELECT b.*, bi.bill_item_id, bi.quantity, bi.unit_price, "
@@ -155,9 +169,12 @@ public class BillDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>(billMap.values());
+        cachedBills = new ArrayList<>(billMap.values());
+        isCacheDirty = false;
+        return new ArrayList<>(cachedBills);
     }
 
+    // Fetches the line items for a specific bill
     private List<BillItem> findBillItems(int billId) {
         List<BillItem> items = new ArrayList<>();
         String query = "SELECT bi.bill_item_id, bi.quantity, bi.unit_price, "
@@ -202,6 +219,7 @@ public class BillDAO {
         return items;
     }
 
+    // Converts a result set row into a Bill object with its cashier resolved
     private Bill mapBillRow(ResultSet rs, Map<Integer, model.User> userCache) throws SQLException {
         Bill bill = new Bill();
         bill.setBillId(rs.getInt("bill_id"));

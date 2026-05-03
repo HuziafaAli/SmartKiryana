@@ -15,15 +15,14 @@ public class Main extends Application {
 
     private SystemFacade systemFacade;
 
+    // Wires up the entire backend stack before the UI loads
     @Override
     public void init() {
-        // 1. Test Database Connection
         if (!DatabaseConnection.testConnection()) {
             System.err.println("CRITICAL: Database Connection Failed!");
             return;
         }
 
-        // 2. Initialize Backend stack
         UserDAO userDAO = new UserDAO();
         ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
         InventoryItemDAO inventoryDAO = new InventoryItemDAO();
@@ -34,10 +33,9 @@ public class Main extends Application {
         AuthService authService = new AuthService(userDAO);
         InventoryService inventoryService = new InventoryService(categoryDAO, inventoryDAO);
 
-        // Wire up the Observer pattern: StockAlert listens for low-stock events
         StockAlert stockAlert = new StockAlert();
         inventoryService.addObserver(stockAlert);
-        inventoryService.checkAllStockLevels(); // Fire alerts for any already-low items
+        inventoryService.checkAllStockLevels();
 
         BillingService billingService = new BillingService(inventoryService, billDAO, returnDAO);
         ReportService reportService = new ReportService(authService, salesTargetDAO);
@@ -50,22 +48,18 @@ public class Main extends Application {
         this.systemFacade = new SystemFacade(billController, inventoryController, reportController, userController, stockAlert);
     }
 
+    // Loads the login screen and shows the main window
     @Override
     public void start(Stage stage) throws Exception {
-        // 3. Load the FXML Login View
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Login.fxml"));
         Parent root = loader.load();
 
-        // 4. Inject the Facade into the Controller
         LoginController controller = loader.getController();
         controller.setSystemFacade(systemFacade);
 
-        // 5. Setup Scene and Window
         Scene scene = new Scene(root);
         stage.setTitle("SmartKiryana POS - Login");
         stage.setScene(scene);
-        
-        // Open in Maximized mode
         stage.setMaximized(true);
         stage.show();
     }

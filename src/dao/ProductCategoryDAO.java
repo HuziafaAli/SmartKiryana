@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProductCategoryDAO {
 
-    // Save a new category to the database
+    // Inserts a new category and sets its generated ID
     public boolean save(ProductCategory category) {
         String query = "INSERT INTO product_categories (category_name) VALUES (?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -34,7 +34,7 @@ public class ProductCategoryDAO {
         }
     }
 
-    // Find a single category by its ID
+    // Retrieves a single category by its primary key
     public ProductCategory findById(int categoryId) {
         String query = "SELECT category_id, category_name FROM product_categories WHERE category_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -53,7 +53,7 @@ public class ProductCategoryDAO {
         return null;
     }
 
-    // Fetch all categories from the database
+    // Returns every product category in the system
     public List<ProductCategory> findAll() {
         List<ProductCategory> categories = new ArrayList<>();
         String query = "SELECT category_id, category_name FROM product_categories";
@@ -72,7 +72,7 @@ public class ProductCategoryDAO {
         return categories;
     }
 
-    // Update an existing category's name
+    // Renames an existing category
     public boolean update(ProductCategory category) {
         String query = "UPDATE product_categories SET category_name = ? WHERE category_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -88,7 +88,7 @@ public class ProductCategoryDAO {
         }
     }
 
-    // Delete a category by its ID
+    // Deletes a category if no products reference it
     public boolean delete(int categoryId) {
         String query = "DELETE FROM product_categories WHERE category_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -103,7 +103,6 @@ public class ProductCategoryDAO {
         }
     }
 
-    // Helper: Convert a database row into a Java object
     private ProductCategory mapRow(ResultSet rs) throws SQLException {
         return new ProductCategory(
                 rs.getInt("category_id"),

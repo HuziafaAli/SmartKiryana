@@ -19,6 +19,7 @@ public class AuthService {
         this.currentUser = null;
     }
 
+    // Validates credentials and starts a session for active users
     public boolean login(String username, String password) {
         if (!Validator.isNotEmpty(username) || !Validator.isNotEmpty(password)) {
             return false;
@@ -37,6 +38,7 @@ public class AuthService {
         return false;
     }
 
+    // Ends the current user session
     public boolean logout() {
         if (this.currentUser != null) {
             this.currentUser = null;
@@ -49,6 +51,7 @@ public class AuthService {
         return this.currentUser;
     }
 
+    // Creates a new employee account after admin and input validation
     public boolean addEmployee(String username, String password, String fullName, String phone, String cnic) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
             return false;
@@ -64,6 +67,7 @@ public class AuthService {
         return userDAO.save(newEmp);
     }
 
+    // Updates an employee's profile fields after admin check
     public boolean updateEmployee(int userId, String newFullName, String newPhone, String newUsername, String newPassword) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
             return false;
@@ -87,6 +91,7 @@ public class AuthService {
         return false;
     }
 
+    // Marks an employee as inactive so they can no longer log in
     public boolean deactivateUser(int userId) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
             return false;
@@ -106,6 +111,7 @@ public class AuthService {
         return false;
     }
 
+    // Re-enables a previously deactivated account
     public boolean activateUser(int userId) {
         if (currentUser == null || !currentUser.getRole().equalsIgnoreCase("ADMIN")) {
             return false;
@@ -125,6 +131,7 @@ public class AuthService {
         return false;
     }
 
+    // Filters and returns only employee-type users
     public List<Employee> getAllEmployees() {
         List<User> allUsers = userDAO.findAll();
         List<Employee> tempEmp = new ArrayList<>();
@@ -136,4 +143,3 @@ public class AuthService {
         return tempEmp;
     }
 }
-

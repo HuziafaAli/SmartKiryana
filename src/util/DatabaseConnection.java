@@ -10,10 +10,12 @@ public class DatabaseConnection {
     private static final String USER = "postgres";
     private static final String PASSWORD = "postgres";
 
+    // Opens a fresh connection to the PostgreSQL database
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
+    // Verifies the database is reachable at startup
     public static boolean testConnection() {
         try (Connection conn = getConnection()) {
             return conn != null && !conn.isClosed();

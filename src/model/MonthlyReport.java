@@ -29,13 +29,10 @@ public class MonthlyReport {
         this.generatedDate = LocalDateTime.now();
     }
 
-    // Business Logic
-    
+    // Calculates profit after subtracting returns from sales
     public double getNetRevenue() {
         return totalSales - totalReturns;
     }
-
-    // Getters & Setters
 
     public int getReportId() {
         return reportId;

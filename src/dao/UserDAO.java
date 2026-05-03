@@ -15,6 +15,7 @@ import java.util.List;
 
 public class UserDAO {
 
+    // Inserts a new user record and sets the generated ID
     public boolean save(User user) {
         String query = "INSERT INTO users (username, password, full_name, phone, role, cnic, is_active) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -47,6 +48,7 @@ public class UserDAO {
         }
     }
 
+    // Finds a user by their primary key ID
     public User findById(int userId) {
         String query = "SELECT * FROM users WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -65,6 +67,7 @@ public class UserDAO {
         return null;
     }
 
+    // Looks up a user by their login username
     public User findByUsername(String username) {
         String query = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -83,6 +86,7 @@ public class UserDAO {
         return null;
     }
 
+    // Retrieves all user accounts from the database
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM users";
@@ -100,6 +104,7 @@ public class UserDAO {
         return users;
     }
 
+    // Updates an existing user's profile fields
     public boolean update(User user) {
         String query = "UPDATE users SET username = ?, password = ?, full_name = ?, phone = ?, is_active = ? WHERE user_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -119,8 +124,7 @@ public class UserDAO {
         }
     }
 
-
-
+    // Maps a database row to either an Admin or Employee based on the role column
     private User mapRow(ResultSet rs) throws SQLException {
         String role = rs.getString("role");
 

@@ -24,6 +24,7 @@ public class SalesTargetDAO {
         this.userDAO = userDAO;
     }
 
+    // Saves a target or updates an existing one for the same employee/month/year
     public boolean save(SalesTarget target) {
         int existingId = findExistingTargetId(target.getEmployee().getUserId(), target.getMonth(), target.getYear());
         if (existingId > 0) {
@@ -54,6 +55,7 @@ public class SalesTargetDAO {
         }
     }
 
+    // Updates the target and achieved amounts for an existing record
     public boolean update(SalesTarget target) {
         String query = "UPDATE sales_targets SET target_amount = ?, achieved_amount = ? WHERE target_id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -70,6 +72,7 @@ public class SalesTargetDAO {
         }
     }
 
+    // Fetches all sales targets sorted by most recent period first
     public List<SalesTarget> findAll() {
         List<SalesTarget> targets = new ArrayList<>();
         Map<Integer, model.User> userCache = new HashMap<>();
@@ -88,6 +91,7 @@ public class SalesTargetDAO {
         return targets;
     }
 
+    // Gets all targets for a specific employee, one per period
     public List<SalesTarget> findByEmployee(int employeeId) {
         List<SalesTarget> targets = new ArrayList<>();
         Map<Integer, model.User> userCache = new HashMap<>();
@@ -111,6 +115,7 @@ public class SalesTargetDAO {
         return targets;
     }
 
+    // Checks if a target already exists for this employee in the given period
     private int findExistingTargetId(int employeeId, int month, int year) {
         String query = "SELECT target_id FROM sales_targets WHERE employee_id = ? AND month = ? AND year = ? ORDER BY target_id DESC LIMIT 1";
         try (Connection conn = DatabaseConnection.getConnection();

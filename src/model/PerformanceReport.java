@@ -28,15 +28,12 @@ public class PerformanceReport {
         this.bonusAmount = bonusAmount;
         this.generatedDate = LocalDateTime.now();
         
-        // Auto-calculate the achievement percentage based on the passed in sales and target
         if (targetAmount > 0) {
             this.achievementPercentage = (totalSales / targetAmount) * 100.0;
         } else {
             this.achievementPercentage = 0.0;
         }
     }
-
-    // Getters & Setters
 
     public int getReportId() {
         return reportId;

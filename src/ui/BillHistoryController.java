@@ -8,7 +8,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import facade.SystemFacade;
 import model.Bill;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,9 +38,7 @@ public class BillHistoryController implements FacadeAware {
     @Override
     public void setSystemFacade(SystemFacade facade) {
         this.systemFacade = facade;
-        
         historyTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> handleFilter());
-
         loadAllBills();
         loadAllReturns();
     }
@@ -62,10 +59,10 @@ public class BillHistoryController implements FacadeAware {
         }
     }
 
+    // Builds bill cards with a cap of 100 to prevent UI lag
     private void renderBills(List<Bill> bills) {
         billGrid.getChildren().clear();
         salesCountLabel.setText(bills.size() + (bills.size() == 1 ? " record" : " records"));
-
         if (bills.isEmpty()) {
             Label empty = new Label("No sales records found.");
             empty.getStyleClass().add("return-empty-state");
@@ -74,54 +71,50 @@ public class BillHistoryController implements FacadeAware {
             billGrid.getChildren().add(empty);
             return;
         }
-
-        for (Bill bill : bills) {
-            billGrid.getChildren().add(createBillCard(bill));
+        int limit = Math.min(bills.size(), 100);
+        for (int i = 0; i < limit; i++) billGrid.getChildren().add(createBillCard(bills.get(i)));
+        if (bills.size() > 100) {
+            Label moreMsg = new Label("Showing 100 most recent records. Use filters to find older ones.");
+            moreMsg.setStyle("-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 13px; -fx-padding: 10 0;");
+            moreMsg.setMaxWidth(Double.MAX_VALUE);
+            moreMsg.setAlignment(Pos.CENTER);
+            billGrid.getChildren().add(moreMsg);
         }
     }
 
     private VBox createBillCard(Bill bill) {
         VBox card = new VBox(0);
         card.getStyleClass().add("sales-card");
-
         HBox top = new HBox(10);
         top.setAlignment(Pos.CENTER_LEFT);
-
         VBox title = new VBox(3);
         HBox.setHgrow(title, Priority.ALWAYS);
-
         Label billId = new Label("BLL-" + bill.getBillId());
         billId.getStyleClass().add("sales-bill-id");
-
         Label date = new Label(bill.getBillDate().format(dtf));
         date.getStyleClass().add("inv-card-barcode");
-
         title.getChildren().addAll(billId, date);
-
         Label payment = new Label("Cash");
         payment.getStyleClass().add("badge-active");
         top.getChildren().addAll(title, payment);
-
         HBox metrics = new HBox(8,
                 metric("Amount", String.format("Rs. %,.0f", bill.getTotalAmount()), true),
                 metric("Items", String.valueOf(bill.getItems().size()), false),
                 metric("Cashier", bill.getUser() != null ? bill.getUser().getFullName() : "N/A", false));
         VBox.setMargin(metrics, new javafx.geometry.Insets(14, 0, 14, 0));
-
         HBox bottom = new HBox(8);
         bottom.setAlignment(Pos.CENTER_RIGHT);
         Label change = new Label("Change: Rs. " + String.format("%,.0f", bill.getreturnCash()));
         change.getStyleClass().add("sales-change");
         bottom.getChildren().add(change);
-
         card.getChildren().addAll(top, divider(), metrics, divider(), bottom);
         return card;
     }
 
+    // Builds return cards with a cap of 100
     private void renderReturns(List<ReturnTransaction> returns) {
         returnsGrid.getChildren().clear();
         returnsCountLabel.setText(returns.size() + (returns.size() == 1 ? " record" : " records"));
-
         if (returns.isEmpty()) {
             Label empty = new Label("No return records found.");
             empty.getStyleClass().add("return-empty-state");
@@ -130,48 +123,43 @@ public class BillHistoryController implements FacadeAware {
             returnsGrid.getChildren().add(empty);
             return;
         }
-
-        for (ReturnTransaction tx : returns) {
-            returnsGrid.getChildren().add(createReturnCard(tx));
+        int limit = Math.min(returns.size(), 100);
+        for (int i = 0; i < limit; i++) returnsGrid.getChildren().add(createReturnCard(returns.get(i)));
+        if (returns.size() > 100) {
+            Label moreMsg = new Label("Showing 100 most recent returns. Use filters to find older ones.");
+            moreMsg.setStyle("-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 13px; -fx-padding: 10 0;");
+            moreMsg.setMaxWidth(Double.MAX_VALUE);
+            moreMsg.setAlignment(Pos.CENTER);
+            returnsGrid.getChildren().add(moreMsg);
         }
     }
 
     private VBox createReturnCard(ReturnTransaction tx) {
         VBox card = new VBox(0);
         card.getStyleClass().add("sales-card");
-
         HBox top = new HBox(10);
         top.setAlignment(Pos.CENTER_LEFT);
-
         VBox title = new VBox(3);
         HBox.setHgrow(title, Priority.ALWAYS);
-
         Label retId = new Label("RET-" + tx.getReturnId());
         retId.getStyleClass().add("sales-bill-id");
-
         Label date = new Label(tx.getReturnDate().format(dtf));
         date.getStyleClass().add("inv-card-barcode");
-
         title.getChildren().addAll(retId, date);
-
         Label type = new Label("Refund");
         type.getStyleClass().add("badge-warning");
         top.getChildren().addAll(title, type);
-
         int itemsCount = tx.getReturnedItems().stream().mapToInt(ReturnItem::getReturnQuantity).sum();
-
         HBox metrics = new HBox(8,
                 metric("Refund", String.format("Rs. %,.0f", tx.getRefundAmount()), true),
                 metric("Items", String.valueOf(itemsCount), false),
                 metric("Original Bill", "BLL-" + tx.getOriginalBill().getBillId(), false));
         VBox.setMargin(metrics, new javafx.geometry.Insets(14, 0, 14, 0));
-
         HBox bottom = new HBox(8);
         bottom.setAlignment(Pos.CENTER_LEFT);
         Label reason = new Label("Reason: " + (tx.getReason() == null || tx.getReason().isEmpty() ? "None" : tx.getReason()));
         reason.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
         bottom.getChildren().add(reason);
-
         card.getChildren().addAll(top, divider(), metrics, divider(), bottom);
         return card;
     }
@@ -214,48 +202,37 @@ public class BillHistoryController implements FacadeAware {
         avgOrderLabel.setText(String.format("Rs. %,.2f", avg));
     }
 
+    // Applies date range and text search filters to the active tab
     @FXML
     private void handleFilter() {
         LocalDate from = dateFrom.getValue();
         LocalDate to = dateTo.getValue();
         String query = searchField.getText();
-
         boolean isSalesMode = historyTabPane.getSelectionModel().getSelectedIndex() == 0;
-
         if (isSalesMode) {
             List<Bill> filtered;
             if (from != null && to != null) {
-                LocalDateTime fromDT = from.atStartOfDay();
-                LocalDateTime toDT = to.atTime(LocalTime.MAX);
-                filtered = systemFacade.filterByDateRange(fromDT, toDT);
+                filtered = systemFacade.filterByDateRange(from.atStartOfDay(), to.atTime(LocalTime.MAX));
             } else {
                 filtered = FXCollections.observableArrayList(allBills);
             }
-
             if (query != null && !query.trim().isEmpty()) {
                 String q = query.trim().toLowerCase();
-                filtered.removeIf(b -> !String.valueOf(b.getBillId()).contains(q)
-                        && !(b.getUser() != null && b.getUser().getFullName().toLowerCase().contains(q)));
+                filtered.removeIf(b -> !String.valueOf(b.getBillId()).contains(q) && !(b.getUser() != null && b.getUser().getFullName().toLowerCase().contains(q)));
             }
-
             renderBills(filtered);
             updateStats(filtered);
         } else {
             List<ReturnTransaction> filtered = FXCollections.observableArrayList(allReturns);
-            
             if (from != null && to != null) {
                 LocalDateTime fromDT = from.atStartOfDay();
                 LocalDateTime toDT = to.atTime(LocalTime.MAX);
                 filtered.removeIf(r -> r.getReturnDate().isBefore(fromDT) || r.getReturnDate().isAfter(toDT));
             }
-
             if (query != null && !query.trim().isEmpty()) {
                 String q = query.trim().toLowerCase();
-                filtered.removeIf(r -> !String.valueOf(r.getReturnId()).contains(q)
-                        && !String.valueOf(r.getOriginalBill().getBillId()).contains(q)
-                        && !(r.getReason() != null && r.getReason().toLowerCase().contains(q)));
+                filtered.removeIf(r -> !String.valueOf(r.getReturnId()).contains(q) && !String.valueOf(r.getOriginalBill().getBillId()).contains(q) && !(r.getReason() != null && r.getReason().toLowerCase().contains(q)));
             }
-
             renderReturns(filtered);
             updateReturnStats(filtered);
         }
@@ -266,11 +243,6 @@ public class BillHistoryController implements FacadeAware {
         dateFrom.setValue(null);
         dateTo.setValue(null);
         searchField.clear();
-        
-        if (historyTabPane.getSelectionModel().getSelectedIndex() == 0) {
-            loadAllBills();
-        } else {
-            loadAllReturns();
-        }
+        if (historyTabPane.getSelectionModel().getSelectedIndex() == 0) { loadAllBills(); } else { loadAllReturns(); }
     }
 }

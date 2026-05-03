@@ -17,11 +17,10 @@ public class BillItem {
         this.unitPrice = unitPrice;
     }
 
-   public double getSubtotal() {
+    // Returns the line total for this item
+    public double getSubtotal() {
         return quantity * unitPrice;
     }
-
-    // Getters & Setters 
 
     public int getBillItemId() {
         return billItemId;

@@ -15,6 +15,7 @@ import java.io.IOException;
 public class ReportPDFService {
     private static final String REPORT_DIR = "reports/monthly_sales";
 
+    // Exports the monthly sales report as a formatted PDF file
     public static String exportMonthlyReport(MonthlyReport report, String month, int year) {
         File dir = new File(REPORT_DIR);
         if (!dir.exists()) {
@@ -43,7 +44,6 @@ public class ReportPDFService {
             period.setSpacingAfter(30);
             document.add(period);
 
-            // Summary Table
             PdfPTable summary = new PdfPTable(2);
             summary.setWidthPercentage(100);
             summary.setSpacingAfter(30);
@@ -56,7 +56,6 @@ public class ReportPDFService {
             summary.addCell(createCell(String.format("Rs. %,.0f", report.getNetRevenue()), headerFont, Color.decode("#eff6ff")));
             document.add(summary);
 
-            // Top Products
             Paragraph topTitle = new Paragraph("Top Performing Products", headerFont);
             topTitle.setSpacingAfter(10);
             document.add(topTitle);

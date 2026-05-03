@@ -43,6 +43,7 @@ public class ReturnsController implements FacadeAware {
         this.systemFacade = facade;
     }
 
+    // Searches for a previous bill by ID to begin a return process
     @FXML
     private void handleSearchBill() {
         String idText = billSearchField.getText().trim();
@@ -72,6 +73,7 @@ public class ReturnsController implements FacadeAware {
         }
     }
 
+    // Clears the active return session and resets the UI
     @FXML
     private void handleReset() {
         foundBill = null;
@@ -86,6 +88,7 @@ public class ReturnsController implements FacadeAware {
         renderSelectedReturns();
     }
 
+    // Populates the grid with products from the loaded bill
     private void renderBillItems() {
         billItemsFlow.getChildren().clear();
 
@@ -103,7 +106,6 @@ public class ReturnsController implements FacadeAware {
 
     private VBox createReturnItemCard(BillItem item) {
         Product product = item.getProduct();
-
         VBox card = new VBox(0);
         card.getStyleClass().add("return-product-card");
 
@@ -195,6 +197,7 @@ public class ReturnsController implements FacadeAware {
         renderSelectedReturns();
     }
 
+    // Updates the summary sidebar with the selected return items
     private void renderSelectedReturns() {
         selectedReturnsBox.getChildren().clear();
 
@@ -260,6 +263,7 @@ public class ReturnsController implements FacadeAware {
         billItemsFlow.getChildren().add(empty);
     }
 
+    // Finalizes the return transaction through the command pattern
     @FXML
     private void handleProcessReturn() {
         if (foundBill == null) {

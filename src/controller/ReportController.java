@@ -17,6 +17,7 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    // Assigns or updates a monthly sales target for an employee
     public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
         boolean success = reportService.assignTarget(employee, month, year, targetAmount);
 
@@ -29,6 +30,7 @@ public class ReportController {
         return success;
     }
 
+    // Generates a single employee's performance report for a given month
     public PerformanceReport generatePerformanceReport(Employee emp, int month, int year, List<Bill> allBills) {
         PerformanceReport report = reportService.generatePerformanceReport(emp, month, year, allBills);
         if (report != null) {
@@ -39,6 +41,7 @@ public class ReportController {
         return report;
     }
 
+    // Generates the store-wide monthly sales summary
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
 
@@ -51,6 +54,7 @@ public class ReportController {
         return report;
     }
 
+    // Builds performance reports for multiple employees at once
     public List<PerformanceReport> getPerformanceComparison(List<Employee> employees, int month, int year,
             List<Bill> allBills) {
 

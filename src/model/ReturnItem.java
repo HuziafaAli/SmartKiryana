@@ -15,15 +15,11 @@ public class ReturnItem {
         this.returnQuantity = returnQuantity;
     }
 
-    // --- Business Logic ---
-
-    // Calculates the refund for just this specific quantity of the item
+    // Calculates the refund amount for this returned quantity
     public double getRefundSubtotal() {
         if (originalItem == null) return 0.0;
         return returnQuantity * originalItem.getUnitPrice();
     }
-
-    // --- Getters & Setters ---
 
     public int getReturnItemId() {
         return returnItemId;

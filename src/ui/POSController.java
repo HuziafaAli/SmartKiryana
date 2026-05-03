@@ -13,24 +13,15 @@ import java.util.Optional;
 
 public class POSController implements FacadeAware {
 
-    @FXML
-    private TextField searchField;
-    @FXML
-    private FlowPane productGrid;
-    @FXML
-    private VBox billItemsBox;
-    @FXML
-    private Label subTotalLabel;
-    @FXML
-    private Label totalLabel;
-    @FXML
-    private TextField discountField;
-    @FXML
-    private ReturnsController returnsViewController;
-    @FXML
-    private TabPane posTabs;
-    @FXML
-    private Tab billingTab;
+    @FXML private TextField searchField;
+    @FXML private FlowPane productGrid;
+    @FXML private VBox billItemsBox;
+    @FXML private Label subTotalLabel;
+    @FXML private Label totalLabel;
+    @FXML private TextField discountField;
+    @FXML private ReturnsController returnsViewController;
+    @FXML private TabPane posTabs;
+    @FXML private Tab billingTab;
 
     private SystemFacade systemFacade;
 
@@ -42,8 +33,7 @@ public class POSController implements FacadeAware {
                     systemFacade.applyDiscount(discount);
                     refreshBillSummary();
                 }
-            } catch (NumberFormatException ignored) {
-            }
+            } catch (NumberFormatException ignored) {}
         });
 
         posTabs.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
@@ -64,6 +54,7 @@ public class POSController implements FacadeAware {
         loadProductGrid();
     }
 
+    // Renders the clickable grid of all available products
     private void loadProductGrid() {
         productGrid.getChildren().clear();
         List<InventoryItem> items = systemFacade.getAllInventoryItems();
@@ -102,6 +93,7 @@ public class POSController implements FacadeAware {
         }
     }
 
+    // Filters the product grid or auto-adds a product if the barcode exactly matches
     @FXML
     private void handleSearch() {
         String query = searchField.getText().trim();
@@ -112,24 +104,20 @@ public class POSController implements FacadeAware {
 
         List<InventoryItem> items = systemFacade.getAllInventoryItems();
 
-        // Auto-add feature for Barcode Scanners:
-        // If the query is an EXACT match for a barcode, add it immediately and clear
-        // search.
         for (InventoryItem inv : items) {
             if (inv.getProduct().getBarcode().equalsIgnoreCase(query)) {
                 String result = systemFacade.scanItem(inv.getProduct().getBarcode(), 1);
                 if (result.contains("successfully") || result.contains("Updated")) {
                     refreshBill();
-                    searchField.clear(); // clear for the next scan
-                    loadProductGrid(); // reset grid
+                    searchField.clear();
+                    loadProductGrid();
                 } else {
                     showAlert("Cannot Add Item", result);
                 }
-                return; // Stop processing further since we found an exact barcode match
+                return;
             }
         }
 
-        // If not an exact barcode match, just filter the grid
         productGrid.getChildren().clear();
         for (InventoryItem inv : items) {
             Product p = inv.getProduct();
@@ -172,6 +160,7 @@ public class POSController implements FacadeAware {
         return card;
     }
 
+    // Updates the current bill's line items in the sidebar
     private void refreshBill() {
         billItemsBox.getChildren().clear();
         Bill bill = systemFacade.getCurrentBill();
@@ -180,10 +169,7 @@ public class POSController implements FacadeAware {
             for (BillItem item : bill.getItems()) {
                 HBox row = new HBox(10);
                 row.setAlignment(Pos.CENTER_LEFT);
-                row.setStyle(
-                        "-fx-background-color: rgba(255,255,255,0.04);" +
-                                "-fx-background-radius: 8;" +
-                                "-fx-padding: 10 12;");
+                row.setStyle("-fx-background-color: rgba(255,255,255,0.04); -fx-background-radius: 8; -fx-padding: 10 12;");
 
                 VBox nameBox = new VBox(3);
                 HBox.setHgrow(nameBox, Priority.ALWAYS);
@@ -194,10 +180,7 @@ public class POSController implements FacadeAware {
                 nameLabel.setWrapText(true);
 
                 Label qtyLabel = new Label("x" + item.getQuantity());
-                qtyLabel.setStyle(
-                        "-fx-text-fill: #60a5fa; -fx-font-size: 11px; -fx-font-weight: bold;" +
-                                "-fx-background-color: rgba(59,130,246,0.15);" +
-                                "-fx-background-radius: 20; -fx-padding: 2 8;");
+                qtyLabel.setStyle("-fx-text-fill: #60a5fa; -fx-font-size: 11px; -fx-font-weight: bold; -fx-background-color: rgba(59,130,246,0.15); -fx-background-radius: 20; -fx-padding: 2 8;");
 
                 nameBox.getChildren().addAll(nameLabel, qtyLabel);
 
@@ -244,6 +227,7 @@ public class POSController implements FacadeAware {
         }
     }
 
+    // Processes payment, saves the PDF receipt, and resets the bill
     @FXML
     private void handlePay() {
         Bill bill = systemFacade.getCurrentBill();
@@ -264,9 +248,7 @@ public class POSController implements FacadeAware {
                 double cashAmount = Double.parseDouble(cash);
                 Bill finalized = systemFacade.checkOut(cashAmount);
                 if (finalized != null) {
-                    // Auto-save PDF
                     String pdfPath = util.ReceiptPDFService.saveReceiptAsPDF(finalized);
-
                     double change = finalized.getreturnCash();
                     String successMsg = String.format("Change: Rs. %.2f\n\nReceipt saved to:\n%s", change, pdfPath);
                     showInfo("Payment Successful", successMsg);

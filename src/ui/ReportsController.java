@@ -38,7 +38,6 @@ public class ReportsController implements FacadeAware {
     @FXML private Label peakSaleLabel;
     @FXML private Label summaryLabel;
 
-    // Monthly Report Fields
     @FXML private Label monthlyTotalSales;
     @FXML private Label monthlyTotalReturns;
     @FXML private Label monthlyNetRevenue;
@@ -74,7 +73,6 @@ public class ReportsController implements FacadeAware {
             employeeSelectionBox.setVisible(false);
             employeeSelectionBox.setManaged(false);
             
-            // Remove Monthly Report tab for employees
             reportTabs.getTabs().removeIf(tab -> tab.getText().equals("Monthly Report"));
             
             empNameLabel.setText(user.getFullName());
@@ -130,6 +128,7 @@ public class ReportsController implements FacadeAware {
         }
     }
 
+    // Generates a PDF version of the monthly report and opens a save dialog
     @FXML
     private void handleExportPDF() {
         int monthIndex = monthSelector.getSelectionModel().getSelectedIndex() + 1;
@@ -167,6 +166,7 @@ public class ReportsController implements FacadeAware {
         }
     }
 
+    // Calculates and displays employee performance against their monthly target
     private void generatePerformanceReport(int month, int year) {
         if (currentEmployee == null) {
             showAlert("Select Employee", "Please select an employee first.");
@@ -216,7 +216,9 @@ public class ReportsController implements FacadeAware {
 
             double bonusAmount = report.getBonusAmount();
             String status;
-            if (bonusAmount > 0) {
+            if (report.getTargetAmount() <= 0) {
+                status = "Status: No sales target assigned for this month.";
+            } else if (bonusAmount > 0) {
                 status = String.format("Status: Great job! You've earned a bonus of Rs. %,.0f. " +
                         "Every additional sale increases your bonus by 5%% of the amount!", bonusAmount);
             } else {
@@ -253,6 +255,7 @@ public class ReportsController implements FacadeAware {
         bonusLabel.setText("Rs. 0");
     }
 
+    // Calculates overall store sales, returns, and lists top performing products
     private void generateMonthlyReport(int month, int year) {
         List<Bill> allBills = systemFacade.getAllBills();
         List<ReturnTransaction> allReturns = systemFacade.getAllReturns();
@@ -270,7 +273,6 @@ public class ReportsController implements FacadeAware {
             monthlyTotalReturns.setText(String.format("Rs. %,.0f", report.getTotalReturns()));
             monthlyNetRevenue.setText(String.format("Rs. %,.0f", report.getNetRevenue()));
             
-            // Average Daily Sales
             int daysInMonth = LocalDate.of(year, month, 1).lengthOfMonth();
             double avgDaily = report.getTotalSales() / daysInMonth;
             monthlyAvgDaily.setText(String.format("Rs. %,.0f", avgDaily));

@@ -40,6 +40,7 @@ public class DashboardController {
     private Button activeNavButton;
     private SystemFacade systemFacade;
 
+    // Configures sidebar visibility based on user role and loads the home view
     public void setSystemFacade(SystemFacade facade) {
         this.systemFacade = facade;
         User user = facade.getCurrentUser();
@@ -110,6 +111,7 @@ public class DashboardController {
         }
     }
 
+    // Logs out and returns to the login screen
     @FXML
     private void handleLogout() {
         try {
@@ -128,12 +130,12 @@ public class DashboardController {
         }
     }
 
+    // Loads an FXML view into the content area and injects the facade
     private void loadView(String fxmlFile) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/" + fxmlFile));
             Node view = loader.load();
 
-            // Inject the facade into the loaded controller
             Object controller = loader.getController();
             if (controller instanceof FacadeAware) {
                 ((FacadeAware) controller).setSystemFacade(systemFacade);

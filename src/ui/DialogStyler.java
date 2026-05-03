@@ -1,5 +1,6 @@
 package ui;
 
+// Applies the app's dark theme stylesheet to any JavaFX dialog
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 

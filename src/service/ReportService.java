@@ -26,6 +26,7 @@ public class ReportService {
         this.salesTargetDAO = salesTargetDAO;
     }
 
+    // Assigns a sales target after verifying admin permissions
     public boolean assignTarget(Employee employee, int month, int year, double targetAmount) {
         User currentUser = authService.getCurrentUser();
 
@@ -42,6 +43,7 @@ public class ReportService {
         return salesTargetDAO.save(newTarget);
     }
 
+    // Builds a performance report comparing sales against the employee's target
     public PerformanceReport generatePerformanceReport(Employee emp, int month, int year,
             List<Bill> allBills) {
         List<SalesTarget> targetDatabase = salesTargetDAO.findAll();
@@ -65,6 +67,7 @@ public class ReportService {
         return salesTargetDAO.findAll();
     }
 
+    // Creates the store-wide monthly sales and returns summary
     public MonthlyReport generateMonthlyReport(int month, int year, List<Bill> allBills,
             List<ReturnTransaction> allReturns) {
 
@@ -77,6 +80,4 @@ public class ReportService {
 
         return report;
     }
-
-
 }

@@ -28,11 +28,13 @@ public class Bill {
         this.billDate = LocalDateTime.now();
     }
 
+    // Appends an item and recalculates the bill total
     public void addItem(BillItem item) {
         items.add(item);
         calculateTotal(); 
     }
 
+    // Sums all line items then applies tax and discount
     public void calculateTotal() {
         double sum = 0;
         for (BillItem item : items) {
@@ -44,8 +46,6 @@ public class Bill {
         
         this.totalAmount = sum;
     }
-
-    // --- Getters & Setters ---
 
     public int getBillId() {
         return billId;
