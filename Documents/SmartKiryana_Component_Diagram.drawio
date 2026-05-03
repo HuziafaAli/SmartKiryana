@@ -1,0 +1,302 @@
+<mxfile host="app.diagrams.net" agent="draw.io">
+  <diagram id="comp1" name="Component Diagram">
+    <mxGraphModel dx="4138" dy="2587" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="imbW0CrJdui55aqdKTj_-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="920" width="1380" x="-1530" y="-1050" as="geometry" />
+        </mxCell>
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=18;fontStyle=1;align=center;fillColor=none;strokeColor=none;labelBackgroundColor=none;" value="SmartKiryana — Component Diagram" vertex="1">
+          <mxGeometry height="36" width="1100" x="-1440" y="-1120" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_outer" parent="1" style="shape=mxgraph.uml2.component;fontStyle=0;fontSize=12;verticalAlign=top;spacingTop=4;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;: UI Component&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color:#555555;&quot;&gt;JavaFX Views &amp;amp; Controllers&lt;/font&gt;" vertex="1">
+          <mxGeometry height="280" width="280" x="-1440" y="-940" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_sub1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;LoginView" vertex="1">
+          <mxGeometry height="50" width="110" x="-1420" y="-860" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_sub2" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;DashboardView" vertex="1">
+          <mxGeometry height="50" width="115" x="-1295" y="-860" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_sub3" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;POSView" vertex="1">
+          <mxGeometry height="50" width="110" x="-1420" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_sub4" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;InventoryView" vertex="1">
+          <mxGeometry height="50" width="115" x="-1295" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_sub5" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;ReportsView" vertex="1">
+          <mxGeometry height="50" width="240" x="-1420" y="-730" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_port_l" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1446" y="-814" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_lollipop" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-1490" y="-814" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_lollipop_line" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1472" y="-805" as="sourcePoint" />
+            <mxPoint x="-1446" y="-805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_ikiryana" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IUserInterface&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="80" x="-1530" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_port_r" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1166" y="-814" as="geometry" />
+        </mxCell>
+        <mxCell id="facade_socket_r" parent="1" style="shape=mxgraph.uml2.requiredInterface;fillColor=none;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="-1152" y="-824" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_facade_req" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IBusinessService Interface&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="120" x="-1146" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_outer" parent="1" style="shape=mxgraph.uml2.component;fontStyle=0;fontSize=12;verticalAlign=top;spacingTop=4;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;: Business Component&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color:#555555;&quot;&gt;Core Application Logic&lt;/font&gt;" vertex="1">
+          <mxGeometry height="280" width="300" x="-1020" y="-940" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_sub1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;SystemFacade" vertex="1">
+          <mxGeometry height="50" width="120" x="-1000" y="-860" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_sub2" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;AuthService" vertex="1">
+          <mxGeometry height="50" width="120" x="-860" y="-860" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_sub3" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;BillingService" vertex="1">
+          <mxGeometry height="50" width="120" x="-1000" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_sub4" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;InventoryService" vertex="1">
+          <mxGeometry height="50" width="120" x="-860" y="-795" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_sub5" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;ReportService" vertex="1">
+          <mxGeometry height="50" width="260" x="-1000" y="-730" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_port_l" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1026" y="-814" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_lollipop" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-1068" y="-814" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_lollipop_line" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1050" y="-805" as="sourcePoint" />
+            <mxPoint x="-1026" y="-805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="biz_port_b" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-878" y="-668" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_socket_b" parent="1" style="shape=mxgraph.uml2.requiredInterface;fillColor=none;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="-888" y="-654" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_port_l_util" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1026" y="-700" as="geometry" />
+        </mxCell>
+        <mxCell id="biz_socket_l_util" parent="1" style="shape=mxgraph.uml2.requiredInterface;fillColor=none;direction=west;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="-1050" y="-710" as="geometry" />
+        </mxCell>
+        <mxCell id="da_outer" parent="1" style="shape=mxgraph.uml2.component;fontStyle=0;fontSize=12;verticalAlign=top;spacingTop=4;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;: Data Access&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color:#555555;&quot;&gt;DAO / Repository Layer&lt;/font&gt;" vertex="1">
+          <mxGeometry height="240" width="320" x="-1018" y="-530" as="geometry" />
+        </mxCell>
+        <mxCell id="da_sub1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;UserDAO" vertex="1">
+          <mxGeometry height="50" width="120" x="-998" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="da_sub2" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;InventoryItemDAO" vertex="1">
+          <mxGeometry height="50" width="120" x="-858" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="da_sub3" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;BillDAO" vertex="1">
+          <mxGeometry height="50" width="120" x="-998" y="-400" as="geometry" />
+        </mxCell>
+        <mxCell id="da_sub4" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;SalesTargetDAO" vertex="1">
+          <mxGeometry height="50" width="120" x="-858" y="-400" as="geometry" />
+        </mxCell>
+        <mxCell id="da_port_t" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-866" y="-536" as="geometry" />
+        </mxCell>
+        <mxCell id="da_lollipop" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-875" y="-572" as="geometry" />
+        </mxCell>
+        <mxCell id="da_lollipop_line" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-866" y="-554" as="sourcePoint" />
+            <mxPoint x="-866" y="-536" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_ida" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IPersistence Interface&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="100" x="-850" y="-572" as="geometry" />
+        </mxCell>
+        <mxCell id="da_port_r" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-706" y="-424" as="geometry" />
+        </mxCell>
+        <mxCell id="da_socket_r" parent="1" style="shape=mxgraph.uml2.requiredInterface;fillColor=none;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="-692" y="-434" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl_da_req" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IDatabase&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="60" x="-692" y="-406" as="geometry" />
+        </mxCell>
+        <mxCell id="da_port_l" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1024" y="-424" as="geometry" />
+        </mxCell>
+        <mxCell id="da_socket_l" parent="1" style="shape=mxgraph.uml2.requiredInterface;fillColor=none;direction=west;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="24" width="24" x="-1048" y="-434" as="geometry" />
+        </mxCell>
+        <mxCell id="util_outer" parent="1" style="shape=mxgraph.uml2.component;fontStyle=0;fontSize=12;verticalAlign=top;spacingTop=4;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;: Utility Component&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color:#555555;&quot;&gt;Cross-cutting Concerns&lt;/font&gt;" vertex="1">
+          <mxGeometry height="240" width="280" x="-1446" y="-532" as="geometry" />
+        </mxCell>
+        <mxCell id="util_sub1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;ReceiptPDFService" vertex="1">
+          <mxGeometry height="50" width="110" x="-1422" y="-472" as="geometry" />
+        </mxCell>
+        <mxCell id="util_sub2" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;Validator" vertex="1">
+          <mxGeometry height="50" width="110" x="-1292" y="-472" as="geometry" />
+        </mxCell>
+        <mxCell id="util_sub3" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;DatabaseConnection" vertex="1">
+          <mxGeometry height="50" width="110" x="-1292" y="-400" as="geometry" />
+        </mxCell>
+        <mxCell id="util_port_r" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1166" y="-434" as="geometry" />
+        </mxCell>
+        <mxCell id="util_lollipop" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-1128" y="-436" as="geometry" />
+        </mxCell>
+        <mxCell id="util_lollipop_line" edge="1" parent="1" source="util_port_r" style="endArrow=none;strokeWidth=1.5;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=none;fontColor=default;" target="util_lollipop" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1140" y="-430" />
+            </Array>
+            <mxPoint x="-1060" y="-415" as="sourcePoint" />
+            <mxPoint x="-1054" y="-415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_iutil" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IUtility Interface&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="60" x="-1170" y="-412" as="geometry" />
+        </mxCell>
+        <mxCell id="util_port_t" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-1300" y="-546" as="geometry" />
+        </mxCell>
+        <mxCell id="util_lollipop_t" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-1302" y="-580" as="geometry" />
+        </mxCell>
+        <mxCell id="util_lollipop_line_t" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1293" y="-562" as="sourcePoint" />
+            <mxPoint x="-1293" y="-546" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pg_outer" parent="1" style="shape=mxgraph.uml2.component;fontStyle=0;fontSize=12;verticalAlign=top;spacingTop=4;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;database&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;&lt;b&gt;: PostgreSQL Database&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color:#555555;&quot;&gt;Relational Data Store&lt;/font&gt;" vertex="1">
+          <mxGeometry height="240" width="300" x="-488" y="-530" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_sub1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;table&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;users" vertex="1">
+          <mxGeometry height="50" width="120" x="-468" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_sub2" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;table&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;inventory_items" vertex="1">
+          <mxGeometry height="50" width="120" x="-328" y="-460" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_sub3" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;table&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;bills" vertex="1">
+          <mxGeometry height="50" width="120" x="-468" y="-400" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_sub4" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;table&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;sales_targets" vertex="1">
+          <mxGeometry height="50" width="120" x="-328" y="-400" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_port_l" parent="1" style="shape=mxgraph.uml2.port;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="14" width="14" x="-494" y="-424" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_lollipop" parent="1" style="ellipse;aspect=fixed;labelBackgroundColor=none;" value="" vertex="1">
+          <mxGeometry height="18" width="18" x="-530" y="-424" as="geometry" />
+        </mxCell>
+        <mxCell id="pg_lollipop_line" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-512" y="-415" as="sourcePoint" />
+            <mxPoint x="-494" y="-415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbl_idb" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IDatabase&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="60" x="-548" y="-406" as="geometry" />
+        </mxCell>
+        <mxCell id="actor_user" parent="1" style="shape=mxgraph.archimate3.actor;whiteSpace=wrap;html=1;fontSize=11;labelBackgroundColor=none;" value="&lt;b&gt;: Shopkeeper&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;(JavaFX User)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="70" x="-1610" y="-830" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_user" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1540" y="-795" as="sourcePoint" />
+            <mxPoint x="-1490" y="-805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn_ui_biz" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1128" y="-805" as="sourcePoint" />
+            <mxPoint x="-1068" y="-805" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn_biz_da" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;entryX=0.5;entryY=0;entryDx=0;entryDy=0;labelBackgroundColor=none;fontColor=default;" target="da_lollipop" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-876" y="-630" as="sourcePoint" />
+            <mxPoint x="-958" y="-582" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn_da_pg" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-668" y="-422" as="sourcePoint" />
+            <mxPoint x="-530" y="-415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn_da_util" edge="1" parent="1" source="util_lollipop" style="endArrow=none;strokeWidth=1.5;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=none;fontColor=default;" target="da_socket_l" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1048" y="-422" as="sourcePoint" />
+            <mxPoint x="-1036" y="-415" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="conn_biz_util" edge="1" parent="1" style="endArrow=none;strokeWidth=1.5;edgeStyle=orthogonalEdgeStyle;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-1120" y="-698" />
+              <mxPoint x="-1120" y="-580" />
+            </Array>
+            <mxPoint x="-1050" y="-698" as="sourcePoint" />
+            <mxPoint x="-1293" y="-580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note_facade" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;align=left;spacingLeft=6;labelBackgroundColor=none;" value="&lt;b&gt;IUserInterface&lt;/b&gt;&lt;br&gt;+ login(user, pass)&lt;br&gt;+ openDashboard()&lt;br&gt;+ processSale()&lt;br&gt;+ viewInventory()" vertex="1">
+          <mxGeometry height="82" width="160" x="-1600" y="-712" as="geometry" />
+        </mxCell>
+        <mxCell id="note_biz" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;align=left;spacingLeft=6;labelBackgroundColor=none;" value="&lt;b&gt;IBusinessService&lt;/b&gt;&lt;br&gt;+ authenticate(creds)&lt;br&gt;+ generateBill(cart)&lt;br&gt;+ updateStock(item)&lt;br&gt;+ generateReport()" vertex="1">
+          <mxGeometry height="82" width="180" x="-1078" y="-1020" as="geometry" />
+        </mxCell>
+        <mxCell id="note_da" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;align=left;spacingLeft=6;labelBackgroundColor=none;" value="&lt;b&gt;IPersistence&lt;/b&gt;&lt;br&gt;+ findById(id)&lt;br&gt;+ save(entity)&lt;br&gt;+ update(entity)&lt;br&gt;+ delete(id)" vertex="1">
+          <mxGeometry height="82" width="150" x="-708" y="-580" as="geometry" />
+        </mxCell>
+        <mxCell id="note_util" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;align=left;spacingLeft=6;labelBackgroundColor=none;" value="&lt;b&gt;IUtility&lt;/b&gt;&lt;br&gt;+ validate(data)&lt;br&gt;+ generatePDF(bill)&lt;br&gt;+ getConnection()&lt;br&gt;+ manageSession()" vertex="1">
+          <mxGeometry height="82" width="150" x="-1440" y="-282" as="geometry" />
+        </mxCell>
+        <mxCell id="nc1" edge="1" parent="1" style="endArrow=none;dashed=1;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1485" y="-710" as="sourcePoint" />
+            <mxPoint x="-1485" y="-790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nc2" edge="1" parent="1" style="endArrow=none;dashed=1;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-990" y="-938" as="sourcePoint" />
+            <mxPoint x="-990" y="-940" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nc3" edge="1" parent="1" style="endArrow=none;dashed=1;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-708" y="-539" as="sourcePoint" />
+            <mxPoint x="-795" y="-563" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nc4" edge="1" parent="1" style="endArrow=none;dashed=1;labelBackgroundColor=none;fontColor=default;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1365" y="-282" as="sourcePoint" />
+            <mxPoint x="-1300" y="-300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="imbW0CrJdui55aqdKTj_-5" parent="1" style="text;html=1;fontSize=10;labelBackgroundColor=none;" value="&lt;i&gt;IUtility Interface&lt;/i&gt;" vertex="1">
+          <mxGeometry height="14" width="60" x="-1300" y="-607" as="geometry" />
+        </mxCell>
+        <mxCell id="YujtIXJqlO5J4YXCOhQf-1" parent="1" style="shape=mxgraph.uml2.component;fontSize=10;whiteSpace=wrap;html=1;labelBackgroundColor=none;" value="&lt;b&gt;&amp;lt;&amp;lt;component&amp;gt;&amp;gt;&lt;/b&gt;&lt;br&gt;ReportPDFService" vertex="1">
+          <mxGeometry height="50" width="110" x="-1420" y="-400" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
